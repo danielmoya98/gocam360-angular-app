@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>gocam360 - Plataforma de Experiencias 360° e Impresión Instantánea</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <meta name="description" content="Gestión de eventos 360°, proyección en vivo a 60 FPS, cola de impresión térmica instantánea y captación de prospectos CRM.">
+  
+  <!-- Script Blocking Anti-Flicker inline síncrono para eliminar el parpadeo de tema al recargar -->
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem('gocam360_theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="gocam360 - Experiencias 360° en Vivo">
+  <meta property="og:description" content="Plataforma profesional para gestión de eventos 360°, impresión térmica y muro interactivo en tiempo real.">
+  <meta property="og:type" content="website">
+
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-background text-foreground font-sans antialiased selection:bg-primary selection:text-primary-foreground">
+  <app-root></app-root>
+</body>
+</html>

@@ -1,0 +1,108 @@
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { IconComponent } from '../icon/icon.component';
+
+@Component({
+  selector: 'app-confirm-dialog',
+  standalone: true,
+  imports: [IconComponent],
+  host: {
+    class: 'contents',
+  },
+  template: `
+    @if (isVisible()) {
+      <!-- Fixed Fullscreen Backdrop (z-[250000] superior a Drawers) -->
+      <div
+        class="fixed inset-0 bg-black/75 backdrop-blur-md z-[250000] flex items-center justify-center p-4 transition-opacity duration-300 ease-out"
+        [class.animate-in]="isAnimatingIn()"
+        [class.fade-in]="isAnimatingIn()"
+        [class.animate-out]="isClosing()"
+        [class.fade-out]="isClosing()"
+        (click)="close()"
+      >
+        <!-- Dialog Container (Animación suave de escalado con entrada y salida) -->
+        <div
+          class="w-full max-w-sm bg-popover-solid text-popover-foreground border border-border rounded-xl shadow-2xl p-6 space-y-4 relative z-[250001]"
+          [class.animate-dialog-in]="isAnimatingIn()"
+          [class.animate-out]="isClosing()"
+          [class.zoom-out-95]="isClosing()"
+          [class.fade-out]="isClosing()"
+          (click)="$event.stopPropagation()"
+        >
+          <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center text-lg font-bold">
+            <app-icon name="trash" class="w-5 h-5 text-rose-500" />
+          </div>
+
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-foreground tracking-tight">{{ title }}</h3>
+            <p class="text-xs text-muted-foreground leading-relaxed">{{ message }}</p>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-2 border-t border-border/60">
+            <button
+              type="button"
+              (click)="close()"
+              class="px-3 py-1.5 text-xs font-semibold rounded-md border border-border bg-background hover:bg-muted text-foreground transition-all active:scale-95 cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              (click)="confirm()"
+              class="px-3.5 py-1.5 text-xs font-bold rounded-md bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition-all active:scale-95 cursor-pointer"
+            >
+              Confirmar Eliminación
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  `,
+})
+export class ConfirmDialogComponent {
+  private _isOpen = false;
+  protected isVisible = signal(false);
+  protected isAnimatingIn = signal(false);
+  protected isClosing = signal(false);
+
+  @Input() title = '¿Estás seguro?';
+  @Input() message = 'Esta acción no se puede deshacer.';
+
+  @Input()
+  set isOpen(value: boolean) {
+    if (value && !this._isOpen) {
+      this._isOpen = true;
+      this.isVisible.set(true);
+      this.isClosing.set(false);
+      this.isAnimatingIn.set(true);
+    } else if (!value && this._isOpen) {
+      this.triggerCloseAnimation();
+    }
+  }
+  get isOpen(): boolean {
+    return this._isOpen;
+  }
+
+  @Output() isOpenChange = new EventEmitter<boolean>();
+  @Output() confirmed = new EventEmitter<void>();
+
+  close(): void {
+    if (this.isClosing()) return;
+    this.triggerCloseAnimation();
+  }
+
+  confirm(): void {
+    this.confirmed.emit();
+    this.close();
+  }
+
+  private triggerCloseAnimation(): void {
+    this.isAnimatingIn.set(false);
+    this.isClosing.set(true);
+    setTimeout(() => {
+      this._isOpen = false;
+      this.isVisible.set(false);
+      this.isClosing.set(false);
+      this.isOpenChange.emit(false);
+    }, 200);
+  }
+}

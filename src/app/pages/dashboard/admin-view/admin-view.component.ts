@@ -1,0 +1,251 @@
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import { ToastService } from '../../../shared/services/toast.service';
+import { IconComponent } from '../../../shared/ui/icon/icon.component';
+import { AdminDashboardService } from '../services/admin-dashboard.service';
+
+@Component({
+  selector: 'app-admin-view',
+  standalone: true,
+  imports: [IconComponent, RouterLink],
+  template: `
+    <div class="space-y-6 animate-in fade-in duration-300">
+      
+      <!-- Banner de Bienvenida del Admin con Botón de Actualizar -->
+      <div class="p-5 rounded-2xl border border-border/80 bg-popover-solid text-popover-foreground flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-none">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-extrabold font-mono">
+              ROL: ADMIN OPERATIVO
+            </span>
+            <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+              EN VIVO
+            </span>
+          </div>
+          <h2 class="text-xl font-extrabold tracking-tight text-foreground">Panel Operativo de Mis Eventos</h2>
+          <p class="text-xs text-muted-foreground mt-0.5">Supervisa tus eventos creados, capturas en vivo, métricas de hoy e impresiones térmicas pendientes.</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            (click)="loadMetrics(true)"
+            class="px-3.5 py-1.5 rounded-lg border border-border bg-card hover:bg-muted font-bold text-xs transition-all active:scale-95 flex items-center gap-1.5 text-foreground cursor-pointer"
+          >
+            <app-icon name="refresh" class="w-3.5 h-3.5" [class.animate-spin]="isLoading()" />
+            <span>Actualizar Métricas</span>
+          </button>
+          <a
+            routerLink="/dashboard/events"
+            class="px-3.5 py-1.5 rounded-lg bg-foreground text-background font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+          >
+            <app-icon name="plus" class="w-3.5 h-3.5" />
+            <span>Crear Evento</span>
+          </a>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <!-- Skeletons en Carga -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 animate-pulse">
+          <div class="h-28 bg-muted/40 rounded-xl"></div>
+          <div class="h-28 bg-muted/40 rounded-xl"></div>
+          <div class="h-28 bg-muted/40 rounded-xl"></div>
+          <div class="h-28 bg-muted/40 rounded-xl"></div>
+        </div>
+      } @else {
+        <!-- FILA 1: Grid de 4 Tarjetas KPI Locales del Administrador -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
+          
+          <!-- Tarjeta 1: Eventos Creados -->
+          <div class="p-4 rounded-xl border border-border/80 bg-card space-y-2 shadow-none hover:border-primary/50 transition-all relative overflow-hidden group">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                <app-icon name="events" class="w-4 h-4 text-emerald-400" />
+                <span>Eventos Creados</span>
+              </span>
+              <app-icon name="info" class="w-3.5 h-3.5 text-muted-foreground/60" />
+            </div>
+            <div>
+              <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono">{{ cardsData()?.eventsCount || 0 }}</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-[11px] text-emerald-400 font-bold">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span>{{ cardsData()?.activeEventsCount || 0 }} eventos activos hoy</span>
+            </div>
+          </div>
+
+          <!-- Tarjeta 2: Fotos Subidas -->
+          <div class="p-4 rounded-xl border border-border/80 bg-card space-y-2 shadow-none hover:border-primary/50 transition-all relative overflow-hidden group">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                <app-icon name="camera" class="w-4 h-4 text-primary" />
+                <span>Mis Fotos Subidas</span>
+              </span>
+              <span class="px-1.5 py-0.2 rounded-full bg-primary/10 text-primary text-[9px] font-bold">HD</span>
+            </div>
+            <div>
+              <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono">{{ cardsData()?.photosCount || 0 }}</span>
+            </div>
+            <p class="text-[11px] text-primary font-bold">
+              +{{ cardsData()?.photosToday || 0 }} subidas hoy
+            </p>
+          </div>
+
+          <!-- Tarjeta 3: Mis Impresiones -->
+          <div class="p-4 rounded-xl border border-border/80 bg-card space-y-2 shadow-none hover:border-primary/50 transition-all relative overflow-hidden group">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                <app-icon name="printer" class="w-4 h-4 text-amber-500" />
+                <span>Mis Impresiones</span>
+              </span>
+              <span class="px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-400 text-[9px] font-bold">TÉRMICA</span>
+            </div>
+            <div>
+              <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono text-amber-400">{{ cardsData()?.printsCount || 0 }}</span>
+            </div>
+            <p class="text-[11px] text-amber-400 font-bold">
+              {{ cardsData()?.pendingPrintsCount || 0 }} pendientes ahora
+            </p>
+          </div>
+
+          <!-- Tarjeta 4: Invitados Recientes -->
+          <div class="p-4 rounded-xl border border-border/80 bg-card space-y-2 shadow-none hover:border-primary/50 transition-all relative overflow-hidden group">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                <app-icon name="users" class="w-4 h-4 text-indigo-400" />
+                <span>Invitados Recientes</span>
+              </span>
+              <span class="px-1.5 py-0.2 rounded-full bg-indigo-500/10 text-indigo-400 text-[9px] font-bold">24H</span>
+            </div>
+            <div>
+              <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono">{{ cardsData()?.recentGuestsCount || 0 }}</span>
+            </div>
+            <p class="text-[11px] text-muted-foreground font-medium">Últimas 24 horas</p>
+          </div>
+
+        </div>
+
+        <!-- FILA 2: Eventos Activos en Curso y Cola de Impresión Local -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- COLUMNA 1: Mis Eventos Activos (100% Sólido bg-popover-solid) -->
+          <div class="bg-popover-solid text-popover-foreground border border-border/80 rounded-2xl shadow-none overflow-hidden flex flex-col min-h-[350px]">
+            <div class="px-5 py-4 border-b border-border/60 bg-popover-solid flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <h3 class="text-sm font-bold text-foreground">Eventos en Curso</h3>
+              </div>
+              <a routerLink="/dashboard/events" class="text-xs font-bold text-primary hover:underline">Ver todos los eventos →</a>
+            </div>
+
+            <div class="flex-1 divide-y divide-border/40 overflow-y-auto no-scrollbar bg-popover-solid">
+              @for (ev of activeEventsList(); track ev.id) {
+                <div class="flex items-center justify-between p-4 hover:bg-muted/40 transition-colors group">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0">
+                      🎪
+                    </div>
+                    <div>
+                      <p class="text-xs font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{{ ev.name }}</p>
+                      <p class="text-[11px] text-muted-foreground mt-0.5">📍 {{ ev.location || 'Sin ubicación' }}</p>
+                    </div>
+                  </div>
+                  <a
+                    routerLink="/dashboard/prints"
+                    class="px-2.5 py-1 rounded-md border border-border text-[11px] font-bold text-foreground hover:bg-muted transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Impresión</span>
+                    <app-icon name="events" class="w-3 h-3 text-muted-foreground" />
+                  </a>
+                </div>
+              } @empty {
+                <div class="p-8 text-center text-muted-foreground text-xs">
+                  No tienes eventos activos en este momento.
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- COLUMNA 2: Cola de Impresión Local (100% Sólido bg-popover-solid) -->
+          <div class="bg-popover-solid text-popover-foreground border border-border/80 rounded-2xl shadow-none overflow-hidden flex flex-col min-h-[350px]">
+            <div class="px-5 py-4 border-b border-border/60 bg-popover-solid flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2">
+                <app-icon name="printer" class="w-4 h-4 text-amber-500" />
+                <h3 class="text-sm font-bold text-foreground">Cola de Impresión Reciente</h3>
+              </div>
+              <a routerLink="/dashboard/prints" class="text-xs font-bold text-primary hover:underline">Gestionar Cola →</a>
+            </div>
+
+            <div class="flex-1 divide-y divide-border/40 overflow-y-auto no-scrollbar bg-popover-solid">
+              @for (item of printQueueList(); track item.id) {
+                <div class="flex items-center justify-between p-4 hover:bg-muted/40 transition-colors group">
+                  <div class="flex items-center gap-3">
+                    <img [src]="item.photoUrl" class="w-10 h-10 rounded-lg object-cover border border-border shrink-0" alt="Foto impresiones" />
+                    <div class="min-w-0">
+                      <p class="text-xs font-bold text-foreground truncate max-w-[160px]">{{ item.fileName }}</p>
+                      <p class="text-[11px] text-muted-foreground font-mono truncate">{{ item.eventName }}</p>
+                    </div>
+                  </div>
+                  <div>
+                    @if (item.status === 'PRINTING') {
+                      <span class="px-2 py-0.5 rounded-full border border-primary/30 text-primary text-[10px] font-bold bg-primary/10">● Imprimiendo</span>
+                    } @else {
+                      <span class="px-2 py-0.5 rounded-full border border-amber-500/30 text-amber-400 text-[10px] font-bold bg-amber-500/10">● Pendiente</span>
+                    }
+                  </div>
+                </div>
+              } @empty {
+                <div class="p-8 text-center text-muted-foreground text-xs">
+                  La cola de impresión está vacía por el momento.
+                </div>
+              }
+            </div>
+          </div>
+
+        </div>
+      }
+
+    </div>
+  `,
+})
+export class AdminViewComponent implements OnInit {
+  private readonly _adminDashboardService = inject(AdminDashboardService);
+  private readonly _toastService = inject(ToastService);
+
+  protected readonly isLoading = this._adminDashboardService.isLoading;
+  protected readonly cardsData = computed(() => this._adminDashboardService.metrics()?.cards);
+  protected readonly activeEventsList = computed(() => this._adminDashboardService.metrics()?.activeEvents ?? []);
+  protected readonly printQueueList = computed(() => this._adminDashboardService.metrics()?.printQueue ?? []);
+
+  ngOnInit(): void {
+    this.loadMetrics();
+  }
+
+  loadMetrics(notify = false): void {
+    this._adminDashboardService.getAdminMetrics(notify).subscribe({
+      next: () => {
+        if (notify) {
+          this._toastService.info('Métricas Actualizadas', 'Datos de eventos e impresiones sincronizados.');
+        }
+      },
+      error: () => {
+        if (notify) {
+          this._toastService.error('Error', 'No se pudieron recuperar las métricas operativas.');
+        }
+      },
+    });
+  }
+}

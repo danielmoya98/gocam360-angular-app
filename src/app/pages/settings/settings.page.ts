@@ -1,0 +1,177 @@
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { form, FormField, submit } from '@angular/forms/signals';
+import { ToastService } from '../../shared/services/toast.service';
+import { IconComponent } from '../../shared/ui/icon/icon.component';
+import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
+import { EventsService, EventItemResponseDto } from '../events/services/events.service';
+
+@Component({
+  selector: 'app-settings-page',
+  standalone: true,
+  imports: [FormField, IconComponent, HlmInputDirective],
+  template: `
+    <div class="h-full flex flex-col min-h-0 space-y-4 overflow-y-auto no-scrollbar pb-6">
+      
+      <!-- Standardized Page Title Header -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0">
+        <div>
+          <h2 class="text-xl font-bold tracking-tight text-foreground">Configuración Global & Parámetros Prisma</h2>
+          <p class="text-xs text-muted-foreground mt-0.5">Ajustes globales de plataforma, reglas por defecto de eventos 360°, cuotas de almacenamiento e integración de hardware térmico.</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            (click)="onSaveSettings()"
+            [disabled]="isSaving()"
+            class="px-3.5 py-1.5 rounded-md bg-foreground text-background font-semibold text-xs shadow-sm hover:opacity-90 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          >
+            @if (isSaving()) {
+              <app-icon name="refresh" class="w-3.5 h-3.5 animate-spin" />
+              <span>Guardando...</span>
+            } @else {
+              <app-icon name="check" class="w-3.5 h-3.5" />
+              <span>Guardar Configuración</span>
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenedor Principal de Ajustes (100% Sólido sin Transparencias bg-popover-solid) -->
+      <div class="space-y-4">
+        
+        <!-- SECCIÓN 1: Reglas Por Defecto para Eventos -->
+        <div class="p-5 rounded-xl border border-border/80 bg-popover-solid text-popover-foreground space-y-4 shadow-none">
+          <div class="border-b border-border/60 pb-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <app-icon name="events" class="w-4 h-4 text-primary" />
+              <h3 class="text-sm font-bold text-foreground">Reglas Por Defecto para Nuevos Eventos (Event)</h3>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold font-mono">PRISMA DATABASE</span>
+          </div>
+
+          <form (submit)="onSaveSettings(); $event.preventDefault()" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div class="space-y-1">
+              <label class="font-bold text-foreground">Fotos por Invitado (maxPhotosPerGuest)</label>
+              <input type="number" hlmInput [formField]="settingsForm.defaultMaxPhotosPerGuest" class="h-9 rounded-md text-xs w-full font-mono" />
+              <p class="text-[10px] text-muted-foreground">Límite por defecto asignado a nuevos eventos.</p>
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-foreground">Impresiones por Invitado (maxPrintsPerGuest)</label>
+              <input type="number" hlmInput [formField]="settingsForm.defaultMaxPrintsPerGuest" class="h-9 rounded-md text-xs w-full font-mono" />
+              <p class="text-[10px] text-muted-foreground">Máximo de impresiones térmicas permitidas.</p>
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-foreground">Días de Retención Cloud (galleryRetentionDays)</label>
+              <input type="number" hlmInput [formField]="settingsForm.defaultGalleryRetentionDays" class="h-9 rounded-md text-xs w-full font-mono" />
+              <p class="text-[10px] text-muted-foreground">Días activos de descarga pública por QR.</p>
+            </div>
+          </form>
+        </div>
+
+        <!-- SECCIÓN 2: Estación de Impresión Térmica & Procesamiento HD -->
+        <div class="p-5 rounded-xl border border-border/80 bg-popover-solid text-popover-foreground space-y-4 shadow-none">
+          <div class="border-b border-border/60 pb-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <app-icon name="printer" class="w-4 h-4 text-amber-500" />
+              <h3 class="text-sm font-bold text-foreground">Hardware Térmico & Cola de Impresiones (PrintRequest)</h3>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[10px] font-bold font-mono">TÉRMIKA DNP/FUJI</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg border border-border/60 bg-card hover:bg-muted/40 transition-colors">
+              <input type="checkbox" checked class="rounded border-border accent-primary cursor-pointer" />
+              <div>
+                <span class="font-bold text-foreground block">Impresión Automática Inmediata</span>
+                <span class="text-[11px] text-muted-foreground">Enviar a la cola de hardware térmico inmediatamente cuando el invitado confirme la foto.</span>
+              </div>
+            </label>
+
+            <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg border border-border/60 bg-card hover:bg-muted/40 transition-colors">
+              <input type="checkbox" checked class="rounded border-border accent-primary cursor-pointer" />
+              <div>
+                <span class="font-bold text-foreground block">Renderizado Automático PNG Overlay (Photo.renderedPath)</span>
+                <span class="text-[11px] text-muted-foreground">Procesar y guardar la imagen combinada con marco antes de enviar a la impresora física.</span>
+              </div>
+            </label>
+
+            <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg border border-border/60 bg-card hover:bg-muted/40 transition-colors">
+              <input type="checkbox" checked class="rounded border-border accent-primary cursor-pointer" />
+              <div>
+                <span class="font-bold text-foreground block">Notificación por WhatsApp Instantánea</span>
+                <span class="text-[11px] text-muted-foreground">Habilitar enlaces de aviso wa.me cuando el estado pase a PRINTED.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 3: Captura de Leads CRM -->
+        <div class="p-5 rounded-xl border border-border/80 bg-popover-solid text-popover-foreground space-y-4 shadow-none">
+          <div class="border-b border-border/60 pb-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <app-icon name="users" class="w-4 h-4 text-emerald-400" />
+              <h3 class="text-sm font-bold text-foreground">Captura de Prospectos & Leads (CrmLead)</h3>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-bold font-mono">CRM MODULE</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div class="space-y-1">
+              <label class="font-bold text-foreground">Pregunta de Captura al Descargar Foto por QR</label>
+              <input type="text" value="¿Te gustaría contratar el servicio 360° para tu próximo evento?" hlmInput class="h-9 rounded-md text-xs w-full" />
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-foreground">Estado por Defecto del Lead (LeadStatus)</label>
+              <select class="w-full h-9 px-3 rounded-md border border-border bg-card text-xs font-bold text-foreground focus:outline-none cursor-pointer">
+                <option value="NEW">NUEVO (NEW)</option>
+                <option value="CONTACTED">CONTACTADO (CONTACTED)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  `,
+})
+export class SettingsPage implements OnInit {
+  private readonly _eventsService = inject(EventsService);
+  private readonly _toastService = inject(ToastService);
+
+  protected readonly isSaving = signal(false);
+  protected readonly eventsList = signal<EventItemResponseDto[]>([]);
+
+  protected readonly settingsModel = signal({
+    defaultMaxPhotosPerGuest: 10,
+    defaultMaxPrintsPerGuest: 1,
+    defaultGalleryRetentionDays: 7,
+  });
+
+  protected readonly settingsForm = form(this.settingsModel);
+
+  ngOnInit(): void {
+    this._eventsService.findAll().subscribe({
+      next: (events) => {
+        this.eventsList.set(events);
+      },
+    });
+  }
+
+  onSaveSettings(): void {
+    submit(this.settingsForm, async () => {
+      this.isSaving.set(true);
+      setTimeout(() => {
+        this.isSaving.set(false);
+        this._toastService.success(
+          'Configuración Guardada',
+          'Los parámetros por defecto de Prisma y hardware térmico han sido actualizados.'
+        );
+      }, 500);
+    });
+  }
+}

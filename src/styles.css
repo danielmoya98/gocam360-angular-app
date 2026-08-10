@@ -1,0 +1,302 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 10% 4%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 10% 4%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 10% 4%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 4%;
+    --radius: 0.375rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6.5%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 6.5%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 10% 4%;
+    --secondary: 240 6% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 6% 12%;
+    --muted-foreground: 240 5% 55%;
+    --accent: 240 6% 14%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 6% 15%;
+    --input: 240 6% 15%;
+    --ring: 0 0% 98%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.bg-popover-solid {
+  background-color: #ffffff !important;
+}
+
+.dark .bg-popover-solid {
+  background-color: #121215 !important;
+}
+
+app-sidebar,
+app-topbar,
+app-superadmin-view,
+app-admin-view,
+app-icon,
+app-toast-container,
+app-event-qr-modal,
+app-print-queue-modal {
+  display: block;
+}
+
+/* Permitir que los componentes de página y modales liberen el stacking context para backdrop-blur global */
+app-users-page,
+app-events-page,
+app-prints-page,
+app-crm-leads-page,
+app-audit-logs-page,
+app-settings-page,
+app-drawer,
+app-confirm-dialog,
+app-command-palette,
+app-event-qr-modal,
+app-print-queue-modal {
+  display: contents;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Transición de tema mantenida en root de derecha a izquierda */
+
+/* Transición de Tema de Derecha a Izquierda ultra-pausada y lenta (1.4s) */
+.theme-transition-active::view-transition-old(root) {
+  animation: 1200ms cubic-bezier(0.25, 1, 0.5, 1) both theme-slide-out-left;
+  z-index: 1;
+}
+
+.theme-transition-active::view-transition-new(root) {
+  animation: 1400ms cubic-bezier(0.25, 1, 0.5, 1) both theme-slide-in-left;
+  z-index: 2;
+}
+
+@keyframes theme-slide-out-left {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+
+  to {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@keyframes theme-slide-in-left {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Animaciones ultra-suaves para Dropdown de Notificaciones y Command Palette Modal */
+@keyframes smooth-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes smooth-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-smooth-popover {
+  animation: smooth-popover-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-smooth-modal {
+  animation: smooth-modal-in 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Transición suave para apertura y cierre de menús desplegables (Dropdowns de Estado, Rol, Columnas) */
+.animate-dropdown-smooth {
+  animation: smooth-dropdown-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top left;
+}
+
+.animate-dropdown-smooth-right {
+  animation: smooth-dropdown-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top right;
+}
+
+@keyframes smooth-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Transición suave para filas de tabla, tarjetas e intercambio de columnas/búsquedas en UsersPage */
+.table-row-smooth {
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.column-smooth {
+  transition: opacity 250ms cubic-bezier(0.16, 1, 0.3, 1), transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.view-mode-container {
+  transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1), transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Animación ultra-suave de apertura y cierre para Drawers Laterales (Derecha a Izquierda) */
+@keyframes smooth-drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes smooth-drawer-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.animate-drawer-in {
+  animation: smooth-drawer-in 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-drawer-out {
+  animation: smooth-drawer-out 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Animación suave para Diálogos y Modales (QR, Confirmación y Cola de Impresión) */
+@keyframes smooth-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.93) translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes smooth-dialog-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+}
+
+.animate-dialog-in {
+  animation: smooth-dialog-in 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-dialog-out {
+  animation: smooth-dialog-out 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Animaciones ultra-suaves de entrada y salida para Toasts */
+@keyframes smooth-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes smooth-toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.92);
+  }
+}
+
+.animate-toast-in {
+  animation: smooth-toast-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-toast-out {
+  animation: smooth-toast-out 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
