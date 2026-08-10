@@ -27,7 +27,7 @@ Esta aplicación está **100% optimizada para ser desplegada de forma gratuita e
 1. Crea un nuevo **Static Site** en tu cuenta de [Render Dashboard](https://dashboard.render.com/).
 2. Conecta este repositorio de GitHub: `danielmoya98/gocam360-angular-app`.
 3. Configura los siguientes parámetros (o usa el archivo `render.yaml` incluido):
-   - **Build Command**: `npm install && npm run build`
+   - **Build Command**: `npm install --legacy-peer-deps && npm run build`
    - **Publish Directory**: `./dist/angular-setup-ai/browser`
    - **Rewrites (Single Page App)**:
      - `Source`: `/*`

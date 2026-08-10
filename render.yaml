@@ -2,7 +2,7 @@ services:
   - type: web
     name: gocam360-angular-app
     env: static
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --legacy-peer-deps && npm run build
     staticPublishPath: ./dist/angular-setup-ai/browser
     routes:
       - type: rewrite
