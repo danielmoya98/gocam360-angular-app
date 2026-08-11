@@ -1,0 +1,26 @@
+<div class="flex items-center bg-muted/40 p-0.5 rounded-md border border-border shrink-0">
+  <button
+    type="button"
+    (click)="setMode('cards')"
+    class="p-1.5 rounded text-xs font-bold transition-all cursor-pointer flex items-center justify-center"
+    [class.bg-background]="mode === 'cards'"
+    [class.shadow-sm]="mode === 'cards'"
+    [class.text-foreground]="mode === 'cards'"
+    [class.text-muted-foreground]="mode !== 'cards'"
+    title="Vista de Tarjetas"
+  >
+    <app-icon name="grid" class="w-3.5 h-3.5" />
+  </button>
+  <button
+    type="button"
+    (click)="setMode('table')"
+    class="p-1.5 rounded text-xs font-bold transition-all cursor-pointer flex items-center justify-center"
+    [class.bg-background]="mode === 'table'"
+    [class.shadow-sm]="mode === 'table'"
+    [class.text-foreground]="mode === 'table'"
+    [class.text-muted-foreground]="mode !== 'table'"
+    title="Vista de Tabla"
+  >
+    <app-icon name="table" class="w-3.5 h-3.5" />
+  </button>
+</div>

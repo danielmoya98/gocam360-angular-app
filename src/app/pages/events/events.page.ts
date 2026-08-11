@@ -10,6 +10,7 @@ import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.com
 import { KpiCardComponent } from '../../shared/ui/kpi-card/kpi-card.component';
 import { SegmentedPillsComponent } from '../../shared/ui/segmented-pills/segmented-pills.component';
 import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
+import { ViewSwitcherComponent } from '../../shared/ui/view-switcher/view-switcher.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { PrintPhotoItem, PrintQueueModalComponent } from './print-queue-modal.component';
@@ -30,6 +31,7 @@ import { PreferencesService } from '../../shared/services/preferences.service';
     KpiCardComponent,
     SegmentedPillsComponent,
     SearchInputComponent,
+    ViewSwitcherComponent,
     IconComponent,
     DatePipe,
   ],

@@ -6,13 +6,22 @@ import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
 import { KpiCardComponent } from '../../shared/ui/kpi-card/kpi-card.component';
 import { SegmentedPillsComponent } from '../../shared/ui/segmented-pills/segmented-pills.component';
+import { ViewSwitcherComponent } from '../../shared/ui/view-switcher/view-switcher.component';
 import { EventsService, EventItemResponseDto } from '../events/services/events.service';
 import { PrintsService, PrintRequestItemDto, PrintStatus } from './services/prints.service';
 
 @Component({
   selector: 'app-prints-page',
   standalone: true,
-  imports: [IconComponent, DatePipe, RouterLink, PageHeaderComponent, KpiCardComponent, SegmentedPillsComponent],
+  imports: [
+    IconComponent,
+    DatePipe,
+    RouterLink,
+    PageHeaderComponent,
+    KpiCardComponent,
+    SegmentedPillsComponent,
+    ViewSwitcherComponent,
+  ],
   templateUrl: './prints.page.html',
   styleUrl: './prints.page.css',
 })

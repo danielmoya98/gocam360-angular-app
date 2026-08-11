@@ -155,34 +155,12 @@
       </div>
     </div>
 
-    <!-- Right Action Buttons: View Switcher -->
+    <!-- Right Action Buttons: View Switcher Reutilizable -->
     <div class="flex items-center gap-2">
-      <div class="flex items-center bg-muted/40 p-0.5 rounded-md border border-border">
-        <button
-          type="button"
-          (click)="viewMode.set('table')"
-          class="p-1 rounded text-xs font-bold transition-all cursor-pointer"
-          [class.bg-background]="viewMode() === 'table'"
-          [class.shadow-sm]="viewMode() === 'table'"
-          [class.text-foreground]="viewMode() === 'table'"
-          [class.text-muted-foreground]="viewMode() !== 'table'"
-          title="Vista de Tabla"
-        >
-          <app-icon name="table" class="w-3.5 h-3.5" />
-        </button>
-        <button
-          type="button"
-          (click)="viewMode.set('cards')"
-          class="p-1 rounded text-xs font-bold transition-all cursor-pointer"
-          [class.bg-background]="viewMode() === 'cards'"
-          [class.shadow-sm]="viewMode() === 'cards'"
-          [class.text-foreground]="viewMode() === 'cards'"
-          [class.text-muted-foreground]="viewMode() !== 'cards'"
-          title="Vista de Tarjetas"
-        >
-          <app-icon name="grid" class="w-3.5 h-3.5" />
-        </button>
-      </div>
+      <app-view-switcher
+        [mode]="viewMode()"
+        (modeChange)="viewMode.set($event)"
+      />
     </div>
 
   </div>
