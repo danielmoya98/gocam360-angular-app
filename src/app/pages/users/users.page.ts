@@ -568,7 +568,9 @@ export interface ColumnVisibility {
             </div>
 
             <div class="space-y-1">
-              <label class="text-xs font-bold text-foreground">Contraseña {{ drawerMode() === 'edit' ? '(Dejar en blanco para conservar)' : '' }}</label>
+              <label class="text-xs font-bold text-foreground">
+                Contraseña {{ drawerMode() === 'create' ? '(Mín. 6 caract. - por defecto: Admin360#)' : '(Dejar en blanco para conservar)' }}
+              </label>
               <input type="password" hlmInput [formField]="adminForm.password" placeholder="••••••••" class="h-9 rounded-md text-xs" />
               @if (adminForm.password().touched() && adminForm.password().errors().length) {
                 <p class="text-[10px] text-rose-500 font-medium">{{ adminForm.password().errors()[0].message }}</p>
@@ -853,10 +855,14 @@ export class UsersPage implements OnInit {
       const formVal = this.adminModel();
 
       if (this.drawerMode() === 'create') {
+        const finalPassword = formVal.password && formVal.password.trim().length >= 6 
+          ? formVal.password.trim() 
+          : 'Admin360#';
+
         const payload: CreateAdminDto = {
           fullName: formVal.fullName,
           email: formVal.email,
-          password: formVal.password || 'password123',
+          password: finalPassword,
           role: formVal.role,
           status: formVal.status,
         };
