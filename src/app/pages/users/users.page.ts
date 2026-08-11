@@ -11,14 +11,6 @@ import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { UsersService, AdminUserResponseDto, CreateAdminDto, UpdateAdminDto } from './services/users.service';
 import { PreferencesService } from '../../shared/services/preferences.service';
 
-export interface ColumnVisibility {
-  admin: boolean;
-  email: boolean;
-  role: boolean;
-  status: boolean;
-  lastLogin: boolean;
-  createdAt: boolean;
-}
 
 @Component({
   selector: 'app-users-page',
@@ -162,7 +154,7 @@ export interface ColumnVisibility {
           <div class="relative">
             <button
               type="button"
-              (click)="showStatusDropdown.update(v => !v); showRoleDropdown.set(false); showColumnsDropdown.set(false)"
+              (click)="showStatusDropdown.update(v => !v); showRoleDropdown.set(false)"
               class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <app-icon name="filter" class="w-3.5 h-3.5 text-muted-foreground" />
@@ -195,7 +187,7 @@ export interface ColumnVisibility {
           <div class="relative">
             <button
               type="button"
-              (click)="showRoleDropdown.update(v => !v); showStatusDropdown.set(false); showColumnsDropdown.set(false)"
+              (click)="showRoleDropdown.update(v => !v); showStatusDropdown.set(false)"
               class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <app-icon name="shield" class="w-3.5 h-3.5 text-muted-foreground" />
@@ -225,58 +217,8 @@ export interface ColumnVisibility {
           </div>
         </div>
 
-        <!-- Right Action Buttons -->
+        <!-- Right Action Buttons: View Switcher -->
         <div class="flex items-center gap-2">
-          
-          <!-- Column Visibility Selector Dropdown -->
-          <div class="relative">
-            <button
-              type="button"
-              (click)="showColumnsDropdown.update(v => !v); showStatusDropdown.set(false); showRoleDropdown.set(false)"
-              class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer"
-            >
-              <app-icon name="settings" class="w-3.5 h-3.5 text-muted-foreground" />
-              <span>Columnas</span>
-              <app-icon name="chevron-down" class="w-3 h-3 text-muted-foreground" />
-            </button>
-
-            @if (showColumnsDropdown()) {
-              <div
-                class="absolute right-0 top-full mt-1.5 w-48 bg-popover-solid text-popover-foreground border border-border rounded-lg shadow-2xl p-2 z-[9999] space-y-1 text-xs animate-dropdown-smooth-right"
-                (click)="$event.stopPropagation()"
-              >
-                <div class="px-2 py-1 text-[10px] uppercase tracking-wider font-extrabold text-muted-foreground border-b border-border/40">
-                  Ver/Ocultar Columnas
-                </div>
-                <label (click)="toggleColumn('admin')" class="flex items-center justify-between p-1.5 rounded hover:bg-muted cursor-pointer font-medium">
-                  <span>Administrador</span>
-                  <input type="checkbox" [checked]="columns().admin" />
-                </label>
-                <label (click)="toggleColumn('email')" class="flex items-center justify-between p-1.5 rounded hover:bg-muted cursor-pointer font-medium">
-                  <span>Correo Electrónico</span>
-                  <input type="checkbox" [checked]="columns().email" />
-                </label>
-                <label (click)="toggleColumn('role')" class="flex items-center justify-between p-1.5 rounded hover:bg-muted cursor-pointer font-medium">
-                  <span>Rol</span>
-                  <input type="checkbox" [checked]="columns().role" />
-                </label>
-                <label (click)="toggleColumn('status')" class="flex items-center justify-between p-1.5 rounded hover:bg-muted cursor-pointer font-medium">
-                  <span>Estado</span>
-                  <input type="checkbox" [checked]="columns().status" />
-                </label>
-                <label (click)="toggleColumn('lastLogin')" class="flex items-center justify-between p-1.5 rounded hover:bg-muted cursor-pointer font-medium">
-                  <span>Último Acceso</span>
-                  <input type="checkbox" [checked]="columns().lastLogin" />
-                </label>
-                <label (click)="toggleColumn('createdAt')" class="flex items-center justify-between p-1.5 rounded hover:bg-muted cursor-pointer font-medium">
-                  <span>Fecha de Registro</span>
-                  <input type="checkbox" [checked]="columns().createdAt" />
-                </label>
-              </div>
-            }
-          </div>
-
-          <!-- View Switcher -->
           <div class="flex items-center bg-muted/40 p-0.5 rounded-md border border-border">
             <button
               type="button"
@@ -331,12 +273,12 @@ export interface ColumnVisibility {
                         class="rounded border-border cursor-pointer"
                       />
                     </th>
-                    @if (columns().admin) { <th class="py-2.5 px-3 bg-popover-solid">Administrador</th> }
-                    @if (columns().email) { <th class="py-2.5 px-3 bg-popover-solid">Correo Electrónico</th> }
-                    @if (columns().role) { <th class="py-2.5 px-3 bg-popover-solid">Rol</th> }
-                    @if (columns().status) { <th class="py-2.5 px-3 bg-popover-solid">Estado</th> }
-                    @if (columns().lastLogin) { <th class="py-2.5 px-3 bg-popover-solid">Último Acceso</th> }
-                    @if (columns().createdAt) { <th class="py-2.5 px-3 bg-popover-solid">Fecha de Registro</th> }
+                    <th class="py-2.5 px-3 bg-popover-solid">Administrador</th>
+                    <th class="py-2.5 px-3 bg-popover-solid">Correo Electrónico</th>
+                    <th class="py-2.5 px-3 bg-popover-solid">Rol</th>
+                    <th class="py-2.5 px-3 bg-popover-solid">Estado</th>
+                    <th class="py-2.5 px-3 bg-popover-solid">Último Acceso</th>
+                    <th class="py-2.5 px-3 bg-popover-solid">Fecha de Registro</th>
                     <th class="py-2.5 px-3 text-right bg-popover-solid">Acciones</th>
                   </tr>
                 </thead>
@@ -351,53 +293,41 @@ export interface ColumnVisibility {
                           class="rounded border-border cursor-pointer"
                         />
                       </td>
-                      @if (columns().admin) {
-                        <td class="py-2.5 px-3 column-smooth animate-in fade-in duration-200">
-                          <div class="flex items-center gap-2.5">
-                            <div class="w-7 h-7 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center border border-border shrink-0 uppercase font-mono">
-                              {{ admin.fullName.substring(0, 2) }}
-                            </div>
-                            <span class="font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{{ admin.fullName }}</span>
+                      <td class="py-2.5 px-3 column-smooth animate-in fade-in duration-200">
+                        <div class="flex items-center gap-2.5">
+                          <div class="w-7 h-7 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center border border-border shrink-0 uppercase font-mono">
+                            {{ admin.fullName.substring(0, 2) }}
                           </div>
-                        </td>
-                      }
-                      @if (columns().email) {
-                        <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px] column-smooth animate-in fade-in duration-200">{{ admin.email }}</td>
-                      }
-                      @if (columns().role) {
-                        <td class="py-2.5 px-3 column-smooth animate-in fade-in duration-200">
-                          <span
-                            class="px-2 py-0.5 rounded border text-[10px] font-bold inline-flex items-center gap-1"
-                            [class]="admin.role === 'SUPER_ADMIN' || admin.role === 'SUPERADMIN' ? 'border-amber-500/30 bg-amber-500/10 text-amber-400' : 'border-border bg-muted/40 text-foreground'"
-                          >
-                            <app-icon name="shield" class="w-3 h-3 text-muted-foreground" />
-                            {{ admin.role === 'SUPER_ADMIN' || admin.role === 'SUPERADMIN' ? 'SUPERADMIN' : 'ADMIN' }}
+                          <span class="font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{{ admin.fullName }}</span>
+                        </div>
+                      </td>
+                      <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px] column-smooth animate-in fade-in duration-200">{{ admin.email }}</td>
+                      <td class="py-2.5 px-3 column-smooth animate-in fade-in duration-200">
+                        <span
+                          class="px-2 py-0.5 rounded border text-[10px] font-bold inline-flex items-center gap-1"
+                          [class]="admin.role === 'SUPER_ADMIN' || admin.role === 'SUPERADMIN' ? 'border-amber-500/30 bg-amber-500/10 text-amber-400' : 'border-border bg-muted/40 text-foreground'"
+                        >
+                          <app-icon name="shield" class="w-3 h-3 text-muted-foreground" />
+                          {{ admin.role === 'SUPER_ADMIN' || admin.role === 'SUPERADMIN' ? 'SUPERADMIN' : 'ADMIN' }}
+                        </span>
+                      </td>
+                      <td class="py-2.5 px-3 column-smooth animate-in fade-in duration-200">
+                        @if (admin.status) {
+                          <span class="px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold bg-emerald-500/10 flex items-center gap-1 w-fit">
+                            <span>●</span> Activo
                           </span>
-                        </td>
-                      }
-                      @if (columns().status) {
-                        <td class="py-2.5 px-3 column-smooth animate-in fade-in duration-200">
-                          @if (admin.status) {
-                            <span class="px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold bg-emerald-500/10 flex items-center gap-1 w-fit">
-                              <span>●</span> Activo
-                            </span>
-                          } @else {
-                            <span class="px-2 py-0.5 rounded-full border border-rose-500/30 text-rose-400 text-[10px] font-semibold bg-rose-500/10 flex items-center gap-1 w-fit">
-                              <span>●</span> Inactivo
-                            </span>
-                          }
-                        </td>
-                      }
-                      @if (columns().lastLogin) {
-                        <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px] column-smooth animate-in fade-in duration-200">
-                          {{ admin.lastLoginAt ? (admin.lastLoginAt | date:'short') : 'Nunca ha ingresado' }}
-                        </td>
-                      }
-                      @if (columns().createdAt) {
-                        <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px] column-smooth animate-in fade-in duration-200">
-                          {{ admin.createdAt | date:'shortDate' }}
-                        </td>
-                      }
+                        } @else {
+                          <span class="px-2 py-0.5 rounded-full border border-rose-500/30 text-rose-400 text-[10px] font-semibold bg-rose-500/10 flex items-center gap-1 w-fit">
+                            <span>●</span> Inactivo
+                          </span>
+                        }
+                      </td>
+                      <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px] column-smooth animate-in fade-in duration-200">
+                        {{ admin.lastLoginAt ? (admin.lastLoginAt | date:'short') : 'Nunca ha ingresado' }}
+                      </td>
+                      <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px] column-smooth animate-in fade-in duration-200">
+                        {{ admin.createdAt | date:'shortDate' }}
+                      </td>
                       <td class="py-2.5 px-3 text-right relative">
                         <button
                           type="button"
@@ -668,20 +598,9 @@ export class UsersPage implements OnInit {
   protected readonly viewMode = signal<'table' | 'cards'>(this.initialPref.viewMode ?? 'table');
   protected readonly showStatusDropdown = signal(false);
   protected readonly showRoleDropdown = signal(false);
-  protected readonly showColumnsDropdown = signal(false);
   protected readonly activeRowMenuId = signal<string | null>(null);
 
   protected readonly adminsList = signal<AdminUserResponseDto[]>([]);
-
-  protected readonly columns = signal<ColumnVisibility>({
-    admin: true,
-    email: true,
-    role: true,
-    status: true,
-    lastLogin: true,
-    createdAt: true,
-    ...(this.initialPref.visibleColumns ? this.parseColumns(this.initialPref.visibleColumns) : {}),
-  });
 
   protected readonly searchQuery = signal(this.initialPref.searchQuery ?? '');
   protected readonly selectedRoleFilter = signal<string>(this.initialPref.statusFilter ?? 'ALL');
@@ -739,10 +658,6 @@ export class UsersPage implements OnInit {
         }
       },
     });
-  }
-
-  toggleColumn(col: keyof ColumnVisibility): void {
-    this.columns.update((curr) => ({ ...curr, [col]: !curr[col] }));
   }
 
   // Métricas calculadas para las 4 KPI Cards
@@ -1014,11 +929,5 @@ export class UsersPage implements OnInit {
         this._toastService.error('Error', 'No se pudo realizar la eliminación masiva.');
       },
     });
-  }
-
-  private parseColumns(cols: string[]): Partial<ColumnVisibility> {
-    const result: any = {};
-    cols.forEach((col) => (result[col] = true));
-    return result;
   }
 }
