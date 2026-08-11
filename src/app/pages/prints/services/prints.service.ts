@@ -1,41 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
 import { ApiClientService } from '../../../core/services/api-client.service';
+import { PrintRequestItemDto, PrintStatus, PrintRequestPhotoDto, PrintRequestGuestDto } from '../../../shared/models/print.model';
 
-export type PrintStatus = 'PENDING' | 'PRINTING' | 'PRINTED' | 'CANCELLED';
-
-export interface PrintRequestGuestDto {
-  id: string;
-  name: string;
-  phone: string;
-}
-
-export interface PrintRequestPhotoDto {
-  id: string;
-  originalPath: string;
-  renderedPath?: string;
-  thumbnailPath?: string;
-  width?: number;
-  height?: number;
-  guest: PrintRequestGuestDto;
-  frame?: {
-    id: string;
-    name: string;
-  };
-}
-
-export interface PrintRequestItemDto {
-  id: string;
-  eventId: string;
-  photoId: string;
-  guestId: string;
-  quantity: number;
-  status: PrintStatus;
-  requestedAt: string | Date;
-  printedAt?: string | Date;
-  createdAt: string | Date;
-  photo: PrintRequestPhotoDto;
-}
+export type { PrintRequestItemDto, PrintStatus, PrintRequestPhotoDto, PrintRequestGuestDto };
 
 @Injectable({
   providedIn: 'root',

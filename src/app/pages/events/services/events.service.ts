@@ -1,58 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
 import { ApiClientService } from '../../../core/services/api-client.service';
+import { EventItemResponseDto, CreateEventDto, UpdateEventDto, EventStatus } from '../../../shared/models/event.model';
 
-export interface EventItemResponseDto {
-  id: string;
-  title: string;
-  status: 'DRAFT' | 'ACTIVE' | 'FINISHED' | 'EXPIRED';
-  description?: string;
-  uniqueCode: string;
-  qrToken: string;
-  galleryToken: string;
-  hostName: string;
-  hostPhone?: string;
-  hostEmail?: string;
-  totalPhotos: number;
-  totalPrints: number;
-  date: string | Date;
-  location: string;
-  coverGradient?: string;
-  maxPhotosPerGuest?: number;
-  maxPrintsPerGuest?: number;
-  galleryRetentionDays?: number;
-}
-
-export interface CreateEventDto {
-  name: string;
-  description?: string;
-  hostName: string;
-  hostPhone?: string;
-  hostEmail?: string;
-  location?: string;
-  eventDate: string;
-  startTime: string;
-  endTime: string;
-  maxPhotosPerGuest?: number;
-  maxPrintsPerGuest?: number;
-  galleryRetentionDays?: number;
-}
-
-export interface UpdateEventDto {
-  name?: string;
-  description?: string;
-  hostName?: string;
-  hostPhone?: string;
-  hostEmail?: string;
-  location?: string;
-  eventDate?: string;
-  startTime?: string;
-  endTime?: string;
-  status?: 'DRAFT' | 'ACTIVE' | 'FINISHED' | 'EXPIRED';
-  maxPhotosPerGuest?: number;
-  maxPrintsPerGuest?: number;
-  galleryRetentionDays?: number;
-}
+export type { EventItemResponseDto, CreateEventDto, UpdateEventDto, EventStatus };
 
 @Injectable({
   providedIn: 'root',

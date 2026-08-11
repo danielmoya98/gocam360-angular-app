@@ -1,23 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, tap, catchError, of, delay } from 'rxjs';
 import { ApiClientService } from '../../../core/services/api-client.service';
+import { CrmLeadDto, LeadStatus } from '../../../shared/models/crm-lead.model';
 
-export type LeadStatus = 'NEW' | 'CONTACTED' | 'CONVERTED' | 'DISCARDED';
-
-export interface CrmLeadDto {
-  id: string;
-  name: string;
-  phone: string;
-  eventId?: string;
-  eventType?: string;
-  estimatedDate?: string;
-  notes?: string;
-  status: LeadStatus;
-  createdAt: string | Date;
-  event?: {
-    name: string;
-  };
-}
+export type { CrmLeadDto, LeadStatus };
 
 @Injectable({
   providedIn: 'root',

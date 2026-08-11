@@ -1,0 +1,47 @@
+import { Injectable, inject } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { ApiClientService } from '../../../core/services/api-client.service';
+import { PublicEventDto } from '../../../shared/models/event.model';
+
+export interface JoinEventPayload {
+  eventCode: string;
+  guestName: string;
+  guestPhone: string;
+}
+
+export interface UploadPhotoPayload {
+  eventId: string;
+  guestId: string;
+  frameId: string;
+  photoBase64: string;
+}
+
+export interface CrmQuotePayload {
+  name: string;
+  phone: string;
+  eventId?: string;
+  notes?: string;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class GuestExperienceService {
+  private readonly _api = inject(ApiClientService);
+
+  getPublicEvent(code: string): Observable<PublicEventDto> {
+    return this._api.get<PublicEventDto>(`/guest-experience/event/${code}`);
+  }
+
+  joinEvent(payload: JoinEventPayload): Observable<any> {
+    return this._api.post('/guest-experience/join', payload);
+  }
+
+  uploadPhoto(payload: UploadPhotoPayload): Observable<any> {
+    return this._api.post('/guest-experience/upload', payload);
+  }
+
+  sendCrmQuote(payload: CrmQuotePayload): Observable<any> {
+    return this._api.post('/guest-experience/crm-lead', payload);
+  }
+}

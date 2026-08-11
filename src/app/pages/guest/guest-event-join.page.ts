@@ -4,26 +4,11 @@ import { DatePipe } from '@angular/common';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { ToastService } from '../../shared/services/toast.service';
-import { ApiClientService } from '../../core/services/api-client.service';
+import { GuestExperienceService } from './services/guest-experience.service';
+import { PublicEventDto, PublicFrameDto } from '../../shared/models/event.model';
 
 export type StepType = 'LOGIN' | 'LOADING_EVENT' | 'WELCOME' | 'FRAME' | 'SUCCESS';
-
-export interface PublicFrameDto {
-  id: string;
-  name: string;
-  previewUrl?: string;
-  overlayUrl?: string;
-  thumbnailColor?: string;
-}
-
-export interface PublicEventDto {
-  id: string;
-  name: string;
-  status: string;
-  primaryColor?: string;
-  logoUrl?: string;
-  frames: PublicFrameDto[];
-}
+export type { PublicEventDto, PublicFrameDto };
 
 @Component({
   selector: 'app-guest-event-join-page',
@@ -34,7 +19,7 @@ export interface PublicEventDto {
 })
 export class GuestEventJoinPage implements OnInit, OnDestroy {
   private readonly _route = inject(ActivatedRoute);
-  private readonly _api = inject(ApiClientService);
+  private readonly _guestService = inject(GuestExperienceService);
   private readonly _toast = inject(ToastService);
 
   protected readonly currentStep = signal<StepType>('LOGIN');
@@ -102,8 +87,7 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
     this.isSubmitting.set(true);
     this.currentStep.set('LOADING_EVENT');
 
-    // Consumir API GET /guest-experience/event/:code
-    this._api.get<PublicEventDto>(`/guest-experience/event/${code}`).subscribe({
+    this._guestService.getPublicEvent(code).subscribe({
       next: (data) => {
         this.eventData.set(data);
         if (data.frames && data.frames.length > 0) {
@@ -111,8 +95,7 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
           this.selectedFrameId.set(data.frames[0].id);
         }
         
-        // Consumir API POST /guest-experience/join
-        this._api.post('/guest-experience/join', { eventCode: code, guestName: name, guestPhone: phone }).subscribe({
+        this._guestService.joinEvent({ eventCode: code, guestName: name, guestPhone: phone }).subscribe({
           next: () => {
             this.isSubmitting.set(false);
             this.currentStep.set('WELCOME');
@@ -125,7 +108,6 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
         });
       },
       error: () => {
-        // Mock fallback de demostración si la API aún no está disponible
         const mockEvent: PublicEventDto = {
           id: 'ev-1',
           name: 'Lanzamiento L\'Oréal 360°',
@@ -174,7 +156,7 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
       photoBase64: this.selectedPhotoUrl(),
     };
 
-    this._api.post('/guest-experience/upload', payload).subscribe({
+    this._guestService.uploadPhoto(payload).subscribe({
       next: () => {
         this.isUploading.set(false);
         this.currentStep.set('SUCCESS');
@@ -195,7 +177,7 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
   }
 
   sendCrmQuote(): void {
-    this._api.post('/guest-experience/crm-lead', {
+    this._guestService.sendCrmQuote({
       name: this.guestName(),
       phone: this.guestPhone(),
       eventId: this.eventData()?.id,
