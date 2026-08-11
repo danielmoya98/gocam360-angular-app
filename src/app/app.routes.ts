@@ -5,8 +5,7 @@ import { setupGuard, rootEntryGuard } from './shared/guards/setup.guard';
 export const routes: Routes = [
   {
     path: '',
-    canActivate: [rootEntryGuard],
-    children: [],
+    loadComponent: () => import('./pages/splash-loader/splash-loader.component').then((m) => m.SplashLoaderComponent),
   },
   {
     path: 'setup',
