@@ -69,21 +69,21 @@ export class SidebarWidget {
           },
           ...(role === 'SUPERADMIN'
             ? [
-                {
-                  label: 'Usuarios',
-                  icon: 'users' as IconName,
-                  route: '/dashboard/users',
-                  roles: ['SUPERADMIN' as UserRole],
-                  hasChevron: false,
-                },
-                {
-                  label: 'Bitácora / Auditoría',
-                  icon: 'info' as IconName,
-                  route: '/dashboard/audit-logs',
-                  roles: ['SUPERADMIN' as UserRole],
-                  hasChevron: false,
-                },
-              ]
+              {
+                label: 'Usuarios',
+                icon: 'users' as IconName,
+                route: '/dashboard/users',
+                roles: ['SUPERADMIN' as UserRole],
+                hasChevron: false,
+              },
+              {
+                label: 'Auditoría',
+                icon: 'info' as IconName,
+                route: '/dashboard/audit-logs',
+                roles: ['SUPERADMIN' as UserRole],
+                hasChevron: false,
+              },
+            ]
             : []),
           {
             label: 'Eventos',
@@ -100,7 +100,7 @@ export class SidebarWidget {
             hasChevron: false,
           },
           {
-            label: 'Leads CRM',
+            label: 'CRM',
             icon: 'users',
             route: '/dashboard/crm-leads',
             roles: ['SUPERADMIN', 'ADMIN'],

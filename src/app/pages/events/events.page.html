@@ -116,16 +116,53 @@
         (modeChange)="viewMode.set($event)"
       />
     </div>
-
   </div>
 
-  <!-- MAIN CONTAINER: CARDS / TABLE WITH SKELETON LOADING -->
+  <!-- MAIN CONTAINER: CARDS / TABLE WITH SKELETON LOADING & FULL FLEX HEIGHT -->
   @if (isLoading()) {
-    <div class="flex-1 rounded-lg border border-border/80 bg-card p-4 space-y-3 animate-pulse">
-      <div class="h-8 bg-muted/60 rounded-md w-full"></div>
-      <div class="h-20 bg-muted/40 rounded-md w-full"></div>
-      <div class="h-20 bg-muted/40 rounded-md w-full"></div>
-    </div>
+    @if (viewMode() === 'table') {
+      <div class="flex-1 rounded-lg border border-border/80 bg-popover-solid overflow-hidden flex flex-col justify-between min-h-0 animate-pulse">
+        <div class="overflow-x-auto flex-1">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-popover-solid border-b border-border/60 text-muted-foreground font-bold uppercase tracking-wider text-[10px]">
+              <tr>
+                <th class="py-3 px-4">Evento & Anfitrión</th>
+                <th class="py-3 px-3">Fecha & Hora</th>
+                <th class="py-3 px-3">Estado</th>
+                <th class="py-3 px-3">Código Acceso</th>
+                <th class="py-3 px-3 text-center">Métricas</th>
+                <th class="py-3 px-4 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border/40 bg-popover-solid">
+              @for (item of [1, 2, 3, 4, 5]; track item) {
+                <tr class="bg-muted/20">
+                  <td class="py-3 px-4"><div class="h-4 bg-muted/60 rounded w-40"></div></td>
+                  <td class="py-3 px-3"><div class="h-3.5 bg-muted/60 rounded w-24"></div></td>
+                  <td class="py-3 px-3"><div class="h-5 bg-muted/60 rounded w-20"></div></td>
+                  <td class="py-3 px-3"><div class="h-5 bg-muted/60 rounded w-16"></div></td>
+                  <td class="py-3 px-3 text-center"><div class="h-4 bg-muted/60 rounded w-28 mx-auto"></div></td>
+                  <td class="py-3 px-4 text-right"><div class="h-4 bg-muted/60 rounded w-8 ml-auto"></div></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="p-3 border-t border-border/60 bg-popover-solid flex items-center justify-between">
+          <div class="h-3 bg-muted/60 rounded w-32"></div>
+          <div class="h-4 bg-muted/60 rounded w-48"></div>
+        </div>
+      </div>
+    } @else {
+      <div class="flex-1 rounded-lg border border-border/80 bg-card p-4 space-y-3 animate-pulse">
+        <div class="h-8 bg-muted/60 rounded-md w-full"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="h-40 bg-muted/40 rounded-xl"></div>
+          <div class="h-40 bg-muted/40 rounded-xl"></div>
+          <div class="h-40 bg-muted/40 rounded-xl"></div>
+        </div>
+      </div>
+    }
   } @else {
     @if (viewMode() === 'cards') {
       <div class="flex-1 overflow-y-auto pr-1 no-scrollbar">
@@ -144,26 +181,24 @@
                       </span>
                       ACTIVO
                     </span>
-                  } @else if (event.status === 'FINISHED') {
-                    <span class="px-2 py-0.5 rounded-full border border-border/60 text-muted-foreground text-[10px] font-medium bg-black/60 backdrop-blur-md">Finalizado</span>
                   } @else {
-                    <span class="px-2 py-0.5 rounded-full border border-amber-500/40 text-amber-400 text-[10px] font-bold bg-black/60 backdrop-blur-md">Borrador</span>
+                    <span class="px-2 py-0.5 rounded-full border border-border/60 text-muted-foreground text-[10px] font-bold bg-black/60 backdrop-blur-md">● FINALIZADO</span>
                   }
 
                   <button
+                    type="button"
                     (click)="openQrModal(event)"
-                    class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/30 backdrop-blur-md flex items-center justify-center text-white transition-all cursor-pointer"
+                    class="p-1 rounded-md bg-black/40 hover:bg-black/60 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold flex items-center gap-1 backdrop-blur-md transition-all cursor-pointer"
                     title="Ver Código QR de Invitados"
                   >
-                    <app-icon name="qr" class="w-4 h-4" />
+                    <app-icon name="qr" class="w-3.5 h-3.5 text-emerald-400" />
+                    <span>QR</span>
                   </button>
                 </div>
 
-                <div class="z-10 flex items-baseline justify-between">
-                  <span class="font-mono text-[10px] font-bold text-slate-300 bg-black/40 px-2 py-0.5 rounded border border-white/10">
-                    Código: {{ event.uniqueCode }}
-                  </span>
-                  <span class="text-[10px] text-slate-300 font-mono">📅 {{ event.date | date:'shortDate' }}</span>
+                <div class="z-10 flex items-center justify-between">
+                  <span class="text-[10px] font-mono font-bold text-white/80 uppercase tracking-widest">Código: {{ event.uniqueCode }}</span>
+                  <span class="text-[10px] text-white/70 font-mono">📅 {{ event.date | date:'shortDate' }}</span>
                 </div>
               </div>
 
@@ -204,7 +239,7 @@
                       <app-icon name="more" class="w-4 h-4" />
                     </button>
 
-                    <!-- Floating Context Menu para Tarjetas (Con bg-popover-solid opaco y animación smooth) -->
+                    <!-- Floating Context Menu para Tarjetas -->
                     @if (activeRowMenuId() === event.id) {
                       <div
                         class="absolute right-0 bottom-full mb-1.5 w-48 bg-popover-solid text-popover-foreground border border-border rounded-xl shadow-2xl p-1 z-[9999] text-left space-y-0.5 animate-dropdown-smooth-right"
@@ -233,9 +268,7 @@
                     }
                   </div>
                 </div>
-
               </div>
-
             </div>
           } @empty {
             <div class="col-span-full p-12 text-center text-muted-foreground bg-card border border-border rounded-xl">
@@ -250,7 +283,7 @@
         </div>
       </div>
     } @else {
-      <!-- VISTA TABLA LISTA (100% Sólida sin Transparencias) -->
+      <!-- VISTA TABLA LISTA -->
       <div class="flex-1 rounded-lg border border-border/80 bg-popover-solid shadow-none overflow-hidden flex flex-col justify-between min-h-0 view-mode-container animate-in fade-in duration-300">
         <div class="overflow-x-auto overflow-y-auto flex-1 no-scrollbar bg-popover-solid">
           <table class="w-full text-left text-xs">
