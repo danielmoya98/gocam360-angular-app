@@ -1,0 +1,109 @@
+<!-- Dark Fullscreen Standalone View -->
+<div class="fixed inset-0 z-[99999] bg-zinc-950 text-white flex flex-col justify-between p-6 select-none overflow-hidden font-sans">
+  
+  <!-- Top Bar: Event Title, QR Badge & Controls -->
+  <div class="flex items-center justify-between gap-4 z-20 bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-zinc-800 shadow-2xl">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-extrabold text-xl flex items-center justify-center">
+        🎥
+      </div>
+      <div>
+        <h1 class="text-xl font-black tracking-tight text-white leading-tight">
+          {{ eventData()?.name || 'Muro 360° En Vivo' }}
+        </h1>
+        <span class="text-xs text-emerald-400 font-mono font-bold flex items-center gap-1.5 mt-0.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          PROYECCIÓN A 60 FPS EN TIEMPO REAL
+        </span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <!-- Code Badge -->
+      <div class="px-4 py-2 rounded-xl bg-zinc-800 border border-zinc-700 text-center">
+        <span class="text-[10px] text-zinc-400 font-bold block uppercase tracking-wider">Código de Acceso</span>
+        <span class="text-base font-black font-mono text-emerald-400">{{ eventData()?.accessCode || 'GOCAM360' }}</span>
+      </div>
+
+      <!-- Exit Fullscreen Link -->
+      <a
+        routerLink="/dashboard/events"
+        class="px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-xs font-bold text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+      >
+        <app-icon name="chevron-right" class="w-4 h-4 rotate-180" />
+        <span>Salir de Proyector</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- MAIN HERO CAROUSEL: Center Photo Projection -->
+  <div class="flex-1 flex items-center justify-center my-6 relative z-10">
+    @if (currentPhoto(); as photo) {
+      <div class="relative max-h-[70vh] max-w-[85vw] flex flex-col items-center animate-in zoom-in-95 duration-500">
+        <!-- Glassmorphism Frame around the projected photo -->
+        <div class="p-3 rounded-3xl bg-zinc-900/80 border border-zinc-800 shadow-2xl backdrop-blur-md relative overflow-hidden">
+          <img
+            [src]="photo.storagePath"
+            [alt]="photo.guestName"
+            class="max-h-[60vh] max-w-[80vw] object-contain rounded-2xl shadow-2xl transition-all duration-700"
+          />
+          
+          <!-- Floating Overlay Badge at Bottom Left -->
+          <div class="absolute bottom-6 left-6 px-4 py-2 rounded-2xl bg-zinc-950/80 backdrop-blur-md border border-zinc-800 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-primary/20 text-primary font-bold flex items-center justify-center text-xs">
+              📸
+            </div>
+            <div>
+              <p class="text-xs font-extrabold text-white">{{ photo.guestName }}</p>
+              <span class="text-[10px] text-zinc-400 font-mono">{{ photo.uploadedAt | date:'shortTime' }}</span>
+            </div>
+          </div>
+
+          <!-- Floating Likes counter at Bottom Right -->
+          <div class="absolute bottom-6 right-6 px-3 py-1.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-400 font-bold text-xs flex items-center gap-1">
+            <span>❤️ {{ photo.likesCount }} Likes</span>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="text-center space-y-3 p-12 rounded-3xl bg-zinc-900/50 border border-zinc-800">
+        <app-icon name="camera" class="w-12 h-12 text-zinc-600 mx-auto animate-bounce" />
+        <h3 class="text-lg font-bold text-zinc-300">¡Esperando las primeras fotos del evento!</h3>
+        <p class="text-xs text-zinc-500">Escanea el código QR en pantalla para capturar tus fotos 360°.</p>
+      </div>
+    }
+  </div>
+
+  <!-- FOOTER: QR Invitation Bar & Mini Gallery Strip -->
+  <div class="flex items-center justify-between gap-6 z-20 bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-zinc-800">
+    
+    <!-- Left: Scanning Invitation -->
+    <div class="flex items-center gap-4">
+      <div class="p-2 rounded-xl bg-white text-zinc-950 font-black text-xs shrink-0 shadow-lg">
+        📱 QR SCAN
+      </div>
+      <div>
+        <p class="text-sm font-extrabold text-white">¡Sube tu foto y mírale aquí en pantalla gigante!</p>
+        <p class="text-xs text-zinc-400">Escanea el código con la cámara de tu celular para unirte al evento.</p>
+      </div>
+    </div>
+
+    <!-- Right: Rotating Thumbnail Strip -->
+    <div class="hidden md:flex items-center gap-2 overflow-x-auto no-scrollbar max-w-lg">
+      @for (p of eventData()?.photos; track p.id; let idx = $index) {
+        <button
+          type="button"
+          (click)="selectPhotoIndex(idx)"
+          class="w-12 h-12 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer"
+          [class.border-emerald-400]="activePhotoIndex() === idx"
+          [class.border-transparent]="activePhotoIndex() !== idx"
+          [class.opacity-50]="activePhotoIndex() !== idx"
+        >
+          <img [src]="p.storagePath" class="w-full h-full object-cover" alt="Thumb" />
+        </button>
+      }
+    </div>
+
+  </div>
+
+</div>
