@@ -1,0 +1,5 @@
+/* Estilos específicos para el widget Topbar superior */
+:host {
+  display: block;
+  width: 100%;
+}
