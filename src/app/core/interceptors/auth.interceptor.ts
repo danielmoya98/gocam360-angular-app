@@ -33,8 +33,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         localStorage.removeItem('access_token');
         if (!isCheckSessionReq) {
           toast.error('Sesión Expirada', 'Tu sesión ha caducado. Por favor ingresa nuevamente.');
+          router.navigate(['/login']);
         }
-        router.navigate(['/login']);
       } else if (error.status === 403) {
         toast.error('Acceso Restringido', 'No tienes permisos suficientes para realizar esta acción.');
       } else if (error.status === 500) {
