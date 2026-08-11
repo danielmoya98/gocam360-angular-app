@@ -1,0 +1,6 @@
+/* Estilos específicos para la vista del Onboarding / Setup */
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
