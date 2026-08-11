@@ -40,8 +40,8 @@
     />
   </div>
 
-  <!-- Buscador y Filtros por Pills con Animación Suave -->
-  <div class="p-4 rounded-xl border border-border/80 bg-popover-solid text-popover-foreground flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-none">
+  <!-- Buscador y Filtros por Pills sin contenedor englobado -->
+  <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shrink-0">
     <app-search-input
       placeholder="Buscar por nombre, teléfono o notas..."
       containerClass="w-full md:w-80"
@@ -67,7 +67,7 @@
         (click)="statusFilter.set('NEW')"
         class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
         [class.bg-background]="statusFilter() === 'NEW'"
-        [class.text-foreground]="statusFilter() === 'NEW'"
+        [class.text-emerald-400]="statusFilter() === 'NEW'"
         [class.shadow-sm]="statusFilter() === 'NEW'"
         [class.text-muted-foreground]="statusFilter() !== 'NEW'"
       >
@@ -81,7 +81,7 @@
         (click)="statusFilter.set('CONTACTED')"
         class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
         [class.bg-background]="statusFilter() === 'CONTACTED'"
-        [class.text-foreground]="statusFilter() === 'CONTACTED'"
+        [class.text-amber-400]="statusFilter() === 'CONTACTED'"
         [class.shadow-sm]="statusFilter() === 'CONTACTED'"
         [class.text-muted-foreground]="statusFilter() !== 'CONTACTED'"
       >
@@ -95,7 +95,7 @@
         (click)="statusFilter.set('CONVERTED')"
         class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
         [class.bg-background]="statusFilter() === 'CONVERTED'"
-        [class.text-foreground]="statusFilter() === 'CONVERTED'"
+        [class.text-indigo-400]="statusFilter() === 'CONVERTED'"
         [class.shadow-sm]="statusFilter() === 'CONVERTED'"
         [class.text-muted-foreground]="statusFilter() !== 'CONVERTED'"
       >
@@ -109,7 +109,7 @@
         (click)="statusFilter.set('DISCARDED')"
         class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
         [class.bg-background]="statusFilter() === 'DISCARDED'"
-        [class.text-foreground]="statusFilter() === 'DISCARDED'"
+        [class.text-rose-400]="statusFilter() === 'DISCARDED'"
         [class.shadow-sm]="statusFilter() === 'DISCARDED'"
         [class.text-muted-foreground]="statusFilter() !== 'DISCARDED'"
       >
