@@ -25,10 +25,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(cloned).pipe(
     catchError((error: HttpErrorResponse) => {
+      // Ignorar toast de 'Sesión Expirada' en verificaciones iniciales de sesión (/auth/me) o de instalación (/auth/setup-status)
+      const isCheckSessionReq = req.url.includes('/auth/me') || req.url.includes('/auth/setup-status');
+
       if (error.status === 401) {
         localStorage.removeItem('gocam360_token');
         localStorage.removeItem('access_token');
-        toast.error('Sesión Expirada', 'Tu sesión ha caducado. Por favor ingresa nuevamente.');
+        if (!isCheckSessionReq) {
+          toast.error('Sesión Expirada', 'Tu sesión ha caducado. Por favor ingresa nuevamente.');
+        }
         router.navigate(['/login']);
       } else if (error.status === 403) {
         toast.error('Acceso Restringido', 'No tienes permisos suficientes para realizar esta acción.');
