@@ -1,0 +1,5 @@
+/* Estilos específicos para la vista de CRM Leads */
+:host {
+  display: block;
+  height: 100%;
+}

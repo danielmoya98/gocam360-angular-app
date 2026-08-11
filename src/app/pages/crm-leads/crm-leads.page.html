@@ -1,0 +1,259 @@
+<div class="h-full flex flex-col min-h-0 space-y-4 overflow-y-auto no-scrollbar pb-6 animate-in fade-in duration-300">
+  
+  <!-- Top Title Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-extrabold font-mono">
+          CRM LEADS & VENTAS
+        </span>
+        <span class="text-[10px] text-muted-foreground font-mono">CAPTURA QR EN VIVO</span>
+      </div>
+      <h2 class="text-xl font-extrabold tracking-tight text-foreground">Gestión de Prospectos Comercial</h2>
+      <p class="text-xs text-muted-foreground mt-0.5">Contacta en 1-clic vía WhatsApp a los invitados interesados en contratar la experiencia 360°.</p>
+    </div>
+
+    <button
+      type="button"
+      (click)="loadLeads(true)"
+      class="px-3.5 py-1.5 rounded-lg border border-border bg-card hover:bg-muted font-bold text-xs transition-all active:scale-95 flex items-center gap-1.5 text-foreground cursor-pointer"
+    >
+      <app-icon name="refresh" class="w-3.5 h-3.5" [class.animate-spin]="isLoading()" />
+      <span>Sincronizar Leads</span>
+    </button>
+  </div>
+
+  <!-- KPI Cards Summary -->
+  <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 shrink-0">
+    <div class="p-3.5 rounded-xl border border-border/80 bg-card space-y-1 shadow-none">
+      <span class="text-[11px] font-semibold text-muted-foreground">Total Prospectos</span>
+      <p class="text-xl font-extrabold text-foreground font-mono">{{ leads().length }}</p>
+    </div>
+
+    <div class="p-3.5 rounded-xl border border-border/80 bg-card space-y-1 shadow-none">
+      <span class="text-[11px] font-semibold text-emerald-400">Nuevos Sin Contactar</span>
+      <p class="text-xl font-extrabold text-emerald-400 font-mono">{{ countByStatus('NEW') }}</p>
+    </div>
+
+    <div class="p-3.5 rounded-xl border border-border/80 bg-card space-y-1 shadow-none">
+      <span class="text-[11px] font-semibold text-amber-400">En Negociación</span>
+      <p class="text-xl font-extrabold text-amber-400 font-mono">{{ countByStatus('CONTACTED') }}</p>
+    </div>
+
+    <div class="p-3.5 rounded-xl border border-border/80 bg-card space-y-1 shadow-none">
+      <span class="text-[11px] font-semibold text-primary">Ventas Convertidas</span>
+      <p class="text-xl font-extrabold text-primary font-mono">{{ countByStatus('CONVERTED') }}</p>
+    </div>
+  </div>
+
+  <!-- Buscador y Filtros por Pills con Animación Suave -->
+  <div class="p-4 rounded-xl border border-border/80 bg-popover-solid text-popover-foreground flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-none">
+    <div class="relative flex items-center w-full md:w-80">
+      <app-icon name="search" class="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+      <input
+        type="text"
+        hlmInput
+        placeholder="Buscar por nombre, teléfono o notas..."
+        (input)="onSearchChange($event)"
+        class="h-9 w-full pl-9 text-xs rounded-md"
+      />
+    </div>
+    
+    <!-- Filter Tabs / Pills con animación fluida -->
+    <div class="flex items-center gap-1 overflow-x-auto no-scrollbar p-1 bg-muted/40 rounded-xl border border-border/60">
+      <button
+        type="button"
+        (click)="statusFilter.set('ALL')"
+        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+        [class.bg-background]="statusFilter() === 'ALL'"
+        [class.text-foreground]="statusFilter() === 'ALL'"
+        [class.shadow-sm]="statusFilter() === 'ALL'"
+        [class.text-muted-foreground]="statusFilter() !== 'ALL'"
+      >
+        Todos ({{ leads().length }})
+      </button>
+
+      <button
+        type="button"
+        (click)="statusFilter.set('NEW')"
+        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+        [class.bg-background]="statusFilter() === 'NEW'"
+        [class.text-foreground]="statusFilter() === 'NEW'"
+        [class.shadow-sm]="statusFilter() === 'NEW'"
+        [class.text-muted-foreground]="statusFilter() !== 'NEW'"
+      >
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span>Nuevos</span>
+        <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/10 text-[9px] text-emerald-400 font-mono">{{ countByStatus('NEW') }}</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="statusFilter.set('CONTACTED')"
+        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+        [class.bg-background]="statusFilter() === 'CONTACTED'"
+        [class.text-foreground]="statusFilter() === 'CONTACTED'"
+        [class.shadow-sm]="statusFilter() === 'CONTACTED'"
+        [class.text-muted-foreground]="statusFilter() !== 'CONTACTED'"
+      >
+        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+        <span>Contactados</span>
+        <span class="px-1.5 py-0.2 rounded-full bg-amber-500/10 text-[9px] text-amber-400 font-mono">{{ countByStatus('CONTACTED') }}</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="statusFilter.set('CONVERTED')"
+        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+        [class.bg-background]="statusFilter() === 'CONVERTED'"
+        [class.text-foreground]="statusFilter() === 'CONVERTED'"
+        [class.shadow-sm]="statusFilter() === 'CONVERTED'"
+        [class.text-muted-foreground]="statusFilter() !== 'CONVERTED'"
+      >
+        <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+        <span>Convertidos</span>
+        <span class="px-1.5 py-0.2 rounded-full bg-indigo-500/10 text-[9px] text-indigo-400 font-mono">{{ countByStatus('CONVERTED') }}</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="statusFilter.set('DISCARDED')"
+        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+        [class.bg-background]="statusFilter() === 'DISCARDED'"
+        [class.text-foreground]="statusFilter() === 'DISCARDED'"
+        [class.shadow-sm]="statusFilter() === 'DISCARDED'"
+        [class.text-muted-foreground]="statusFilter() !== 'DISCARDED'"
+      >
+        <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+        <span>Descartados</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla Sólida 100% Opaca con Skeleton Shimmer & Empty State de Alta Calidad -->
+  <div class="rounded-xl border border-border/80 bg-popover-solid text-popover-foreground overflow-hidden shadow-none flex-1 flex flex-col">
+    <div class="overflow-x-auto flex-1">
+      <table class="w-full text-xs text-left border-collapse">
+        <thead class="bg-muted/40 text-muted-foreground border-b border-border/60 font-bold uppercase tracking-wider text-[10px] sticky top-0 z-10 shadow-xs">
+          <tr>
+            <th class="px-4 py-3">Contacto / Cliente</th>
+            <th class="px-4 py-3">Evento Origen</th>
+            <th class="px-4 py-3">Tipo de Evento Deseado</th>
+            <th class="px-4 py-3">Estado Comercial</th>
+            <th class="px-4 py-3 text-right">Acciones WhatsApp</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border/40 font-sans">
+          @if (isLoading()) {
+            <!-- Skeleton Shimmer Loading Rows al sincronizar o recargar -->
+            @for (item of [1,2,3,4,5]; track item) {
+              <tr class="animate-pulse bg-muted/20">
+                <td class="px-4 py-3.5">
+                  <div class="h-3.5 bg-muted/60 rounded w-28 mb-1.5"></div>
+                  <div class="h-2.5 bg-muted/40 rounded w-20"></div>
+                </td>
+                <td class="px-4 py-3.5">
+                  <div class="h-3.5 bg-muted/60 rounded w-32 mb-1.5"></div>
+                  <div class="h-2.5 bg-muted/40 rounded w-16"></div>
+                </td>
+                <td class="px-4 py-3.5">
+                  <div class="h-3.5 bg-muted/60 rounded w-36 mb-1.5"></div>
+                  <div class="h-2.5 bg-muted/40 rounded w-24"></div>
+                </td>
+                <td class="px-4 py-3.5">
+                  <div class="h-7 bg-muted/60 rounded-lg w-28"></div>
+                </td>
+                <td class="px-4 py-3.5 text-right">
+                  <div class="h-7 bg-muted/60 rounded-lg w-32 ml-auto"></div>
+                </td>
+              </tr>
+            }
+          } @else {
+            @for (lead of filteredLeads(); track lead.id) {
+              <tr class="hover:bg-muted/40 transition-all duration-200 group table-row-smooth animate-in fade-in duration-200">
+                <td class="px-4 py-3">
+                  <p class="font-extrabold text-foreground group-hover:text-primary transition-colors leading-tight">{{ lead.name }}</p>
+                  <span class="text-[11px] text-muted-foreground font-mono">📱 {{ lead.phone }}</span>
+                </td>
+
+                <td class="px-4 py-3 text-muted-foreground">
+                  <span class="font-semibold text-foreground">{{ lead.event?.name || 'WebApp Captura' }}</span>
+                  <span class="text-[10px] block text-muted-foreground font-mono">📅 {{ lead.createdAt | date:'shortDate' }}</span>
+                </td>
+
+                <td class="px-4 py-3">
+                  <span class="font-medium text-foreground">{{ lead.eventType || 'Evento Social / Corporativo' }}</span>
+                  @if (lead.notes) {
+                    <p class="text-[10px] text-muted-foreground italic truncate max-w-xs">{{ lead.notes }}</p>
+                  }
+                </td>
+
+                <td class="px-4 py-3">
+                  <!-- Badges de Estado Estilizados e Interactivos -->
+                  <div class="relative inline-block">
+                    <select
+                      [value]="lead.status"
+                      (change)="changeLeadStatus(lead.id, $event)"
+                      class="h-8 px-3 pr-7 rounded-lg text-xs font-extrabold cursor-pointer border transition-all appearance-none focus:outline-none shadow-xs"
+                      [class.bg-emerald-500\/10]="lead.status === 'NEW'"
+                      [class.text-emerald-400]="lead.status === 'NEW'"
+                      [class.border-emerald-500\/30]="lead.status === 'NEW'"
+
+                      [class.bg-amber-500\/10]="lead.status === 'CONTACTED'"
+                      [class.text-amber-400]="lead.status === 'CONTACTED'"
+                      [class.border-amber-500\/30]="lead.status === 'CONTACTED'"
+
+                      [class.bg-indigo-500\/10]="lead.status === 'CONVERTED'"
+                      [class.text-indigo-400]="lead.status === 'CONVERTED'"
+                      [class.border-indigo-500\/30]="lead.status === 'CONVERTED'"
+
+                      [class.bg-rose-500\/10]="lead.status === 'DISCARDED'"
+                      [class.text-rose-400]="lead.status === 'DISCARDED'"
+                      [class.border-rose-500\/30]="lead.status === 'DISCARDED'"
+                    >
+                      <option value="NEW" class="bg-popover-solid text-foreground font-bold">🟢 NUEVO</option>
+                      <option value="CONTACTED" class="bg-popover-solid text-foreground font-bold">🟡 CONTACTADO</option>
+                      <option value="CONVERTED" class="bg-popover-solid text-foreground font-bold">🟣 CONVERTIDO</option>
+                      <option value="DISCARDED" class="bg-popover-solid text-foreground font-bold">🔴 DESCARTADO</option>
+                    </select>
+                    <app-icon name="chevron-down" class="w-3.5 h-3.5 absolute right-2 top-2.5 pointer-events-none opacity-70" />
+                  </div>
+                </td>
+
+                <td class="px-4 py-3 text-right">
+                  <button
+                    type="button"
+                    (click)="openWhatsApp(lead)"
+                    class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-sm transition-all active:scale-95 inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <app-icon name="phone" class="w-3.5 h-3.5 text-white" />
+                    <span>Contactar WA</span>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="p-12 text-center text-muted-foreground">
+                  <div class="max-w-xs mx-auto space-y-2">
+                    <app-icon name="users" class="w-9 h-9 mx-auto text-muted-foreground/60" />
+                    <h4 class="text-sm font-bold text-foreground">No hay prospectos en esta categoría</h4>
+                    <p class="text-xs text-muted-foreground">No se encontraron prospectos que coincidan con la búsqueda o el filtro seleccionado.</p>
+                    @if (searchFilter() || statusFilter() !== 'ALL') {
+                      <button
+                        (click)="clearFilters()"
+                        class="mt-2 px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-xs font-bold cursor-pointer text-foreground transition-all"
+                      >
+                        Limpiar Filtros
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
