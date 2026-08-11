@@ -1,0 +1,5 @@
+/* Estilos específicos para la vista de Perfil de Usuario */
+:host {
+  display: block;
+  height: 100%;
+}
