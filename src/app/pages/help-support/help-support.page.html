@@ -54,15 +54,14 @@
 
   <!-- Buscador de Preguntas Frecuentes -->
   <div class="p-4 rounded-xl border border-border/80 bg-popover-solid text-popover-foreground flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-none">
-    <div class="relative flex items-center w-full md:w-80">
-      <app-icon name="search" class="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+    <div class="relative flex items-center w-full md:w-80 bg-card border border-border/80 rounded-lg px-3 py-1.5 focus-within:border-primary/60 transition-all shadow-sm">
+      <app-icon name="search" class="w-4 h-4 text-muted-foreground shrink-0" />
       <input
         type="text"
         hlmInput
-        placeholder="Buscar en preguntas frecuentes..."
-        [value]="searchQuery()"
+        placeholder="Buscar en el centro de ayuda (ej. Impresión, QR, Eventos)..."
         (input)="onSearchChange($event)"
-        class="h-9 w-full pl-9 text-xs rounded-md"
+        class="w-full bg-transparent text-xs focus:outline-none text-foreground placeholder:text-muted-foreground font-medium !border-none !p-0 !h-auto pl-2.5"
       />
     </div>
 

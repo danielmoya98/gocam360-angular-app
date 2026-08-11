@@ -66,16 +66,16 @@
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
     
     <div class="flex items-center gap-2 w-full sm:w-auto">
-      <!-- Search Input con ícono alineado perfectamente -->
-      <div class="relative flex-1 sm:w-64 flex items-center">
-        <app-icon name="search" class="absolute left-2.5 text-muted-foreground w-3.5 h-3.5 pointer-events-none z-10" />
+      <!-- Search Input (Estilo limpio premium matching Command Palette) -->
+      <div class="relative flex-1 sm:w-64 flex items-center bg-card border border-border/80 rounded-lg px-3 py-1.5 focus-within:border-primary/60 transition-all shadow-sm">
+        <app-icon name="search" class="w-4 h-4 text-muted-foreground shrink-0" />
         <input
           type="text"
           hlmInput
           [value]="searchQuery()"
           (input)="onSearchInput($event)"
           placeholder="Buscar evento o ubicación..."
-          class="h-8 pl-8 pr-3 w-full rounded-md bg-card border border-border text-xs focus:outline-none"
+          class="w-full bg-transparent text-xs focus:outline-none text-foreground placeholder:text-muted-foreground font-medium !border-none !p-0 !h-auto pl-2.5"
         />
       </div>
 

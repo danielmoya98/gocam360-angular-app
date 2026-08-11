@@ -69,16 +69,16 @@
     <!-- Left: Search Input, Bulk Delete & Filter Dropdowns -->
     <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
       
-      <!-- Search Bar (Alineación perfecta del ícono de lupa con espaciado adecuado) -->
-      <div class="relative flex-1 sm:w-64 flex items-center">
-        <app-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 pointer-events-none z-10" />
+      <!-- Search Bar (Estilo limpio premium matching Command Palette) -->
+      <div class="relative flex-1 sm:w-64 flex items-center bg-card border border-border/80 rounded-lg px-3 py-1.5 focus-within:border-primary/60 transition-all shadow-sm">
+        <app-icon name="search" class="w-4 h-4 text-muted-foreground shrink-0" />
         <input
           type="text"
           hlmInput
           [value]="searchQuery()"
           (input)="onSearchInput($event)"
           placeholder="Buscar por nombre o correo..."
-          class="h-8 !pl-9 pr-3 w-full rounded-md bg-card border border-border text-xs focus:outline-none"
+          class="w-full bg-transparent text-xs focus:outline-none text-foreground placeholder:text-muted-foreground font-medium !border-none !p-0 !h-auto pl-2.5"
         />
       </div>
 
