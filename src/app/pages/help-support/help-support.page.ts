@@ -1,8 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
-import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
+import { HlmButtonDirective } from '../../shared/ui/button/hlm-button.directive';
 import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { SegmentedPillsComponent, SegmentedOption } from '../../shared/ui/segmented-pills/segmented-pills.component';
 import { ToastService } from '../../shared/services/toast.service';
 
 export interface FaqItem {
@@ -16,7 +17,13 @@ export interface FaqItem {
 @Component({
   selector: 'app-help-support-page',
   standalone: true,
-  imports: [IconComponent, HlmInputDirective, SearchInputComponent, PageHeaderComponent],
+  imports: [
+    IconComponent,
+    HlmButtonDirective,
+    SearchInputComponent,
+    PageHeaderComponent,
+    SegmentedPillsComponent,
+  ],
   templateUrl: './help-support.page.html',
   styleUrl: './help-support.page.css',
 })
@@ -26,6 +33,13 @@ export class HelpSupportPage {
   protected readonly searchQuery = signal('');
   protected readonly selectedCategory = signal<string>('ALL');
   protected readonly openFaqIds = signal<string[]>(['f1', 'f2']);
+
+  protected readonly categoryOptions: SegmentedOption[] = [
+    { label: 'Todas', value: 'ALL' },
+    { label: 'Eventos 360°', value: 'SETUP' },
+    { label: 'Impresoras', value: 'PRINTS' },
+    { label: 'Web Mobile QR', value: 'MOBILE' },
+  ];
 
   protected readonly faqs = signal<FaqItem[]>([
     {

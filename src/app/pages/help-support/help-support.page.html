@@ -44,7 +44,7 @@
     </div>
   </div>
 
-  <!-- Buscador de Preguntas Frecuentes sin contenedor englobado -->
+  <!-- Categorías Pills Reutilizables -->
   <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shrink-0">
     <app-search-input
       placeholder="Buscar en el centro de ayuda (ej. Impresión, QR, Eventos)..."
@@ -52,94 +52,64 @@
       (searchInput)="onSearchChange($event)"
     />
 
-    <!-- Categorías Pills -->
-    <div class="flex items-center gap-1 overflow-x-auto no-scrollbar p-1 bg-muted/40 rounded-xl border border-border/60">
-      <button
-        type="button"
-        (click)="selectedCategory.set('ALL')"
-        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
-        [class.bg-background]="selectedCategory() === 'ALL'"
-        [class.text-foreground]="selectedCategory() === 'ALL'"
-        [class.shadow-sm]="selectedCategory() === 'ALL'"
-        [class.text-muted-foreground]="selectedCategory() !== 'ALL'"
-      >
-        Todas
-      </button>
-      <button
-        type="button"
-        (click)="selectedCategory.set('SETUP')"
-        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
-        [class.bg-background]="selectedCategory() === 'SETUP'"
-        [class.text-foreground]="selectedCategory() === 'SETUP'"
-        [class.shadow-sm]="selectedCategory() === 'SETUP'"
-        [class.text-muted-foreground]="selectedCategory() !== 'SETUP'"
-      >
-        Eventos 360°
-      </button>
-      <button
-        type="button"
-        (click)="selectedCategory.set('PRINTS')"
-        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
-        [class.bg-background]="selectedCategory() === 'PRINTS'"
-        [class.text-foreground]="selectedCategory() === 'PRINTS'"
-        [class.shadow-sm]="selectedCategory() === 'PRINTS'"
-        [class.text-muted-foreground]="selectedCategory() !== 'PRINTS'"
-      >
-        Impresoras
-      </button>
-      <button
-        type="button"
-        (click)="selectedCategory.set('MOBILE')"
-        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
-        [class.bg-background]="selectedCategory() === 'MOBILE'"
-        [class.text-foreground]="selectedCategory() === 'MOBILE'"
-        [class.shadow-sm]="selectedCategory() === 'MOBILE'"
-        [class.text-muted-foreground]="selectedCategory() !== 'MOBILE'"
-      >
-        Web Mobile QR
-      </button>
-    </div>
+    <app-segmented-pills
+      [options]="categoryOptions"
+      [selectedValue]="selectedCategory()"
+      (valueChange)="selectedCategory.set($event)"
+    />
   </div>
 
-  <!-- Lista Acordeón Interactivo de FAQ (bg-popover-solid 100% Sólido) -->
+  <!-- Lista Acordeón Interactivo de FAQ Con Animaciones Fluidas y Alineación Perfecta -->
   <div class="rounded-xl border border-border/80 bg-popover-solid text-popover-foreground p-4 space-y-3 shadow-none flex-1">
     <h3 class="text-sm font-extrabold text-foreground pb-2 border-b border-border/60">Preguntas Frecuentes Respondidas</h3>
 
-    <div class="space-y-2">
+    <div class="space-y-2.5">
       @for (faq of filteredFaqs(); track faq.id) {
-        <div class="border border-border/70 rounded-xl overflow-hidden bg-card transition-all">
+        <div class="border border-border/70 rounded-xl overflow-hidden bg-card/60 hover:bg-card transition-all duration-200 shadow-xs">
           <button
             type="button"
             (click)="toggleFaq(faq.id)"
-            class="w-full p-3.5 text-left flex items-center justify-between gap-3 hover:bg-muted/40 transition-colors cursor-pointer"
+            class="w-full px-4 py-3.5 text-left flex items-center justify-between gap-3 hover:bg-muted/30 transition-colors cursor-pointer group"
           >
-            <span class="text-xs font-extrabold text-foreground flex items-center gap-2">
-              <span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
-              {{ faq.question }}
+            <span class="text-xs font-bold text-foreground flex items-center gap-2.5 leading-snug">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0 transition-transform group-hover:scale-125"></span>
+              <span>{{ faq.question }}</span>
             </span>
             <app-icon
               name="chevron-down"
-              class="w-4 h-4 text-muted-foreground transition-transform duration-200"
+              class="w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-300 ease-out"
               [class.rotate-180]="openFaqIds().includes(faq.id)"
             />
           </button>
 
-          @if (openFaqIds().includes(faq.id)) {
-            <div class="p-3.5 pt-0 text-xs text-muted-foreground leading-relaxed border-t border-border/40 bg-muted/10 animate-in fade-in duration-150">
-              {{ faq.answer }}
+          <!-- Animación Fluida de Despliegue mediante CSS Grid Rows -->
+          <div
+            class="grid transition-all duration-300 ease-in-out"
+            [class.grid-rows-[1fr]]="openFaqIds().includes(faq.id)"
+            [class.opacity-100]="openFaqIds().includes(faq.id)"
+            [class.grid-rows-[0fr]]="!openFaqIds().includes(faq.id)"
+            [class.opacity-0]="!openFaqIds().includes(faq.id)"
+          >
+            <div class="overflow-hidden">
+              <div class="px-4 py-3.5 text-xs text-muted-foreground leading-relaxed border-t border-border/40 bg-muted/20 space-y-1 pl-8">
+                <p>{{ faq.answer }}</p>
+              </div>
             </div>
-          }
+          </div>
         </div>
       } @empty {
         <div class="p-10 text-center text-muted-foreground">
-          <div class="max-w-xs mx-auto space-y-2">
+          <div class="max-w-xs mx-auto space-y-2.5">
             <app-icon name="help" class="w-8 h-8 text-muted-foreground/60 mx-auto" />
             <h4 class="text-sm font-bold text-foreground">No encontramos esa respuesta</h4>
-            <p class="text-xs">Prueba con otra palabra clave en el buscador o contacta al soporte por WhatsApp.</p>
+            <p class="text-xs text-muted-foreground">Prueba con otra palabra clave en el buscador o contacta al soporte por WhatsApp.</p>
             <button
               type="button"
+              hlmBtn
+              variant="outline"
+              size="sm"
               (click)="clearFilters()"
-              class="mt-2 px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-muted text-xs font-bold cursor-pointer text-foreground transition-all"
+              class="mt-1 font-bold cursor-pointer"
             >
               Ver Todas las Preguntas
             </button>
