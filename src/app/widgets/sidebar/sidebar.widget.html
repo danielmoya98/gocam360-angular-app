@@ -71,20 +71,20 @@
     <div class="relative w-full"> 
       <button
         type="button"
-        (click)="toggleUserMenu()"
-        class="w-full flex items-center justify-between p-1.5 rounded-lg border border-border/80 bg-card hover:bg-muted/60 transition-all cursor-pointer shadow-sm relative z-10"
+        (click)="toggleUserMenu($event)"
+        [attr.aria-expanded]="showUserMenu()"
+        aria-haspopup="menu"
+        aria-label="Menú de perfil de usuario"
+        class="w-full p-2 rounded-xl bg-card border border-border/80 hover:bg-muted transition-all flex items-center justify-between group cursor-pointer"
       >
         <div class="flex items-center gap-2.5 min-w-0">
           @if (user(); as u) {
-            <img
-              [src]="u.avatar"
-              [alt]="u.name"
-              class="w-7 h-7 rounded-full object-cover ring-1 ring-border shrink-0"
-            />
+            <img [src]="u.avatar" [alt]="u.name" class="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-border" />
+            
             @if (!isCollapsed) {
-              <div class="text-left truncate">
-                <p class="text-xs font-bold text-foreground leading-tight truncate">{{ u.name }}</p>
-                <span class="text-[10px] text-muted-foreground font-mono truncate block">{{ u.email }}</span>
+              <div class="text-left min-w-0 flex-1">
+                <p class="text-xs font-bold text-foreground truncate group-hover:text-primary transition-colors">{{ u.name }}</p>
+                <p class="text-[10px] text-muted-foreground truncate font-mono">{{ u.email }}</p>
               </div>
             }
           }
@@ -99,6 +99,8 @@
       @if (showUserMenu()) {
         <div
           class="absolute left-0 bottom-[calc(100%+8px)] w-64 bg-popover-solid text-popover-foreground border border-border rounded-xl shadow-2xl p-1.5 space-y-1 z-[99999] animate-in fade-in zoom-in-95 duration-150 text-xs font-medium"
+          role="menu"
+          aria-label="Opciones de cuenta"
           (click)="$event.stopPropagation()"
         >
           <!-- Header User Info -->
@@ -116,6 +118,7 @@
           <div class="p-1 space-y-0.5 bg-popover-solid">
             <button
               type="button"
+              role="menuitem"
               class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md hover:bg-muted text-left transition-colors font-medium text-foreground cursor-pointer"
               (click)="navigateTo('/dashboard/profile')"
             >
@@ -127,6 +130,7 @@
           <div class="border-t border-border/60 pt-1 space-y-0.5 bg-popover-solid rounded-b-xl">
             <button
               type="button"
+              role="menuitem"
               class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md hover:bg-muted text-left transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
               (click)="navigateTo('/dashboard/help-support')"
             >
@@ -136,7 +140,8 @@
 
             <button
               type="button"
-              class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-rose-400 hover:bg-rose-500/10 text-left transition-colors font-bold"
+              role="menuitem"
+              class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-rose-400 hover:bg-rose-500/10 text-left transition-colors font-bold cursor-pointer"
               (click)="logout()"
             >
               <app-icon name="logout" class="w-4 h-4 text-rose-400" />

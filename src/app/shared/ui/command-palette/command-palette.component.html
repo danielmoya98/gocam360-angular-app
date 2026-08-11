@@ -7,6 +7,9 @@
     <!-- Modal Palette Container (100% Solid Opacity Background) -->
     <div
       class="w-full max-w-lg bg-popover-solid text-popover-foreground border border-border rounded-2xl shadow-2xl overflow-hidden animate-smooth-modal relative z-[100001]"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Paleta de comandos"
       (click)="$event.stopPropagation()"
     >
       <!-- Search Input Bar -->
@@ -14,6 +17,11 @@
         <app-icon name="search" class="w-4 h-4 text-muted-foreground shrink-0" />
         <input
           type="text"
+          role="combobox"
+          aria-expanded="true"
+          aria-haspopup="listbox"
+          aria-controls="command-palette-list"
+          aria-label="Buscar comandos o navegación"
           [value]="searchQuery()"
           (input)="onSearch($event)"
           placeholder="Buscar comandos, páginas o módulos... (Esc para salir)"
@@ -24,10 +32,11 @@
       </div>
 
       <!-- Command List -->
-      <div class="max-h-80 overflow-y-auto p-2 space-y-1 bg-popover-solid no-scrollbar">
+      <div id="command-palette-list" role="listbox" aria-label="Resultados de comandos" class="max-h-80 overflow-y-auto p-2 space-y-1 bg-popover-solid no-scrollbar">
         @for (item of filteredCommands(); track item.label) {
           <button
             type="button"
+            role="option"
             (click)="executeCommand(item.route)"
             class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-foreground hover:bg-muted transition-all group text-left cursor-pointer"
           >

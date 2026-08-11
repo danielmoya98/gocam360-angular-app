@@ -40,7 +40,10 @@ export class SidebarWidget {
   protected readonly userRole = this._authService.userRole;
   protected readonly showUserMenu = signal(false);
 
-  toggleUserMenu(): void {
+  toggleUserMenu(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.showUserMenu.update((v) => !v);
   }
 
