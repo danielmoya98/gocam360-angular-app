@@ -21,10 +21,12 @@ export const rootEntryGuard: CanActivateFn = () => {
 
   return authService.checkSetupStatus().pipe(
     map((res) => {
+      // Si NO está instalado (no hay SuperAdmin), muestra la animación /splash que guía a /setup
       if (!res.isInstalled) {
-        router.navigate(['/setup']);
+        router.navigate(['/splash']);
         return false;
       }
+      // Si YA hay un SuperAdmin en la BD, entra DIRECTO a /login sin mostrar el splash
       router.navigate(['/login']);
       return false;
     }),

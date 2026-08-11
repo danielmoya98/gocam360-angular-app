@@ -274,7 +274,9 @@ export class SidebarWidget {
   }
 
   logout(): void {
-    this._authService.logout();
-    this._router.navigate(['/login']);
+    this._authService.logout().subscribe({
+      next: () => this._router.navigate(['/login']),
+      error: () => this._router.navigate(['/login']),
+    });
   }
 }
