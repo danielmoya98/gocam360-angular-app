@@ -11,6 +11,7 @@ import { KpiCardComponent } from '../../shared/ui/kpi-card/kpi-card.component';
 import { DataTableComponent } from '../../shared/ui/data-table/data-table.component';
 import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
 import { ViewSwitcherComponent } from '../../shared/ui/view-switcher/view-switcher.component';
+import { TablePaginationComponent } from '../../shared/ui/table-pagination/table-pagination.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { UsersService, AdminUserResponseDto, CreateAdminDto, UpdateAdminDto } from './services/users.service';
@@ -31,6 +32,7 @@ import { PreferencesService } from '../../shared/services/preferences.service';
     DataTableComponent,
     SearchInputComponent,
     ViewSwitcherComponent,
+    TablePaginationComponent,
     IconComponent,
     DatePipe,
   ],

@@ -1,0 +1,65 @@
+<div class="p-2.5 border-t border-border/60 bg-popover-solid flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground shrink-0 w-full">
+  <div>
+    @if (showSelectionInfo) {
+      <span>{{ selectedCount }} de {{ totalCount }} filas seleccionadas</span>
+    } @else {
+      <span>Mostrando {{ totalCount }} registros</span>
+    }
+  </div>
+
+  <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2">
+      <span>Filas por página:</span>
+      <select
+        [value]="pageSize"
+        (change)="onPageSizeSelect($event)"
+        class="px-2 py-0.5 rounded border border-border bg-card text-foreground text-xs focus:outline-none cursor-pointer"
+      >
+        @for (opt of pageSizeOptions; track opt) {
+          <option [value]="opt">{{ opt }}</option>
+        }
+      </select>
+    </div>
+
+    <span class="font-bold text-foreground">Página {{ currentPage }} de {{ totalPages }}</span>
+
+    <div class="flex items-center gap-1">
+      <button
+        type="button"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(1)"
+        class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+        title="Primera página"
+      >
+        K
+      </button>
+      <button
+        type="button"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(currentPage - 1)"
+        class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+        title="Página anterior"
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        [disabled]="currentPage >= totalPages"
+        (click)="goToPage(currentPage + 1)"
+        class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+        title="Página siguiente"
+      >
+        ›
+      </button>
+      <button
+        type="button"
+        [disabled]="currentPage >= totalPages"
+        (click)="goToPage(totalPages)"
+        class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+        title="Última página"
+      >
+        ❯
+      </button>
+    </div>
+  </div>
+</div>

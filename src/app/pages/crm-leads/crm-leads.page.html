@@ -160,7 +160,7 @@
               </tr>
             }
           } @else {
-            @for (lead of filteredLeads(); track lead.id) {
+            @for (lead of paginatedLeads(); track lead.id) {
               <tr class="hover:bg-muted/40 transition-all duration-200 group table-row-smooth animate-in fade-in duration-200">
                 <td class="px-4 py-3">
                   <p class="font-extrabold text-foreground group-hover:text-primary transition-colors leading-tight">{{ lead.name }}</p>
@@ -245,6 +245,16 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Fixed Bottom Pagination Footer Reutilizable -->
+    <app-table-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      [pageSize]="pageSize()"
+      [totalCount]="filteredLeads().length"
+      (pageChange)="currentPage.set($event)"
+      (pageSizeChange)="pageSize.set($event); currentPage.set(1)"
+    />
   </div>
 
 </div>

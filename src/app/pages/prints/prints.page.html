@@ -276,7 +276,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-border/40 font-medium bg-popover-solid">
-              @for (item of filteredPrintItems(); track item.id) {
+              @for (item of paginatedPrintItems(); track item.id) {
                 <tr class="hover:bg-muted/40 transition-colors group">
                   <td class="py-2.5 px-4">
                     <div class="flex items-center gap-3">
@@ -334,6 +334,16 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Fixed Bottom Pagination Footer Reutilizable -->
+        <app-table-pagination
+          [currentPage]="currentPage()"
+          [totalPages]="totalPages()"
+          [pageSize]="pageSize()"
+          [totalCount]="filteredPrintItems().length"
+          (pageChange)="currentPage.set($event)"
+          (pageSizeChange)="pageSize.set($event); currentPage.set(1)"
+        />
       </div>
     }
   }

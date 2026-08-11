@@ -351,16 +351,15 @@
           </table>
         </div>
 
-        <!-- Footer Paginación -->
-        <div class="p-2.5 border-t border-border/60 bg-popover-solid flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground shrink-0">
-          <span>Mostrando <b>{{ paginatedEvents().length }}</b> de <b>{{ filteredEvents().length }}</b> eventos</span>
-          <div class="flex items-center gap-1">
-            <button [disabled]="currentPage() === 1" (click)="currentPage.set(1)" class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 cursor-pointer">K</button>
-            <button [disabled]="currentPage() === 1" (click)="currentPage.set(currentPage() - 1)" class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 cursor-pointer">‹</button>
-            <button [disabled]="currentPage() >= totalPages()" (click)="currentPage.set(currentPage() + 1)" class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 cursor-pointer">›</button>
-            <button [disabled]="currentPage() >= totalPages()" (click)="currentPage.set(totalPages())" class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 cursor-pointer">❯</button>
-          </div>
-        </div>
+        <!-- Fixed Bottom Pagination Footer Reutilizable -->
+        <app-table-pagination
+          [currentPage]="currentPage()"
+          [totalPages]="totalPages()"
+          [pageSize]="pageSize()"
+          [totalCount]="filteredEvents().length"
+          (pageChange)="currentPage.set($event)"
+          (pageSizeChange)="pageSize.set($event); currentPage.set(1)"
+        />
       </div>
     }
   }

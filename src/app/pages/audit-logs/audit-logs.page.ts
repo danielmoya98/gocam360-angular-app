@@ -1,9 +1,10 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
 import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
+import { TablePaginationComponent } from '../../shared/ui/table-pagination/table-pagination.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { AuditLogsService } from './services/audit-logs.service';
 import { AuditLogDto } from '../../shared/models/audit.model';
@@ -13,7 +14,14 @@ export type { AuditLogDto };
 @Component({
   selector: 'app-audit-logs-page',
   standalone: true,
-  imports: [IconComponent, DatePipe, HlmInputDirective, PageHeaderComponent, SearchInputComponent],
+  imports: [
+    IconComponent,
+    DatePipe,
+    HlmInputDirective,
+    PageHeaderComponent,
+    SearchInputComponent,
+    TablePaginationComponent,
+  ],
   templateUrl: './audit-logs.page.html',
   styleUrl: './audit-logs.page.css',
 })
@@ -25,7 +33,19 @@ export class AuditLogsPage implements OnInit {
   private readonly _logs = this._auditService.logs;
   protected readonly filterQuery = signal('');
 
+  protected readonly currentPage = signal(1);
+  protected readonly pageSize = signal(10);
+
   protected readonly filteredLogs = signal<AuditLogDto[]>([]);
+
+  protected readonly totalPages = computed(() =>
+    Math.ceil(this.filteredLogs().length / this.pageSize()) || 1
+  );
+
+  protected readonly paginatedLogs = computed(() => {
+    const startIndex = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredLogs().slice(startIndex, startIndex + this.pageSize());
+  });
 
   ngOnInit(): void {
     this.loadAuditLogs();

@@ -11,6 +11,7 @@ import { KpiCardComponent } from '../../shared/ui/kpi-card/kpi-card.component';
 import { SegmentedPillsComponent } from '../../shared/ui/segmented-pills/segmented-pills.component';
 import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
 import { ViewSwitcherComponent } from '../../shared/ui/view-switcher/view-switcher.component';
+import { TablePaginationComponent } from '../../shared/ui/table-pagination/table-pagination.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { PrintPhotoItem, PrintQueueModalComponent } from './print-queue-modal.component';
@@ -32,6 +33,7 @@ import { PreferencesService } from '../../shared/services/preferences.service';
     SegmentedPillsComponent,
     SearchInputComponent,
     ViewSwitcherComponent,
+    TablePaginationComponent,
     IconComponent,
     DatePipe,
   ],
@@ -57,7 +59,7 @@ export class EventsPage implements OnInit {
   protected readonly selectedStatusFilter = signal<string>(this.initialPref.statusFilter ?? 'ALL');
 
   protected readonly currentPage = signal(1);
-  protected readonly pageSize = 6;
+  protected readonly pageSize = signal(6);
 
   protected readonly isFormDrawerOpen = signal(false);
   protected readonly isQrModalOpen = signal(false);
@@ -164,13 +166,13 @@ export class EventsPage implements OnInit {
   });
 
   protected readonly paginatedEvents = computed(() => {
-    const start = (this.currentPage() - 1) * this.pageSize;
-    return this.filteredEvents().slice(start, start + this.pageSize);
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredEvents().slice(start, start + this.pageSize());
   });
 
-  protected readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.filteredEvents().length / this.pageSize))
-  );
+  protected readonly totalPages = computed(() => {
+    return Math.max(1, Math.ceil(this.filteredEvents().length / this.pageSize()));
+  });
 
   onSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement;

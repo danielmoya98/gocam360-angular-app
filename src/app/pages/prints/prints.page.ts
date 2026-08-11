@@ -7,6 +7,7 @@ import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.com
 import { KpiCardComponent } from '../../shared/ui/kpi-card/kpi-card.component';
 import { SegmentedPillsComponent } from '../../shared/ui/segmented-pills/segmented-pills.component';
 import { ViewSwitcherComponent } from '../../shared/ui/view-switcher/view-switcher.component';
+import { TablePaginationComponent } from '../../shared/ui/table-pagination/table-pagination.component';
 import { EventsService, EventItemResponseDto } from '../events/services/events.service';
 import { PrintsService, PrintRequestItemDto, PrintStatus } from './services/prints.service';
 
@@ -21,6 +22,7 @@ import { PrintsService, PrintRequestItemDto, PrintStatus } from './services/prin
     KpiCardComponent,
     SegmentedPillsComponent,
     ViewSwitcherComponent,
+    TablePaginationComponent,
   ],
   templateUrl: './prints.page.html',
   styleUrl: './prints.page.css',
@@ -34,6 +36,9 @@ export class PrintsPage implements OnInit {
   protected readonly viewMode = signal<'cards' | 'table'>('cards');
   protected readonly activeStatusTab = signal<'TODAS' | 'PENDING' | 'PRINTING' | 'PRINTED'>('TODAS');
   protected readonly selectedEventId = signal<string>('ALL');
+
+  protected readonly currentPage = signal(1);
+  protected readonly pageSize = signal(10);
 
   protected readonly eventsList = signal<EventItemResponseDto[]>([]);
   protected readonly printRequests = signal<PrintRequestItemDto[]>([]);
@@ -115,14 +120,21 @@ export class PrintsPage implements OnInit {
     const eventId = this.selectedEventId();
 
     if (eventId !== 'ALL') {
-      list = list.filter((item) => item.eventId === eventId);
+      list = list.filter((r) => r.eventId === eventId);
     }
-
     if (tab !== 'TODAS') {
-      list = list.filter((item) => item.status === tab);
+      list = list.filter((r) => r.status === tab);
     }
-
     return list;
+  });
+
+  protected readonly totalPages = computed(() =>
+    Math.ceil(this.filteredPrintItems().length / this.pageSize()) || 1
+  );
+
+  protected readonly paginatedPrintItems = computed(() => {
+    const startIndex = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredPrintItems().slice(startIndex, startIndex + this.pageSize());
   });
 
   changeStatus(id: string, status: PrintStatus): void {

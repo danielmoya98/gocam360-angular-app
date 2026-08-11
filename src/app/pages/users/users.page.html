@@ -288,34 +288,17 @@
           </table>
         </div>
 
-        <!-- Fixed Bottom Pagination Footer -->
-        <div class="p-2.5 border-t border-border/60 bg-popover-solid flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground shrink-0">
-          <span>{{ selectedAdminIds().length }} de {{ filteredAdmins().length }} filas seleccionadas</span>
-
-          <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2">
-              <span>Filas por página:</span>
-              <select
-                [value]="pageSize()"
-                (change)="onPageSizeChange($event)"
-                class="px-2 py-0.5 rounded border border-border bg-card text-foreground text-xs focus:outline-none cursor-pointer"
-              >
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-              </select>
-            </div>
-
-            <span class="font-bold text-foreground">Página {{ currentPage() }} de {{ totalPages() }}</span>
-
-            <div class="flex items-center gap-1">
-              <button [disabled]="currentPage() === 1" (click)="currentPage.set(1)" class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 cursor-pointer">K</button>
-              <button [disabled]="currentPage() === 1" (click)="currentPage.set(currentPage() - 1)" class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 cursor-pointer">‹</button>
-              <button [disabled]="currentPage() >= totalPages()" (click)="currentPage.set(currentPage() + 1)" class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 cursor-pointer">›</button>
-              <button [disabled]="currentPage() >= totalPages()" (click)="currentPage.set(totalPages())" class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 cursor-pointer">❯</button>
-            </div>
-          </div>
-        </div>
+        <!-- Fixed Bottom Pagination Footer Reutilizable -->
+        <app-table-pagination
+          [currentPage]="currentPage()"
+          [totalPages]="totalPages()"
+          [pageSize]="pageSize()"
+          [selectedCount]="selectedAdminIds().length"
+          [totalCount]="filteredAdmins().length"
+          [showSelectionInfo]="true"
+          (pageChange)="currentPage.set($event)"
+          (pageSizeChange)="pageSize.set($event); currentPage.set(1)"
+        />
 
       </div>
     } @else {
