@@ -1,0 +1,4 @@
+/* Estilos específicos para Command Palette */
+:host {
+  display: block;
+}

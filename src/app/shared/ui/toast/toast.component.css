@@ -1,0 +1,4 @@
+/* Estilos específicos para Toast Container */
+:host {
+  display: block;
+}

@@ -1,0 +1,4 @@
+/* Estilos específicos para Drawer */
+:host {
+  display: contents;
+}

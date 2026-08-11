@@ -1,0 +1,56 @@
+@if (isVisible()) {
+  <!-- Fixed Fullscreen Backdrop (Elevado a z-[200000] para sobrepasar Sidebar y Topbar) -->
+  <div
+    class="fixed inset-0 bg-black/75 backdrop-blur-md z-[200000] transition-opacity duration-300 ease-out"
+    [class.animate-in]="isAnimatingIn()"
+    [class.fade-in]="isAnimatingIn()"
+    [class.animate-out]="isClosing()"
+    [class.fade-out]="isClosing()"
+    (click)="close()"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Floating Drawer Container (Animación derecha a izquierda al abrir y izquierda a derecha al cerrar) -->
+  <aside
+    class="fixed inset-y-0 right-0 m-3 sm:m-4 w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] max-w-md bg-popover-solid text-popover-foreground border border-border/80 rounded-2xl shadow-2xl z-[200001] flex flex-col justify-between overflow-hidden"
+    [class.animate-drawer-in]="isAnimatingIn()"
+    [class.animate-drawer-out]="isClosing()"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="title"
+  >
+    <!-- Header (100% Sólido Opaco) -->
+    <div class="p-5 border-b border-border/80 flex items-center justify-between sticky top-0 bg-popover-solid z-10 shadow-xs">
+      <div>
+        <h3 class="text-base font-bold tracking-tight text-foreground">{{ title }}</h3>
+        @if (subtitle) {
+          <p class="text-xs text-muted-foreground mt-0.5">{{ subtitle }}</p>
+        }
+      </div>
+      <button
+        type="button"
+        (click)="close()"
+        class="w-7 h-7 rounded-lg border border-border/60 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-all active:scale-95 text-xs cursor-pointer"
+        aria-label="Cerrar panel"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Body Content con Scroll Interno -->
+    <div class="p-6 space-y-6 flex-1 bg-popover-solid overflow-y-auto no-scrollbar">
+      <ng-content />
+    </div>
+
+    <!-- Footer (100% Sólido Opaco) -->
+    <div class="p-4 border-t border-border/80 bg-popover-solid flex justify-end gap-2 sticky bottom-0 z-10">
+      <button
+        type="button"
+        (click)="close()"
+        class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-border bg-background hover:bg-muted transition-all active:scale-95 cursor-pointer text-foreground"
+      >
+        Cerrar
+      </button>
+    </div>
+  </aside>
+}
