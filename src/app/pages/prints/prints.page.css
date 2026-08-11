@@ -1,0 +1,5 @@
+/* Estilos específicos para la vista de Cola de Impresión */
+:host {
+  display: block;
+  height: 100%;
+}
