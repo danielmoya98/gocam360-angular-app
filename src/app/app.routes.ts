@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 import { authGuard, roleGuard } from './shared/guards/auth.guard';
-import { setupGuard } from './shared/guards/setup.guard';
+import { setupGuard, rootEntryGuard } from './shared/guards/setup.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
-    pathMatch: 'full',
+    canActivate: [rootEntryGuard],
+    children: [],
   },
   {
     path: 'setup',
