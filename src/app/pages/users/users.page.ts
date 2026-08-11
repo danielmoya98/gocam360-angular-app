@@ -125,16 +125,16 @@ import { PreferencesService } from '../../shared/services/preferences.service';
         <!-- Left: Search Input, Bulk Delete & Filter Dropdowns -->
         <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
           
-          <!-- Search Bar (Alineación perfecta del ícono de lupa dentro del input) -->
+          <!-- Search Bar (Alineación perfecta del ícono de lupa con espaciado adecuado) -->
           <div class="relative flex-1 sm:w-64 flex items-center">
-            <app-icon name="search" class="absolute left-2.5 text-muted-foreground w-3.5 h-3.5 pointer-events-none z-10" />
+            <app-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 pointer-events-none z-10" />
             <input
               type="text"
               hlmInput
               [value]="searchQuery()"
               (input)="onSearchInput($event)"
               placeholder="Buscar por nombre o correo..."
-              class="h-8 pl-8 pr-3 w-full rounded-md bg-card border border-border text-xs focus:outline-none"
+              class="h-8 !pl-9 pr-3 w-full rounded-md bg-card border border-border text-xs focus:outline-none"
             />
           </div>
 
