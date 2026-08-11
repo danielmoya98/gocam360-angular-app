@@ -1,0 +1,5 @@
+/* Estilos aislados para la vista de Gestión de Eventos 360° */
+:host {
+  display: block;
+  height: 100%;
+}
