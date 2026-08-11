@@ -1,0 +1,5 @@
+/* Estilos aislados para la vista de Dashboard Admin Operativo */
+:host {
+  display: block;
+  width: 100%;
+}
