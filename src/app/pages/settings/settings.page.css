@@ -1,0 +1,5 @@
+/* Estilos específicos para la vista de Configuración */
+:host {
+  display: block;
+  height: 100%;
+}
