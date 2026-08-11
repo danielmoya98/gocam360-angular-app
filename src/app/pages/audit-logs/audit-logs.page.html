@@ -21,16 +21,12 @@
 
   <!-- Filtro Rápido y Buscador -->
   <div class="p-4 rounded-xl border border-border/80 bg-popover-solid text-popover-foreground flex flex-col sm:flex-row items-center justify-between gap-3 shadow-none">
-    <div class="relative flex items-center gap-2 w-full sm:w-80 bg-card border border-border/80 rounded-lg px-3 py-1.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/60 transition-all shadow-sm">
-      <app-icon name="search" class="w-4 h-4 text-muted-foreground shrink-0" />
-      <input
-        type="text"
-        placeholder="Buscar por correo, acción o detalle..."
-        [value]="filterQuery()"
-        (input)="onSearchChange($event)"
-        class="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground font-medium focus:outline-none border-none p-0 h-auto"
-      />
-    </div>
+    <app-search-input
+      [value]="filterQuery()"
+      placeholder="Buscar por correo, acción o detalle..."
+      containerClass="w-full sm:w-80"
+      (searchInput)="onSearchChange($event)"
+    />
     <div class="text-xs font-mono text-muted-foreground">
       Total de registros: <span class="font-bold text-foreground">{{ filteredLogs().length }}</span>
     </div>

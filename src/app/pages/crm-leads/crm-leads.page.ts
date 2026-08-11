@@ -5,13 +5,22 @@ import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
 import { KpiCardComponent } from '../../shared/ui/kpi-card/kpi-card.component';
 import { SegmentedPillsComponent } from '../../shared/ui/segmented-pills/segmented-pills.component';
+import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { CrmLeadsService, CrmLeadDto, LeadStatus } from './services/crm-leads.service';
 
 @Component({
   selector: 'app-crm-leads-page',
   standalone: true,
-  imports: [IconComponent, DatePipe, HlmInputDirective, PageHeaderComponent, KpiCardComponent, SegmentedPillsComponent],
+  imports: [
+    IconComponent,
+    DatePipe,
+    HlmInputDirective,
+    PageHeaderComponent,
+    KpiCardComponent,
+    SegmentedPillsComponent,
+    SearchInputComponent,
+  ],
   templateUrl: './crm-leads.page.html',
   styleUrl: './crm-leads.page.css',
 })

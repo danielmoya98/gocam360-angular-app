@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { AuditLogsService } from './services/audit-logs.service';
 import { AuditLogDto } from '../../shared/models/audit.model';
@@ -12,7 +13,7 @@ export type { AuditLogDto };
 @Component({
   selector: 'app-audit-logs-page',
   standalone: true,
-  imports: [IconComponent, DatePipe, HlmInputDirective, PageHeaderComponent],
+  imports: [IconComponent, DatePipe, HlmInputDirective, PageHeaderComponent, SearchInputComponent],
   templateUrl: './audit-logs.page.html',
   styleUrl: './audit-logs.page.css',
 })
