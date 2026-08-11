@@ -2,7 +2,7 @@ import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { form, FormField, submit, required, email } from '@angular/forms/signals';
 import { UserRole } from '../../shared/models/user.model';
-import { HlmButtonDirective } from '../../ui/button/hlm-button.directive';
+import { HlmButtonDirective } from '../../shared/ui/button/hlm-button.directive';
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { DrawerComponent } from '../../shared/ui/drawer/drawer.component';
 import { ConfirmDialogComponent } from '../../shared/ui/confirm-dialog/confirm-dialog.component';

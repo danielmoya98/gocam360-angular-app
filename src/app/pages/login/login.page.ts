@@ -4,7 +4,7 @@ import { form, FormField, submit, required, email, minLength } from '@angular/fo
 import { AuthService } from '../../entities/session/auth.service';
 import { ThemeService } from '../../shared/services/theme.service';
 import { ToastService } from '../../shared/services/toast.service';
-import { HlmButtonDirective } from '../../ui/button/hlm-button.directive';
+import { HlmButtonDirective } from '../../shared/ui/button/hlm-button.directive';
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 
