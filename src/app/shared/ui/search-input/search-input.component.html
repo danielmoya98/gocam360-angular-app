@@ -4,6 +4,7 @@
     type="text"
     [value]="value"
     [placeholder]="placeholder"
+    [attr.aria-label]="placeholder || 'Buscar...'"
     (input)="onInput($event)"
     class="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground font-medium focus:outline-none border-none p-0 h-auto"
   />

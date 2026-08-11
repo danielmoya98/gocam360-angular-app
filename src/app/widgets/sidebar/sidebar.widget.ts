@@ -65,7 +65,7 @@ export class SidebarWidget {
             icon: 'dashboard',
             route: '/dashboard',
             roles: ['SUPERADMIN', 'ADMIN'],
-            hasChevron: true,
+            hasChevron: false,
           },
           ...(role === 'SUPERADMIN'
             ? [
@@ -77,7 +77,7 @@ export class SidebarWidget {
                 hasChevron: false,
               },
               {
-                label: 'Auditoría',
+                label: 'Bitácora / Auditoría',
                 icon: 'info' as IconName,
                 route: '/dashboard/audit-logs',
                 roles: ['SUPERADMIN' as UserRole],

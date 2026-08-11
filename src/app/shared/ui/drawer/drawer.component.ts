@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, Output, signal, HostListener } from '@angular/core';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-drawer',
   standalone: true,
+  imports: [A11yModule],
   host: {
     class: 'contents',
   },

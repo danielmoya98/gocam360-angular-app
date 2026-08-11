@@ -1,6 +1,9 @@
-<div class="flex items-center bg-muted/40 p-0.5 rounded-md border border-border shrink-0">
+<div class="flex items-center bg-muted/40 p-0.5 rounded-md border border-border shrink-0" role="tablist" aria-label="Modo de visualización">
   <button
     type="button"
+    role="tab"
+    [attr.aria-selected]="mode === 'cards'"
+    aria-label="Vista de tarjetas"
     (click)="setMode('cards')"
     class="p-1.5 rounded text-xs font-bold transition-all cursor-pointer flex items-center justify-center"
     [class.bg-background]="mode === 'cards'"
@@ -13,6 +16,9 @@
   </button>
   <button
     type="button"
+    role="tab"
+    [attr.aria-selected]="mode === 'table'"
+    aria-label="Vista de tabla"
     (click)="setMode('table')"
     class="p-1.5 rounded text-xs font-bold transition-all cursor-pointer flex items-center justify-center"
     [class.bg-background]="mode === 'table'"

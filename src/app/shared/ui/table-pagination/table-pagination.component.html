@@ -1,4 +1,4 @@
-<div class="p-2.5 border-t border-border/60 bg-popover-solid flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground shrink-0 w-full">
+<div class="p-2.5 border-t border-border/60 bg-popover-solid flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground shrink-0 w-full" role="navigation" aria-label="Paginación de tabla">
   <div>
     @if (showSelectionInfo) {
       <span>{{ selectedCount }} de {{ totalCount }} filas seleccionadas</span>
@@ -9,10 +9,12 @@
 
   <div class="flex items-center gap-4">
     <div class="flex items-center gap-2">
-      <span>Filas por página:</span>
+      <label for="page-size-select" class="text-xs">Filas por página:</label>
       <select
+        id="page-size-select"
         [value]="pageSize"
         (change)="onPageSizeSelect($event)"
+        aria-label="Seleccionar número de filas por página"
         class="px-2 py-0.5 rounded border border-border bg-card text-foreground text-xs focus:outline-none cursor-pointer"
       >
         @for (opt of pageSizeOptions; track opt) {
@@ -21,7 +23,7 @@
       </select>
     </div>
 
-    <span class="font-bold text-foreground">Página {{ currentPage }} de {{ totalPages }}</span>
+    <span class="font-bold text-foreground" aria-live="polite">Página {{ currentPage }} de {{ totalPages }}</span>
 
     <div class="flex items-center gap-1">
       <button
@@ -30,6 +32,7 @@
         (click)="goToPage(1)"
         class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
         title="Primera página"
+        aria-label="Ir a la primera página"
       >
         K
       </button>
@@ -39,6 +42,7 @@
         (click)="goToPage(currentPage - 1)"
         class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
         title="Página anterior"
+        aria-label="Ir a la página anterior"
       >
         ‹
       </button>
@@ -48,6 +52,7 @@
         (click)="goToPage(currentPage + 1)"
         class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
         title="Página siguiente"
+        aria-label="Ir a la página siguiente"
       >
         ›
       </button>
@@ -57,6 +62,7 @@
         (click)="goToPage(totalPages)"
         class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
         title="Última página"
+        aria-label="Ir a la última página"
       >
         ❯
       </button>
