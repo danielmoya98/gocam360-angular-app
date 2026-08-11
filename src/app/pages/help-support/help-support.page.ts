@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
 import { ToastService } from '../../shared/services/toast.service';
 
 export interface FaqItem {
@@ -15,7 +16,7 @@ export interface FaqItem {
 @Component({
   selector: 'app-help-support-page',
   standalone: true,
-  imports: [IconComponent, HlmInputDirective, SearchInputComponent],
+  imports: [IconComponent, HlmInputDirective, SearchInputComponent, PageHeaderComponent],
   templateUrl: './help-support.page.html',
   styleUrl: './help-support.page.css',
 })
