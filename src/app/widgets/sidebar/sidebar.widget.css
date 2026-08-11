@@ -1,0 +1,4 @@
+/* Estilos específicos para el widget Sidebar navegacional */
+:host {
+  display: block;
+}
