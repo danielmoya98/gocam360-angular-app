@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { form, FormField, submit, required, email, minLength } from '@angular/forms/signals';
 import { AuthService } from '../../entities/session/auth.service';
 import { ThemeService } from '../../shared/services/theme.service';
@@ -23,7 +23,7 @@ export interface LoginDto {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormField, HlmButtonDirective, HlmInputDirective, IconComponent],
+  imports: [FormField, RouterLink, HlmButtonDirective, HlmInputDirective, IconComponent],
   template: `
     <div class="min-h-screen w-full flex bg-background text-foreground relative overflow-hidden font-sans select-none transition-colors duration-300">
       
@@ -171,13 +171,25 @@ export interface LoginDto {
 
           </form>
 
-          <!-- Aviso de Términos y Privacidad -->
-          <p class="text-center text-[10px] text-muted-foreground leading-normal px-2">
-            Al hacer clic en Iniciar Sesión, aceptas nuestros
-            <a href="#" class="underline hover:text-foreground font-medium">Términos del Servicio</a>
-            y
-            <a href="#" class="underline hover:text-foreground font-medium">Política de Privacidad</a>.
-          </p>
+          <!-- Aviso de Términos, Privacidad y First-Run Setup -->
+          <div class="space-y-3 text-center">
+            <p class="text-[10px] text-muted-foreground leading-normal px-2">
+              Al hacer clic en Iniciar Sesión, aceptas nuestros
+              <a href="#" class="underline hover:text-foreground font-medium">Términos del Servicio</a>
+              y
+              <a href="#" class="underline hover:text-foreground font-medium">Política de Privacidad</a>.
+            </p>
+
+            <div class="pt-2 border-t border-border/60">
+              <a
+                routerLink="/setup"
+                class="text-xs text-primary font-bold hover:underline flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <app-icon name="settings" class="w-3.5 h-3.5" />
+                <span>Primer Inicio: Configurar SuperAdmin (/setup)</span>
+              </a>
+            </div>
+          </div>
         </div>
 
         <!-- Footer Copyright -->

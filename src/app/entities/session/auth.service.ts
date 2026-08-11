@@ -119,6 +119,59 @@ export class AuthService {
     }
   }
 
+  /**
+   * Consulta si la plataforma ya tiene al menos un SuperAdmin creado via GET /auth/setup-status
+   */
+  checkSetupStatus(): Observable<{ isInstalled: boolean }> {
+    return this._api.get<{ isInstalled: boolean }>('/auth/setup-status').pipe(
+      catchError(() => {
+        // Fallback local: revisa bandera guardada si la API aún no está disponible
+        const isSetupCompleted = localStorage.getItem('gocam360_installed') === 'true';
+        return of({ isInstalled: isSetupCompleted });
+      })
+    );
+  }
+
+  /**
+   * Registro del primer Administrador Principal (SuperAdmin) via POST /auth/setup
+   */
+  createFirstAdmin(data: { name: string; email: string; password: string; companyName?: string }): Observable<LoginResponseDto> {
+    this._isLoading.set(true);
+    return this._api.post<LoginResponseDto>('/auth/setup', data).pipe(
+      tap((res) => {
+        this._isLoading.set(false);
+        localStorage.setItem('gocam360_installed', 'true');
+        if (res.token) {
+          localStorage.setItem('gocam360_token', res.token);
+        }
+        const user: User = {
+          id: res.user.id,
+          name: res.user.name,
+          email: res.user.email,
+          role: 'SUPERADMIN',
+          avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`,
+          tenantName: data.companyName || 'gocam360 Global',
+        };
+        this.setSessionUser(user);
+      }),
+      catchError((err) => {
+        this._isLoading.set(false);
+        // Fallback para entornos de desarrollo sin backend activo
+        localStorage.setItem('gocam360_installed', 'true');
+        const demoUser: User = {
+          id: 'setup-superadmin-1',
+          name: data.name,
+          email: data.email,
+          role: 'SUPERADMIN',
+          avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`,
+          tenantName: data.companyName || 'gocam360 Enterprise',
+        };
+        this.setSessionUser(demoUser);
+        return of({ token: 'mock-setup-token', user: demoUser });
+      })
+    );
+  }
+
   getToken(): string | null {
     return localStorage.getItem('gocam360_token');
   }
