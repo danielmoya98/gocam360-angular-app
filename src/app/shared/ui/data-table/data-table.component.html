@@ -1,0 +1,52 @@
+<div class="rounded-xl border border-border/80 bg-popover-solid text-popover-foreground overflow-hidden shadow-none flex-1 flex flex-col w-full">
+  <div class="overflow-x-auto flex-1">
+    <table class="w-full text-xs text-left border-collapse">
+      <thead class="bg-muted/40 text-muted-foreground border-b border-border/60 font-bold uppercase tracking-wider text-[10px] sticky top-0 z-10 shadow-xs">
+        <tr>
+          @for (col of columns; track col.header) {
+            <th class="px-4 py-3" [class]="col.headerClass || ''">
+              {{ col.header }}
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border/40 font-mono">
+        @if (isLoading) {
+          @for (item of [1, 2, 3, 4, 5]; track item) {
+            <tr class="animate-pulse bg-muted/20">
+              @for (col of columns; track col.header) {
+                <td class="px-4 py-3.5">
+                  <div class="h-3.5 bg-muted/60 rounded w-24"></div>
+                </td>
+              }
+            </tr>
+          }
+        } @else {
+          @for (row of data; track $index) {
+            <tr class="hover:bg-muted/40 transition-all duration-200 group table-row-smooth animate-in fade-in duration-200">
+              @if (rowTemplate) {
+                <ng-container *ngTemplateOutlet="rowTemplate; context: { $implicit: row, index: $index }" />
+              } @else {
+                @for (col of columns; track col.header) {
+                  <td class="px-4 py-3 text-foreground" [class]="col.class || ''">
+                    {{ getCellValue(row, col.field) }}
+                  </td>
+                }
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="columns.length" class="p-12 text-center text-muted-foreground text-xs font-sans">
+                <div class="max-w-xs mx-auto space-y-2">
+                  <app-icon [name]="emptyIcon" class="w-9 h-9 text-muted-foreground/60 mx-auto" />
+                  <p class="font-bold text-foreground">{{ emptyTitle }}</p>
+                  <p class="text-[11px] text-muted-foreground">{{ emptySubtitle }}</p>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

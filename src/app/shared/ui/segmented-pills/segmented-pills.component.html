@@ -1,0 +1,32 @@
+<div class="flex items-center gap-1 overflow-x-auto no-scrollbar p-1 bg-muted/40 rounded-xl border border-border/80 text-xs font-bold">
+  @for (opt of options; track opt.value) {
+    <button
+      type="button"
+      (click)="selectOption(opt.value)"
+      class="px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+      [class.bg-background]="selectedValue === opt.value"
+      [class.text-foreground]="selectedValue === opt.value"
+      [class.shadow-sm]="selectedValue === opt.value"
+      [class.text-muted-foreground]="selectedValue !== opt.value"
+    >
+      <span>{{ opt.label }}</span>
+      @if (opt.count !== undefined) {
+        <span
+          class="px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold"
+          [class.bg-emerald-500\/10]="opt.badgeVariant === 'emerald'"
+          [class.text-emerald-400]="opt.badgeVariant === 'emerald'"
+          [class.bg-amber-500\/10]="opt.badgeVariant === 'amber'"
+          [class.text-amber-400]="opt.badgeVariant === 'amber'"
+          [class.bg-rose-500\/10]="opt.badgeVariant === 'rose'"
+          [class.text-rose-400]="opt.badgeVariant === 'rose'"
+          [class.bg-indigo-500\/10]="opt.badgeVariant === 'indigo'"
+          [class.text-indigo-400]="opt.badgeVariant === 'indigo'"
+          [class.bg-primary\/10]="!opt.badgeVariant || opt.badgeVariant === 'primary'"
+          [class.text-primary]="!opt.badgeVariant || opt.badgeVariant === 'primary'"
+        >
+          {{ opt.count }}
+        </span>
+      }
+    </button>
+  }
+</div>

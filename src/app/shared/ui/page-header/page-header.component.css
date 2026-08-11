@@ -1,0 +1,5 @@
+/* Estilos para PageHeaderComponent */
+:host {
+  display: block;
+  width: 100%;
+}

@@ -6,6 +6,9 @@ import { HlmButtonDirective } from '../../shared/ui/button/hlm-button.directive'
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { DrawerComponent } from '../../shared/ui/drawer/drawer.component';
 import { ConfirmDialogComponent } from '../../shared/ui/confirm-dialog/confirm-dialog.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { KpiCardComponent } from '../../shared/ui/kpi-card/kpi-card.component';
+import { SegmentedPillsComponent } from '../../shared/ui/segmented-pills/segmented-pills.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { PrintPhotoItem, PrintQueueModalComponent } from './print-queue-modal.component';
@@ -22,6 +25,9 @@ import { PreferencesService } from '../../shared/services/preferences.service';
     DrawerComponent,
     ConfirmDialogComponent,
     PrintQueueModalComponent,
+    PageHeaderComponent,
+    KpiCardComponent,
+    SegmentedPillsComponent,
     IconComponent,
     DatePipe,
   ],

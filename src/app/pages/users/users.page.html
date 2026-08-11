@@ -1,13 +1,11 @@
 <div class="h-full flex flex-col min-h-0 space-y-4 overflow-hidden pb-1">
   
   <!-- Standardized Page Title Header -->
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0">
-    <div>
-      <h2 class="text-xl font-bold tracking-tight text-foreground">Gestión de Administradores</h2>
-      <p class="text-xs text-muted-foreground mt-1">Administra cuentas del equipo, contraseñas, roles de acceso y estado activo/inactivo de administradores gocam360.</p>
-    </div>
-
-    <div class="flex items-center gap-2">
+  <app-page-header
+    title="Gestión de Administradores"
+    subtitle="Administra cuentas del equipo, contraseñas, roles de acceso y estado activo/inactivo de administradores gocam360."
+  >
+    <ng-container actions>
       <button
         type="button"
         (click)="loadAdmins(true)"
@@ -24,72 +22,45 @@
         <app-icon name="user-plus" class="w-3.5 h-3.5" />
         <span>Nuevo Administrador</span>
       </button>
-    </div>
-  </div>
+    </ng-container>
+  </app-page-header>
 
   <!-- Top Section: 4 KPI Cards Grid -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
-    
-    <!-- Total Admins KPI -->
-    <div class="p-3.5 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="users" class="w-3.5 h-3.5 text-muted-foreground" />
-          <span>Administradores Totales</span>
-        </span>
-        <app-icon name="info" class="w-3.5 h-3.5 text-muted-foreground/60" />
-      </div>
-      <div>
-        <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono">{{ totalAdminsCount() }}</span>
-      </div>
-      <p class="text-[10px] text-muted-foreground font-medium">Registrados en la plataforma</p>
-    </div>
-
-    <!-- Active Admins KPI -->
-    <div class="p-3.5 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="shield" class="w-3.5 h-3.5 text-emerald-500" />
-          <span>Cuentas Activas</span>
-        </span>
-        <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] font-bold">Activo</span>
-      </div>
-      <div>
-        <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono">{{ activeAdminsCount() }}</span>
-      </div>
-      <p class="text-[10px] text-emerald-500 font-medium">Operativos con acceso al backend</p>
-    </div>
-
-    <!-- Inactive Admins KPI -->
-    <div class="p-3.5 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="shield" class="w-3.5 h-3.5 text-rose-500" />
-          <span>Cuentas Inactivas</span>
-        </span>
-        <span class="px-1.5 py-0.2 rounded-full bg-rose-500/10 text-rose-400 text-[9px] font-bold">Bloqueado</span>
-      </div>
-      <div>
-        <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono">{{ inactiveAdminsCount() }}</span>
-      </div>
-      <p class="text-[10px] text-muted-foreground font-medium">Sin acceso a la API</p>
-    </div>
-
-    <!-- Super Admins KPI -->
-    <div class="p-3.5 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="crown" class="w-3.5 h-3.5 text-amber-500" />
-          <span>Super Administradores</span>
-        </span>
-        <span class="px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-400 text-[9px] font-bold">Maestro</span>
-      </div>
-      <div>
-        <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono">{{ superAdminsCount() }}</span>
-      </div>
-      <p class="text-[10px] text-muted-foreground font-medium">Permisos globales del sistema</p>
-    </div>
-
+    <app-kpi-card
+      label="Administradores Totales"
+      [value]="totalAdminsCount()"
+      description="Registrados en la plataforma"
+      icon="users"
+    />
+    <app-kpi-card
+      label="Cuentas Activas"
+      [value]="activeAdminsCount()"
+      description="Operativos con acceso al backend"
+      icon="shield"
+      iconColorClass="text-emerald-500"
+      badgeText="Activo"
+      badgeVariant="emerald"
+      valueColorClass="text-foreground"
+    />
+    <app-kpi-card
+      label="Cuentas Inactivas"
+      [value]="inactiveAdminsCount()"
+      description="Sin acceso a la API"
+      icon="shield"
+      iconColorClass="text-rose-500"
+      badgeText="Bloqueado"
+      badgeVariant="rose"
+    />
+    <app-kpi-card
+      label="Super Administradores"
+      [value]="superAdminsCount()"
+      description="Permisos globales del sistema"
+      icon="crown"
+      iconColorClass="text-amber-500"
+      badgeText="Maestro"
+      badgeVariant="amber"
+    />
   </div>
 
   <!-- Toolbar: Search Bar, Bulk Actions, Status Filter, Role Filter, Column Visibility & View Switcher -->

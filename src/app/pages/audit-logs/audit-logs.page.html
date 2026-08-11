@@ -1,27 +1,23 @@
 <div class="h-full flex flex-col min-h-0 space-y-4 overflow-y-auto no-scrollbar pb-6 animate-in fade-in duration-300">
   
   <!-- Top Title Header -->
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0">
-    <div>
-      <div class="flex items-center gap-2 mb-1">
-        <span class="px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-extrabold font-mono">
-          SOLO SUPERADMIN
-        </span>
-        <span class="text-[10px] text-muted-foreground font-mono">BITÁCORA SEGURIDAD FORENSE</span>
-      </div>
-      <h2 class="text-xl font-extrabold tracking-tight text-foreground">Registro de Auditoría de Seguridad</h2>
-      <p class="text-xs text-muted-foreground mt-0.5">Supervisa todas las acciones clave realizadas por administradores u operadores en el sistema.</p>
-    </div>
-
-    <button
-      type="button"
-      (click)="loadAuditLogs(true)"
-      class="px-3.5 py-1.5 rounded-lg border border-border bg-card hover:bg-muted font-bold text-xs transition-all active:scale-95 flex items-center gap-1.5 text-foreground cursor-pointer"
-    >
-      <app-icon name="refresh" class="w-3.5 h-3.5" [class.animate-spin]="isLoading()" />
-      <span>Actualizar Bitácora</span>
-    </button>
-  </div>
+  <app-page-header
+    title="Registro de Auditoría de Seguridad"
+    subtitle="Supervisa todas las acciones clave realizadas por administradores u operadores en el sistema."
+    badgeText="SOLO SUPERADMIN"
+    badgeVariant="rose"
+  >
+    <ng-container actions>
+      <button
+        type="button"
+        (click)="loadAuditLogs(true)"
+        class="px-3.5 py-1.5 rounded-lg border border-border bg-card hover:bg-muted font-bold text-xs transition-all active:scale-95 flex items-center gap-1.5 text-foreground cursor-pointer"
+      >
+        <app-icon name="refresh" class="w-3.5 h-3.5" [class.animate-spin]="isLoading()" />
+        <span>Actualizar Bitácora</span>
+      </button>
+    </ng-container>
+  </app-page-header>
 
   <!-- Filtro Rápido y Buscador -->
   <div class="p-4 rounded-xl border border-border/80 bg-popover-solid text-popover-foreground flex flex-col sm:flex-row items-center justify-between gap-3 shadow-none">

@@ -1,13 +1,11 @@
 <div class="h-full flex flex-col min-h-0 space-y-4 overflow-hidden pb-1">
   
   <!-- Standardized Page Title Header -->
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0">
-    <div>
-      <h2 class="text-xl font-bold tracking-tight text-foreground">Gestión de Eventos 360°</h2>
-      <p class="text-xs text-muted-foreground mt-1">Supervisa transmisiones en directo, captura de invitados, códigos QR de acceso y métricas de impresión instantánea.</p>
-    </div>
-
-    <div class="flex items-center gap-2">
+  <app-page-header
+    title="Gestión de Eventos 360°"
+    subtitle="Supervisa transmisiones en directo, captura de invitados, códigos QR de acceso y métricas de impresión instantánea."
+  >
+    <ng-container actions>
       <button
         type="button"
         (click)="loadEvents(true)"
@@ -24,78 +22,44 @@
         <app-icon name="plus" class="w-3.5 h-3.5" />
         <span>Nuevo Evento</span>
       </button>
-    </div>
-  </div>
+    </ng-container>
+  </app-page-header>
 
   <!-- Top Section: 4 KPI Cards Grid for Events -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
-    
-    <!-- Total Events KPI -->
-    <div class="p-3 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="events" class="w-3.5 h-3.5 text-muted-foreground" />
-          <span>Total Eventos</span>
-        </span>
-        <app-icon name="info" class="w-3.5 h-3.5 text-muted-foreground/60" />
-      </div>
-      <div>
-        <span class="text-xl font-extrabold text-foreground tracking-tight font-mono">{{ totalEventsCount() }}</span>
-      </div>
-      <p class="text-[10px] text-muted-foreground font-medium">Registrados en la plataforma</p>
-    </div>
-
-    <!-- Active Events KPI -->
-    <div class="p-3 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="camera" class="w-3.5 h-3.5 text-emerald-400" />
-          <span>Eventos Activos</span>
-        </span>
-        <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] font-bold flex items-center gap-1">
-          <span class="relative flex h-1.5 w-1.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-          </span>
-          EN VIVO
-        </span>
-      </div>
-      <div>
-        <span class="text-xl font-extrabold text-foreground tracking-tight font-mono">{{ activeEventsCount() }}</span>
-      </div>
-      <p class="text-[10px] text-emerald-400 font-medium">Capturando fotos 360°</p>
-    </div>
-
-    <!-- Total Photos KPI -->
-    <div class="p-3 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="camera" class="w-3.5 h-3.5 text-muted-foreground" />
-          <span>Fotos Capturadas</span>
-        </span>
-        <span class="px-1.5 py-0.2 rounded-full bg-primary/10 text-primary text-[9px] font-bold">HD</span>
-      </div>
-      <div>
-        <span class="text-xl font-extrabold text-foreground tracking-tight font-mono">{{ totalPhotosCount() }}</span>
-      </div>
-      <p class="text-[10px] text-muted-foreground font-medium">Subidas a la galería</p>
-    </div>
-
-    <!-- Total Prints KPI -->
-    <div class="p-3 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="printer" class="w-3.5 h-3.5 text-amber-500" />
-          <span>Impresiones Térmicas</span>
-        </span>
-        <span class="px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-400 text-[9px] font-bold">TÉRMICA</span>
-      </div>
-      <div>
-        <span class="text-xl font-extrabold text-foreground tracking-tight font-mono">{{ totalPrintsCount() }}</span>
-      </div>
-      <p class="text-[10px] text-muted-foreground font-medium">Procesadas e impresas</p>
-    </div>
-
+    <app-kpi-card
+      label="Total Eventos"
+      [value]="totalEventsCount()"
+      description="Registrados en la plataforma"
+      icon="events"
+    />
+    <app-kpi-card
+      label="Eventos Activos"
+      [value]="activeEventsCount()"
+      description="Capturando fotos 360°"
+      icon="camera"
+      iconColorClass="text-emerald-400"
+      badgeText="EN VIVO"
+      badgeVariant="emerald"
+      [isLive]="true"
+    />
+    <app-kpi-card
+      label="Fotos Capturadas"
+      [value]="totalPhotosCount()"
+      description="Subidas a la galería"
+      icon="camera"
+      badgeText="HD"
+      badgeVariant="primary"
+    />
+    <app-kpi-card
+      label="Impresiones Térmicas"
+      [value]="totalPrintsCount()"
+      description="Procesadas e impresas"
+      icon="printer"
+      iconColorClass="text-amber-500"
+      badgeText="TÉRMICA"
+      badgeVariant="amber"
+    />
   </div>
 
   <!-- Toolbar: Search Bar, Status Filter Pills & View Switcher -->

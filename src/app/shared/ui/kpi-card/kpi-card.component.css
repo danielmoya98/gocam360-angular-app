@@ -1,0 +1,5 @@
+/* Estilos para KpiCardComponent */
+:host {
+  display: block;
+  height: 100%;
+}

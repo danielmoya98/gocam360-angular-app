@@ -6,6 +6,9 @@ import { HlmButtonDirective } from '../../shared/ui/button/hlm-button.directive'
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { DrawerComponent } from '../../shared/ui/drawer/drawer.component';
 import { ConfirmDialogComponent } from '../../shared/ui/confirm-dialog/confirm-dialog.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { KpiCardComponent } from '../../shared/ui/kpi-card/kpi-card.component';
+import { DataTableComponent } from '../../shared/ui/data-table/data-table.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { UsersService, AdminUserResponseDto, CreateAdminDto, UpdateAdminDto } from './services/users.service';
@@ -21,6 +24,9 @@ import { PreferencesService } from '../../shared/services/preferences.service';
     HlmInputDirective,
     DrawerComponent,
     ConfirmDialogComponent,
+    PageHeaderComponent,
+    KpiCardComponent,
+    DataTableComponent,
     IconComponent,
     DatePipe,
   ],

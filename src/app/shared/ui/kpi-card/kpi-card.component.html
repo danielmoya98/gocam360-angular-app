@@ -1,0 +1,44 @@
+<div class="p-3.5 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all h-full flex flex-col justify-between">
+  <div class="flex items-center justify-between">
+    <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5 truncate">
+      @if (icon) {
+        <app-icon [name]="icon" class="w-3.5 h-3.5 shrink-0" [class]="iconColorClass" />
+      }
+      <span class="truncate">{{ label }}</span>
+    </span>
+
+    @if (badgeText) {
+      <span
+        class="px-1.5 py-0.2 rounded-full text-[9px] font-bold shrink-0 flex items-center gap-1"
+        [class.bg-emerald-500\/10]="badgeVariant === 'emerald'"
+        [class.text-emerald-400]="badgeVariant === 'emerald'"
+        [class.bg-amber-500\/10]="badgeVariant === 'amber'"
+        [class.text-amber-400]="badgeVariant === 'amber'"
+        [class.bg-rose-500\/10]="badgeVariant === 'rose'"
+        [class.text-rose-400]="badgeVariant === 'rose'"
+        [class.bg-primary\/10]="badgeVariant === 'primary'"
+        [class.text-primary]="badgeVariant === 'primary'"
+        [class.bg-muted]="badgeVariant === 'muted'"
+        [class.text-muted-foreground]="badgeVariant === 'muted'"
+      >
+        @if (isLive) {
+          <span class="relative flex h-1.5 w-1.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+          </span>
+        }
+        <span>{{ badgeText }}</span>
+      </span>
+    }
+  </div>
+
+  <div>
+    <span class="text-2xl font-extrabold tracking-tight font-mono" [class]="valueColorClass">
+      {{ value }}
+    </span>
+  </div>
+
+  @if (description) {
+    <p class="text-[10px] text-muted-foreground font-medium truncate">{{ description }}</p>
+  }
+</div>

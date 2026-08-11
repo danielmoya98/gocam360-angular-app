@@ -1,23 +1,15 @@
 <div class="h-full flex flex-col min-h-0 space-y-4 overflow-hidden pb-1">
   
   <!-- Standardized Page Title Header con SSE Badge -->
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0">
-    <div>
-      <div class="flex items-center gap-2 mb-1">
-        <a routerLink="/dashboard/events" class="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
-          ← Volver a Eventos
-        </a>
-        <span class="text-xs text-muted-foreground">•</span>
-        <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-          SSE Tiempo Real
-        </span>
-      </div>
-      <h2 class="text-xl font-bold tracking-tight text-foreground">Cola de Impresión & Eventos Activos</h2>
-      <p class="text-xs text-muted-foreground mt-0.5">Monitorea los eventos registrados, las fotografías capturadas por evento y sus impresiones pendientes.</p>
-    </div>
-
-    <div class="flex items-center gap-2">
+  <app-page-header
+    title="Cola de Impresión & Eventos Activos"
+    subtitle="Monitorea los eventos registrados, las fotografías capturadas por evento y sus impresiones pendientes."
+    badgeText="● SSE Tiempo Real"
+    badgeVariant="emerald"
+    backLinkUrl="/dashboard/events"
+    backLinkLabel="Volver a Eventos"
+  >
+    <ng-container actions>
       <button
         type="button"
         (click)="loadAllData(true)"
@@ -34,72 +26,47 @@
         <app-icon name="zip" class="w-3.5 h-3.5" />
         <span>Descargar ZIP Fotos</span>
       </button>
-    </div>
-  </div>
+    </ng-container>
+  </app-page-header>
 
   <!-- Top Section: 4 KPI Cards Grid Reutilizando Datos de Eventos + Impresiones -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
-    
-    <!-- Total Eventos KPI -->
-    <div class="p-3.5 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="events" class="w-3.5 h-3.5 text-muted-foreground" />
-          <span>Eventos Registrados</span>
-        </span>
-        <app-icon name="info" class="w-3.5 h-3.5 text-muted-foreground/60" />
-      </div>
-      <div>
-        <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono">{{ eventsList().length }}</span>
-      </div>
-      <p class="text-[10px] text-muted-foreground font-medium">Conectados con la API NestJS</p>
-    </div>
-
-    <!-- Pending Prints KPI -->
-    <div class="p-3.5 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="clock" class="w-3.5 h-3.5 text-amber-500" />
-          <span>Pendientes de Impresión</span>
-        </span>
-        <span class="px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-400 text-[9px] font-bold">COLA ACTIVA</span>
-      </div>
-      <div>
-        <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono text-amber-400">{{ pendingRequestsCount() }}</span>
-      </div>
-      <p class="text-[10px] text-muted-foreground font-medium">Solicitudes en espera de papel</p>
-    </div>
-
-    <!-- Printing KPI -->
-    <div class="p-3.5 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="printer" class="w-3.5 h-3.5 text-primary" />
-          <span>Imprimiendo en Vivo</span>
-        </span>
-        <span class="px-1.5 py-0.2 rounded-full bg-primary/10 text-primary text-[9px] font-bold">HARDWARE</span>
-      </div>
-      <div>
-        <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono text-primary">{{ printingRequestsCount() }}</span>
-      </div>
-      <p class="text-[10px] text-muted-foreground font-medium">En proceso en la estación física</p>
-    </div>
-
-    <!-- Total Photos KPI -->
-    <div class="p-3.5 rounded-lg border border-border/80 bg-card space-y-1 shadow-none hover:border-primary/40 transition-all">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
-          <app-icon name="camera" class="w-3.5 h-3.5 text-emerald-500" />
-          <span>Fotos Capturadas Totales</span>
-        </span>
-        <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] font-bold">GALERÍA</span>
-      </div>
-      <div>
-        <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono text-emerald-500">{{ totalPhotosCount() }}</span>
-      </div>
-      <p class="text-[10px] text-emerald-400 font-medium">Fotos guardadas en base de datos</p>
-    </div>
-
+    <app-kpi-card
+      label="Eventos Registrados"
+      [value]="eventsList().length"
+      description="Conectados con la API NestJS"
+      icon="events"
+    />
+    <app-kpi-card
+      label="Pendientes de Impresión"
+      [value]="pendingRequestsCount()"
+      description="Solicitudes en espera de papel"
+      icon="clock"
+      iconColorClass="text-amber-500"
+      badgeText="COLA ACTIVA"
+      badgeVariant="amber"
+      valueColorClass="text-amber-400"
+    />
+    <app-kpi-card
+      label="Imprimiendo en Vivo"
+      [value]="printingRequestsCount()"
+      description="En proceso en la estación física"
+      icon="printer"
+      iconColorClass="text-primary"
+      badgeText="HARDWARE"
+      badgeVariant="primary"
+      valueColorClass="text-primary"
+    />
+    <app-kpi-card
+      label="Fotos Capturadas Totales"
+      [value]="totalPhotosCount()"
+      description="Fotos guardadas en base de datos"
+      icon="camera"
+      iconColorClass="text-emerald-500"
+      badgeText="GALERÍA"
+      badgeVariant="emerald"
+      valueColorClass="text-emerald-500"
+    />
   </div>
 
   <!-- Selector por Evento (Reutiliza GET /events) + Filtros de Estado -->

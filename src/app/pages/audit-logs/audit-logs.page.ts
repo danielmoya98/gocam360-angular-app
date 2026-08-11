@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
 import { ApiClientService } from '../../core/services/api-client.service';
 import { ToastService } from '../../shared/services/toast.service';
 
@@ -19,7 +20,7 @@ export interface AuditLogDto {
 @Component({
   selector: 'app-audit-logs-page',
   standalone: true,
-  imports: [IconComponent, DatePipe, HlmInputDirective],
+  imports: [IconComponent, DatePipe, HlmInputDirective, PageHeaderComponent],
   templateUrl: './audit-logs.page.html',
   styleUrl: './audit-logs.page.css',
 })
