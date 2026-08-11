@@ -1,0 +1,5 @@
+/* Estilos específicos para el Centro de Ayuda y Soporte */
+:host {
+  display: block;
+  height: 100%;
+}
