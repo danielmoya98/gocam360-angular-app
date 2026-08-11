@@ -553,27 +553,56 @@ export interface ColumnVisibility {
             
             <div class="space-y-1">
               <label class="text-xs font-bold text-foreground">Nombre Completo</label>
-              <input type="text" hlmInput [formField]="adminForm.fullName" placeholder="Ej. Mathew Gulgowski" class="h-9 rounded-md text-xs" />
+              <input
+                type="text"
+                hlmInput
+                [formField]="adminForm.fullName"
+                (input)="onFullNameInput($event)"
+                placeholder="Ej. Mathew Gulgowski"
+                class="h-9 rounded-md text-xs"
+              />
               @if (adminForm.fullName().touched() && adminForm.fullName().errors().length) {
                 <p class="text-[10px] text-rose-500 font-medium">{{ adminForm.fullName().errors()[0].message }}</p>
               }
             </div>
 
             <div class="space-y-1">
-              <label class="text-xs font-bold text-foreground">Correo Electrónico</label>
-              <input type="email" hlmInput [formField]="adminForm.email" placeholder="admin@gocam360.io" class="h-9 rounded-md text-xs" />
+              <label class="text-xs font-bold text-foreground">
+                Correo Electrónico {{ drawerMode() === 'create' ? '(Generado automáticamente)' : '' }}
+              </label>
+              <input
+                type="email"
+                hlmInput
+                [formField]="adminForm.email"
+                placeholder="mathew.gulgowski@gocam.com"
+                class="h-9 rounded-md text-xs font-mono"
+              />
               @if (adminForm.email().touched() && adminForm.email().errors().length) {
                 <p class="text-[10px] text-rose-500 font-medium">{{ adminForm.email().errors()[0].message }}</p>
               }
             </div>
 
             <div class="space-y-1">
-              <label class="text-xs font-bold text-foreground">
-                Contraseña {{ drawerMode() === 'create' ? '(Mín. 6 caract. - por defecto: Admin360#)' : '(Dejar en blanco para conservar)' }}
-              </label>
-              <input type="password" hlmInput [formField]="adminForm.password" placeholder="••••••••" class="h-9 rounded-md text-xs" />
-              @if (adminForm.password().touched() && adminForm.password().errors().length) {
-                <p class="text-[10px] text-rose-500 font-medium">{{ adminForm.password().errors()[0].message }}</p>
+              <label class="text-xs font-bold text-foreground">Contraseña</label>
+              <input
+                type="password"
+                hlmInput
+                [formField]="adminForm.password"
+                placeholder="••••••••"
+                class="h-9 rounded-md text-xs font-mono"
+              />
+              @if (drawerMode() === 'create') {
+                @if (adminModel().password && adminModel().password.length < 6) {
+                  <p class="text-[10px] text-rose-500 font-medium flex items-center gap-1">
+                    <span>⚠️ Mínimo 6 caracteres requeridos.</span>
+                  </p>
+                } @else if (!adminModel().password) {
+                  <p class="text-[10px] text-rose-500/90 font-medium flex items-center gap-1">
+                    <span>🔑 Si la dejas en blanco, se asignará por defecto: <strong class="font-mono underline">Admin360#</strong></span>
+                  </p>
+                }
+              } @else {
+                <p class="text-[10px] text-muted-foreground font-medium">Dejar en blanco para conservar contraseña actual</p>
               }
             </div>
 
@@ -586,8 +615,14 @@ export interface ColumnVisibility {
             </div>
 
             <div class="flex items-center gap-2 pt-2">
-              <input type="checkbox" id="statusCheck" [checked]="adminModel().status" (change)="toggleFormStatus($event)" class="rounded border-border cursor-pointer" />
-              <label for="statusCheck" class="text-xs font-medium text-foreground cursor-pointer">Cuenta activa con acceso al sistema</label>
+              <input
+                type="checkbox"
+                id="statusCheck"
+                [checked]="adminModel().status"
+                (change)="toggleFormStatus($event)"
+                class="rounded border-border cursor-pointer accent-primary"
+              />
+              <label for="statusCheck" class="text-xs font-semibold text-foreground cursor-pointer">Cuenta activa con acceso al sistema</label>
             </div>
 
             <div class="pt-4">
@@ -815,6 +850,34 @@ export class UsersPage implements OnInit {
   toggleFormStatus(event: Event): void {
     const check = event.target as HTMLInputElement;
     this.adminModel.update((m) => ({ ...m, status: check.checked }));
+  }
+
+  onFullNameInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const nameVal = input.value;
+
+    if (this.drawerMode() === 'create') {
+      const generatedEmail = this.slugifyName(nameVal);
+      this.adminModel.update((m) => ({
+        ...m,
+        fullName: nameVal,
+        email: generatedEmail,
+      }));
+    } else {
+      this.adminModel.update((m) => ({ ...m, fullName: nameVal }));
+    }
+  }
+
+  private slugifyName(name: string): string {
+    if (!name.trim()) return '';
+    const clean = name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Elimina acentos y tildes
+      .replace(/[^a-z0-9\s.]/g, '') // Quita caracteres especiales
+      .trim()
+      .replace(/\s+/g, '.'); // Reemplaza espacios por puntos
+    return `${clean}@gocam.com`;
   }
 
   openCreateDrawer(): void {
