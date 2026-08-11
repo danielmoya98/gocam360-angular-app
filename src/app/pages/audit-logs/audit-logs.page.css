@@ -1,0 +1,5 @@
+/* Estilos dedicados para el módulo AuditLogs */
+:host {
+  display: block;
+  height: 100%;
+}
