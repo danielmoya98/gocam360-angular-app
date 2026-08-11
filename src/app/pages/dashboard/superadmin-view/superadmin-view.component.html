@@ -1,0 +1,318 @@
+<div class="space-y-6 pb-4">
+  
+  <!-- Top Title Bar -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <h2 class="text-xl font-bold tracking-tight text-foreground">Resumen Ejecutivo Global</h2>
+      <p class="text-xs text-muted-foreground mt-1">Métricas en tiempo real, administradores, eventos 360°, fotos e impresiones térmicas.</p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        (click)="reloadMetrics()"
+        class="px-3 py-1.5 rounded-md border border-border bg-card hover:bg-muted font-semibold text-xs transition-all active:scale-95 flex items-center gap-1.5 text-foreground cursor-pointer"
+      >
+        <app-icon name="refresh" class="w-3.5 h-3.5" [class.animate-spin]="isLoading()" />
+        <span>Actualizar</span>
+      </button>
+      <button
+        type="button"
+        (click)="exportReport()"
+        class="px-3 py-1.5 rounded-md bg-foreground text-background font-semibold text-xs shadow-sm hover:opacity-90 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+      >
+        <app-icon name="download" class="w-3.5 h-3.5" />
+        <span>Exportar Reporte</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- CARDS METRICS GRID (4 Columns Acme Dark Obsidian Style) -->
+  @if (isLoading()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="h-32 rounded-lg border border-border/60 bg-muted/40 p-4 space-y-3">
+          <div class="h-4 w-24 bg-muted rounded"></div>
+          <div class="h-8 w-16 bg-muted rounded"></div>
+        </div>
+      }
+    </div>
+  } @else {
+    @let cards = metrics()?.cards;
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Card 1: Administradores -->
+      <div class="p-4 rounded-lg border border-border/80 bg-card shadow-none space-y-3 hover:border-primary/50 transition-all group">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Administradores</span>
+          <div class="p-1.5 rounded-md bg-primary/10 text-primary">
+            <app-icon name="users" class="w-4 h-4" />
+          </div>
+        </div>
+        <div class="flex items-end justify-between gap-2">
+          <div>
+            <span class="text-3xl font-extrabold text-foreground tracking-tight font-mono">
+              {{ cards?.admins?.total || 0 }}
+            </span>
+          </div>
+          <div class="flex items-center gap-1 text-[11px] font-bold text-emerald-500">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span>{{ cards?.admins?.active || 0 }} Activos</span>
+          </div>
+        </div>
+        <div class="text-[11px] text-muted-foreground pt-1 flex items-center justify-between border-t border-border/40 font-mono">
+          <span>Inactivos: {{ cards?.admins?.inactive || 0 }}</span>
+          <span class="text-foreground">Admins</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Eventos 360° -->
+      <div class="p-4 rounded-lg border border-border/80 bg-card shadow-none space-y-3 hover:border-primary/50 transition-all group">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Eventos Totales</span>
+          <div class="p-1.5 rounded-md bg-primary/10 text-primary">
+            <app-icon name="events" class="w-4 h-4" />
+          </div>
+        </div>
+        <div class="flex items-end justify-between gap-2">
+          <div>
+            <span class="text-3xl font-extrabold text-foreground tracking-tight font-mono">
+              {{ cards?.events?.total || 0 }}
+            </span>
+          </div>
+          <div class="text-xs font-semibold text-emerald-500">
+            <span>{{ cards?.events?.active || 0 }} En Curso</span>
+          </div>
+        </div>
+        <div class="text-[11px] text-muted-foreground pt-1 flex items-center justify-between border-t border-border/40 font-mono">
+          <span>Finalizados: {{ cards?.events?.finished || 0 }}</span>
+          <span class="text-foreground">Eventos</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Fotos & Galería Cloudinary -->
+      <div class="p-4 rounded-lg border border-border/80 bg-card shadow-none space-y-3 hover:border-primary/50 transition-all group">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Almacenamiento Cloud</span>
+          <div class="p-1.5 rounded-md bg-primary/10 text-primary">
+            <app-icon name="camera" class="w-4 h-4" />
+          </div>
+        </div>
+        <div class="space-y-1">
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-extrabold text-foreground tracking-tight font-mono">
+              {{ cards?.storage?.usedGB || 0 }} <span class="text-xs text-muted-foreground font-sans">GB</span>
+            </span>
+            <span class="text-[10px] font-mono text-muted-foreground">Límite {{ cards?.storage?.limitGB || 10 }} GB</span>
+          </div>
+          <div class="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+            <div
+              class="bg-foreground h-full rounded-full transition-all duration-500"
+              [style.width.%]="cards?.storage?.storageUsedPercent || 0"
+            ></div>
+          </div>
+        </div>
+        <div class="text-[11px] text-muted-foreground pt-1 flex items-center justify-between border-t border-border/40 font-mono">
+          <span>{{ cards?.photos?.today || 0 }} fotos hoy</span>
+          <span class="text-foreground">{{ cards?.photos?.total || 0 }} total</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Impresiones Térmicas -->
+      <div class="p-4 rounded-lg border border-border/80 bg-card shadow-none space-y-3 hover:border-primary/50 transition-all group">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Impresiones Térmicas</span>
+          <div class="p-1.5 rounded-md bg-primary/10 text-primary">
+            <app-icon name="printer" class="w-4 h-4" />
+          </div>
+        </div>
+        <div class="flex items-end justify-between gap-2">
+          <div>
+            <span class="text-3xl font-extrabold text-foreground tracking-tight font-mono">
+              {{ cards?.prints?.total || 0 }}
+            </span>
+          </div>
+          <div class="text-xs font-semibold text-amber-400">
+            <span>{{ cards?.prints?.week || 0 }} esta semana</span>
+          </div>
+        </div>
+        <div class="text-[11px] text-muted-foreground pt-1 flex items-center justify-between border-t border-border/40 font-mono">
+          <span>Sistema en línea</span>
+          <span class="text-emerald-500 font-bold">● Activo</span>
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- CHARTS SECTION GRID (2 Column Layout) -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <!-- Main Line Chart: Volumen de Fotos Subidas vs Impresiones Solicitadas (2 Cols) -->
+    <div class="lg:col-span-2 p-5 rounded-lg border border-border/80 bg-card shadow-none space-y-5 relative z-0">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border/40 pb-3">
+        <div>
+          <h3 class="text-sm font-bold text-foreground">Tendencia Global de Fotografía e Impresiones</h3>
+          <p class="text-[11px] text-muted-foreground">Volumen mensual de fotos capturadas (Línea Continua) vs Impresiones Térmicas (Línea Punteada)</p>
+        </div>
+        <div class="flex items-center gap-3 text-xs">
+          <span class="flex items-center gap-1.5 font-medium text-foreground"><span class="w-2.5 h-2.5 rounded-full bg-foreground inline-block"></span> Fotos</span>
+          <span class="flex items-center gap-1.5 font-medium text-muted-foreground"><span class="w-2.5 h-2.5 rounded-full bg-muted-foreground/60 inline-block"></span> Impresiones</span>
+        </div>
+      </div>
+
+      <!-- Vector Line Chart SVG Adaptado a las Métricas Fotográficas -->
+      <div class="w-full h-44 relative z-0">
+        <svg class="w-full h-full overflow-visible" viewBox="0 0 500 120" preserveAspectRatio="none">
+          <!-- Curva 1: Volumen de Capturas de Fotos -->
+          <path
+            d="M 0,80 Q 50,30 100,65 T 200,40 T 300,25 T 400,15 T 500,35"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          />
+          <!-- Curva 2: Impresiones Térmicas Solicitadas -->
+          <path
+            d="M 0,95 Q 50,60 100,80 T 200,65 T 300,50 T 400,40 T 500,55"
+            fill="none"
+            stroke="currentColor"
+            stroke-opacity="0.4"
+            stroke-width="1.5"
+            stroke-dasharray="3,3"
+          />
+          <circle cx="500" cy="35" r="4" class="fill-foreground animate-pulse" />
+        </svg>
+        <div class="flex justify-between text-[10px] text-muted-foreground font-mono mt-3">
+          <span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donut Chart: Distribución del Almacenamiento & Eventos (1 Col) -->
+    <div class="p-5 rounded-lg border border-border/80 bg-card shadow-none space-y-4 flex flex-col justify-between">
+      <div class="border-b border-border/40 pb-3">
+        <h3 class="text-sm font-bold text-foreground">Estado de Servidores & Eventos</h3>
+        <p class="text-[11px] text-muted-foreground">Distribución de capacidad de almacenamiento</p>
+      </div>
+
+      <div class="flex items-center justify-center relative py-2">
+        <svg class="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+          <path stroke="#27272A" stroke-width="3.8" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path stroke="currentColor" stroke-width="3.8" stroke-dasharray="78, 100" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path stroke="#10B981" stroke-width="3.8" stroke-dasharray="22, 100" stroke-dashoffset="-78" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+        </svg>
+        <div class="absolute text-center">
+          <span class="text-lg font-extrabold text-foreground font-mono">78%</span>
+          <span class="block text-[9px] text-muted-foreground">Cloudinary GB</span>
+        </div>
+      </div>
+
+      <div class="space-y-1.5 text-xs">
+        <div class="flex justify-between items-center"><span class="flex items-center gap-1.5 text-muted-foreground"><span class="w-2 h-2 rounded-full bg-foreground"></span> Fotos HD Renderizadas</span><span class="font-mono font-bold text-foreground">78% (Cloud)</span></div>
+        <div class="flex justify-between items-center"><span class="flex items-center gap-1.5 text-muted-foreground"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Marcos & Logos PNG</span><span class="font-mono font-bold text-foreground">22% (Asset)</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MAIN SECTION GRID: Activity Feed (2 Cols) & Quick Actions (1 Col) -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <!-- Feed de Actividad Reciente Global Real (2 Cols) -->
+    <div class="lg:col-span-2 p-5 rounded-lg border border-border/80 bg-card shadow-none space-y-4">
+      <div class="flex items-center justify-between border-b border-border/40 pb-3">
+        <div>
+          <h3 class="text-sm font-bold text-foreground">Actividad Reciente en la Plataforma</h3>
+          <p class="text-[11px] text-muted-foreground">Eventos creados, capturas subidas y colas de impresión térmicas</p>
+        </div>
+        <span class="px-2 py-0.5 rounded bg-muted text-[10px] font-mono text-muted-foreground">En Vivo</span>
+      </div>
+
+      <div class="space-y-3 divide-y divide-border/30">
+        @for (item of metrics()?.recentActivity; track item.timestamp) {
+          <div class="pt-3 first:pt-0 flex items-start gap-3 text-xs">
+            <div class="p-2 rounded-lg bg-muted text-foreground shrink-0 mt-0.5">
+              @if (item.type === 'EVENT_CREATED') {
+                <app-icon name="events" class="w-4 h-4 text-emerald-500" />
+              } @else if (item.type === 'PHOTO_UPLOADED') {
+                <app-icon name="camera" class="w-4 h-4 text-blue-500" />
+              } @else {
+                <app-icon name="printer" class="w-4 h-4 text-amber-500" />
+              }
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-foreground leading-tight">{{ item.description }}</p>
+              <div class="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground font-mono">
+                <span>{{ item.timestamp | date:'short' }}</span>
+                @if (item.location) {
+                  <span>• {{ item.location }}</span>
+                }
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="p-8 text-center text-xs text-muted-foreground">
+            No hay actividad reciente registrada en la base de datos.
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Acciones Rápidas del SuperAdmin (1 Col) -->
+    <div class="p-5 rounded-lg border border-border/80 bg-card shadow-none space-y-4 flex flex-col justify-between">
+      <div class="border-b border-border/40 pb-3">
+        <h3 class="text-sm font-bold text-foreground">Acciones Rápidas</h3>
+        <p class="text-[11px] text-muted-foreground">Accesos directos de gestión</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <a
+          routerLink="/dashboard/events"
+          class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/60 transition-all text-center group cursor-pointer"
+        >
+          <div class="p-2.5 rounded-lg bg-card text-foreground group-hover:scale-110 transition-transform shadow-xs">
+            <app-icon name="events" class="w-5 h-5" />
+          </div>
+          <span class="text-xs font-bold text-foreground leading-snug">Gestionar<br>Eventos</span>
+        </a>
+
+        <a
+          routerLink="/dashboard/users"
+          class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/60 transition-all text-center group cursor-pointer"
+        >
+          <div class="p-2.5 rounded-lg bg-card text-foreground group-hover:scale-110 transition-transform shadow-xs">
+            <app-icon name="users" class="w-5 h-5" />
+          </div>
+          <span class="text-xs font-bold text-foreground leading-snug">Gestionar<br>Admins</span>
+        </a>
+
+        <a
+          routerLink="/dashboard/prints"
+          class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/60 transition-all text-center group cursor-pointer"
+        >
+          <div class="p-2.5 rounded-lg bg-card text-foreground group-hover:scale-110 transition-transform shadow-xs">
+            <app-icon name="printer" class="w-5 h-5" />
+          </div>
+          <span class="text-xs font-bold text-foreground leading-snug">Cola de<br>Impresión</span>
+        </a>
+
+        <a
+          routerLink="/dashboard/settings"
+          class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/60 transition-all text-center group cursor-pointer"
+        >
+          <div class="p-2.5 rounded-lg bg-card text-foreground group-hover:scale-110 transition-transform shadow-xs">
+            <app-icon name="settings" class="w-5 h-5" />
+          </div>
+          <span class="text-xs font-bold text-foreground leading-snug">Ajustes<br>Sistema</span>
+        </a>
+      </div>
+
+      <div class="p-3 rounded-lg border border-border/60 bg-muted/10 text-[10px] text-muted-foreground font-mono">
+        💡 Consejo: Utiliza la paleta <kbd class="px-1 py-0.2 rounded bg-card border border-border text-foreground font-bold">⌘K</kbd> para buscar comandos en cualquier lugar.
+      </div>
+    </div>
+
+  </div>
+
+</div>
