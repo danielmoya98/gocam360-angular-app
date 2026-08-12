@@ -52,6 +52,7 @@ export class EventsPage implements OnInit {
 
   protected readonly isLoading = signal(true);
   protected readonly hasError = signal(false);
+  protected readonly isSubmitting = signal(false);
   protected readonly viewMode = signal<'cards' | 'table'>(this.initialPref.viewMode ?? 'cards');
   protected readonly activeRowMenuId = signal<string | null>(null);
   protected readonly activeDrawerTab = signal<'general' | 'frames' | 'limits'>('general');
@@ -301,6 +302,9 @@ export class EventsPage implements OnInit {
 
   onFormSubmit(): void {
     submit(this.eventForm, async () => {
+      if (this.isSubmitting()) return;
+      this.isSubmitting.set(true);
+
       const formVal = this.eventModel();
       const eventDateIso = formVal.eventDate ? new Date(formVal.eventDate).toISOString() : new Date().toISOString();
 
@@ -322,11 +326,13 @@ export class EventsPage implements OnInit {
 
         this._eventsService.create(payload).subscribe({
           next: (newEv) => {
+            this.isSubmitting.set(false);
             this.eventsList.update((list) => [newEv, ...list]);
             this._toastService.success('Evento Creado', `Se creó el evento "${newEv.title}".`);
             this.isFormDrawerOpen.set(false);
           },
           error: (err) => {
+            this.isSubmitting.set(false);
             const msg = err?.error?.message || 'No se pudo crear el evento';
             this._toastService.error('Error', msg);
           },
@@ -349,14 +355,17 @@ export class EventsPage implements OnInit {
 
         this._eventsService.update(targetId, payload).subscribe({
           next: (updatedEv) => {
+            this.isSubmitting.set(false);
             this.eventsList.update((list) =>
               list.map((e) => (e.id === targetId ? updatedEv : e))
             );
             this._toastService.info('Evento Actualizado', 'Los cambios se guardaron.');
             this.isFormDrawerOpen.set(false);
           },
-          error: () => {
-            this._toastService.error('Error', 'No se pudo actualizar el evento');
+          error: (err) => {
+            this.isSubmitting.set(false);
+            const msg = err?.error?.message || 'Error al actualizar evento';
+            this._toastService.error('Error', msg);
           },
         });
       }

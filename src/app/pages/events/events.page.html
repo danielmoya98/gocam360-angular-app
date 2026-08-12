@@ -574,8 +574,13 @@
           }
 
           <div class="pt-4">
-            <button type="submit" hlmBtn class="w-full h-9 rounded-md bg-foreground text-background font-bold text-xs shadow-sm cursor-pointer" [disabled]="eventForm().invalid()">
-              {{ drawerMode() === 'create' ? 'Guardar Evento en BD' : 'Actualizar Cambios' }}
+            <button
+              type="submit"
+              hlmBtn
+              class="w-full h-9 rounded-md bg-foreground text-background font-bold text-xs shadow-sm cursor-pointer disabled:opacity-50"
+              [disabled]="eventForm().invalid() || isSubmitting()"
+            >
+              {{ isSubmitting() ? 'Guardando cambios...' : (drawerMode() === 'create' ? 'Guardar Evento en BD' : 'Actualizar Cambios') }}
             </button>
           </div>
         </form>
