@@ -1,14 +1,27 @@
 <header class="h-14 border-b border-border/80 bg-card px-4 flex items-center justify-between shrink-0">
   
-  <!-- Left: Toggle Sidebar & Dynamic Breadcrumbs Navigation -->
+  <!-- Left: Toggle Sidebar (Desktop/Tablet) & Mobile Drawer Navigation Button -->
   <div class="flex items-center gap-3">
+    <!-- Desktop / Tablet Toggle Sidebar -->
     <button
       type="button"
       (click)="toggleSidebar.emit()"
-      class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+      class="hidden md:flex p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
       title="Alternar Menú"
     >
       <app-icon name="dashboard" class="w-4 h-4" />
+    </button>
+
+    <!-- Mobile Drawer Menu Trigger Button (Opens Mobile Sidebar Drawer from right-to-left) -->
+    <button
+      type="button"
+      (click)="toggleMobileDrawer.emit()"
+      class="flex md:hidden p-1.5 rounded-md bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-all cursor-pointer items-center gap-1.5"
+      title="Abrir Menú de Navegación"
+      aria-label="Abrir navegación móvil"
+    >
+      <app-icon name="dashboard" class="w-4 h-4" />
+      <span class="text-xs font-extrabold tracking-tight">Menú</span>
     </button>
 
     <div class="h-4 w-px bg-border/60"></div>

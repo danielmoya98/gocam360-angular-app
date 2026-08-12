@@ -31,6 +31,7 @@ export class TopbarWidget implements OnInit {
 
   @Input() isSidebarCollapsed = false;
   @Output() toggleSidebar = new EventEmitter<void>();
+  @Output() toggleMobileDrawer = new EventEmitter<void>();
   @Output() openCommandPalette = new EventEmitter<void>();
 
   protected readonly showNotifications = signal(false);

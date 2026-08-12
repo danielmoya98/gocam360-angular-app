@@ -7,7 +7,7 @@ import { IconComponent } from '../icon/icon.component';
   standalone: true,
   imports: [IconComponent],
   host: {
-    class: 'fixed bottom-5 right-5 z-[100000] flex flex-col gap-2.5 pointer-events-none max-w-sm w-full',
+    class: 'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-5 sm:bottom-5 sm:max-w-sm z-[100000] flex flex-col gap-2.5 pointer-events-none w-auto',
   },
   templateUrl: './toast.component.html',
   styleUrl: './toast.component.css',

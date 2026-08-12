@@ -22,7 +22,7 @@ interface NavItem {
   selector: 'app-sidebar',
   standalone: true,
   host: {
-    class: 'block shrink-0 relative z-20 h-screen select-none',
+    class: 'hidden md:block shrink-0 relative z-20 h-screen select-none',
   },
   imports: [RouterLink, RouterLinkActive, IconComponent],
   templateUrl: './sidebar.widget.html',

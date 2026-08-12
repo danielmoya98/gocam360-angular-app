@@ -36,6 +36,7 @@ import { PreferencesService } from '../../shared/services/preferences.service';
         <app-topbar
           [isSidebarCollapsed]="isSidebarCollapsed()"
           (toggleSidebar)="toggleSidebar()"
+          (toggleMobileDrawer)="isMobileNavOpen.set(true)"
           (openCommandPalette)="isCommandPaletteOpen.set(true)"
         />
 
@@ -116,6 +117,17 @@ import { PreferencesService } from '../../shared/services/preferences.service';
       <!-- Command Palette Modal (Cmd + K) -->
       <app-command-palette [(isOpen)]="isCommandPaletteOpen" />
 
+      <!-- Mobile Navigation Drawer (Right-to-Left Slide Over Sheet) -->
+      <app-drawer
+        [(isOpen)]="isMobileNavOpen"
+        title="gocam360 Enterprise"
+        subtitle="Navegación Móvil y Control de Cuenta"
+      >
+        <div class="h-full flex flex-col justify-between" (click)="isMobileNavOpen.set(false)">
+          <app-sidebar [isCollapsed]="false" />
+        </div>
+      </app-drawer>
+
     </div>
   `,
 })
@@ -141,6 +153,7 @@ export class DashboardPage {
   protected readonly isSidebarCollapsed = this._preferencesService.isSidebarCollapsed;
 
   protected readonly isDrawerOpen = signal(false);
+  protected readonly isMobileNavOpen = signal(false);
   protected readonly selectedTransaction = signal<TransactionMock | null>(null);
 
   protected readonly isCommandPaletteOpen = signal(false);
