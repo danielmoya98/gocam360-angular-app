@@ -12,6 +12,7 @@ import { DataTableComponent } from '../../shared/ui/data-table/data-table.compon
 import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
 import { ViewSwitcherComponent } from '../../shared/ui/view-switcher/view-switcher.component';
 import { TablePaginationComponent } from '../../shared/ui/table-pagination/table-pagination.component';
+import { ErrorBoundaryComponent } from '../../shared/ui/error-boundary/error-boundary.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { UsersService, AdminUserResponseDto, CreateAdminDto, UpdateAdminDto } from './services/users.service';
@@ -33,6 +34,7 @@ import { PreferencesService } from '../../shared/services/preferences.service';
     SearchInputComponent,
     ViewSwitcherComponent,
     TablePaginationComponent,
+    ErrorBoundaryComponent,
     IconComponent,
     DatePipe,
   ],
@@ -46,6 +48,7 @@ export class UsersPage implements OnInit {
   private readonly initialPref = this._preferencesService.getPageFilter('users');
 
   protected readonly isLoading = signal(true);
+  protected readonly hasError = signal(false);
   protected readonly viewMode = signal<'table' | 'cards'>(this.initialPref.viewMode ?? 'table');
   protected readonly showStatusDropdown = signal(false);
   protected readonly showRoleDropdown = signal(false);
@@ -87,6 +90,7 @@ export class UsersPage implements OnInit {
   }
 
   loadAdmins(notify = false): void {
+    this.hasError.set(false);
     if (this._usersService.users() && !notify) {
       this.adminsList.set(this._usersService.users()!);
       this.isLoading.set(false);
@@ -98,12 +102,14 @@ export class UsersPage implements OnInit {
       next: (data) => {
         this.adminsList.set(data);
         this.isLoading.set(false);
+        this.hasError.set(false);
         if (notify) {
           this._toastService.info('Sincronización Completa', 'Lista de administradores actualizada desde la base de datos');
         }
       },
       error: () => {
         this.isLoading.set(false);
+        this.hasError.set(true);
         if (notify) {
           this._toastService.error('Error de Sincronización', 'No se pudieron recuperar los administradores');
         }

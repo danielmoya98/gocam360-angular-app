@@ -12,6 +12,7 @@ import { SegmentedPillsComponent } from '../../shared/ui/segmented-pills/segment
 import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
 import { ViewSwitcherComponent } from '../../shared/ui/view-switcher/view-switcher.component';
 import { TablePaginationComponent } from '../../shared/ui/table-pagination/table-pagination.component';
+import { ErrorBoundaryComponent } from '../../shared/ui/error-boundary/error-boundary.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { PrintPhotoItem, PrintQueueModalComponent } from './print-queue-modal.component';
@@ -34,6 +35,7 @@ import { PreferencesService } from '../../shared/services/preferences.service';
     SearchInputComponent,
     ViewSwitcherComponent,
     TablePaginationComponent,
+    ErrorBoundaryComponent,
     IconComponent,
     DatePipe,
   ],
@@ -49,6 +51,7 @@ export class EventsPage implements OnInit {
   private readonly initialPref = this._preferencesService.getPageFilter('events');
 
   protected readonly isLoading = signal(true);
+  protected readonly hasError = signal(false);
   protected readonly viewMode = signal<'cards' | 'table'>(this.initialPref.viewMode ?? 'cards');
   protected readonly activeRowMenuId = signal<string | null>(null);
   protected readonly activeDrawerTab = signal<'general' | 'frames' | 'limits'>('general');
@@ -114,6 +117,8 @@ export class EventsPage implements OnInit {
   }
 
   loadEvents(notify = false): void {
+    this.hasError.set(false);
+
     if (this._eventsService.events() && !notify) {
       this.eventsList.set(this._eventsService.events()!);
       this.isLoading.set(false);
@@ -125,12 +130,14 @@ export class EventsPage implements OnInit {
       next: (data) => {
         this.eventsList.set(data);
         this.isLoading.set(false);
+        this.hasError.set(false);
         if (notify) {
           this._toastService.info('Sincronización Completa', 'Lista de eventos actualizada desde la base de datos');
         }
       },
       error: () => {
         this.isLoading.set(false);
+        this.hasError.set(true);
         if (notify) {
           this._toastService.error('Error de Sincronización', 'No se pudieron recuperar los eventos');
         }

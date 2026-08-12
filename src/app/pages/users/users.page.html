@@ -166,7 +166,13 @@
   </div>
 
   <!-- MAIN FLEX-1 CONTAINER: TABLE / CARDS WITH SKELETON LOADING -->
-  @if (isLoading()) {
+  @if (hasError()) {
+    <app-error-boundary
+      title="No se pudieron cargar los administradores"
+      message="Ocurrió un inconveniente al consultar la lista de usuarios. Revisa tu conexión a internet e intenta de nuevo."
+      (onRetry)="loadAdmins(true)"
+    />
+  } @else if (isLoading()) {
     <div class="flex-1 rounded-lg border border-border/80 bg-card p-4 space-y-3 animate-pulse">
       <div class="h-8 bg-muted/60 rounded-md w-full"></div>
       <div class="h-10 bg-muted/40 rounded-md w-full"></div>
