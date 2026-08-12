@@ -17,15 +17,17 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Filtro Rápido y Buscador sin contenedor englobado -->
-  <div class="flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
-    <app-search-input
-      [value]="filterQuery()"
-      placeholder="Buscar por correo, acción o detalle..."
-      containerClass="w-full sm:w-80"
-      (searchInput)="onSearchChange($event)"
-    />
-    <div class="text-xs font-mono text-muted-foreground">
+  <!-- Filtro Rápido y Buscador alineado a la derecha en móvil y desktop -->
+  <div class="flex flex-col sm:flex-row items-end sm:items-center justify-between gap-3 shrink-0 w-full">
+    <div class="w-full sm:w-80 ml-auto">
+      <app-search-input
+        [value]="filterQuery()"
+        placeholder="Buscar por correo, acción o detalle..."
+        containerClass="w-full"
+        (searchInput)="onSearchChange($event)"
+      />
+    </div>
+    <div class="text-xs font-mono text-muted-foreground text-right shrink-0">
       Total de registros: <span class="font-bold text-foreground">{{ filteredLogs().length }}</span>
     </div>
   </div>

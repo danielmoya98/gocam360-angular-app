@@ -350,10 +350,10 @@
                       <app-icon name="more" class="w-4 h-4" />
                     </button>
 
-                    <!-- Context Menu para Filas de Tabla (Apertura hacia arriba bottom-full para evitar solapamiento) -->
+                    <!-- Context Menu para Filas de Tabla (Apertura hacia la izquierda centrado verticalmente para evitar cualquier recorte) -->
                     @if (activeRowMenuId() === event.id) {
                       <div
-                        class="absolute right-3 bottom-full mb-1 w-48 bg-popover-solid text-popover-foreground border border-border rounded-xl shadow-2xl p-1 z-[99999] text-left space-y-0.5 animate-dropdown-smooth-right"
+                        class="absolute right-8 top-1/2 -translate-y-1/2 w-48 bg-popover-solid text-popover-foreground border border-border rounded-xl shadow-2xl p-1 z-[99999] text-left space-y-0.5 animate-dropdown-smooth-right"
                         (click)="$event.stopPropagation()"
                       >
                         <button (click)="openQrModal(event)" class="w-full flex items-center gap-2 px-2.5 py-1.5 hover:bg-muted rounded-lg text-xs font-bold text-emerald-400 cursor-pointer">

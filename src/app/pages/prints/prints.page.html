@@ -1,4 +1,4 @@
-<div class="h-full flex flex-col min-h-0 space-y-4 overflow-hidden pb-1">
+<div class="space-y-4 pb-4 md:pb-1 md:h-full md:flex md:flex-col md:min-h-0 md:overflow-hidden">
   
   <!-- Standardized Page Title Header -->
   <app-page-header
@@ -65,32 +65,34 @@
     />
   </div>
 
-  <!-- Selector por Evento (Reutiliza GET /events) + Filtros de Estado -->
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
+  <!-- Selector por Evento + Filtros de Estado + View Switcher en Móvil -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
     
-    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-      <!-- Selector Desplegable de Evento -->
-      <div class="flex items-center gap-1 bg-card border border-border px-2.5 py-1 rounded-md text-xs">
-        <span class="text-muted-foreground font-semibold">Evento:</span>
-        <select
-          [value]="selectedEventId()"
-          (change)="onEventChange($event)"
-          class="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer"
-        >
-          <option value="ALL" class="bg-popover-solid text-foreground">Todos los Eventos ({{ eventsList().length }})</option>
-          @for (ev of eventsList(); track ev.id) {
-            <option [value]="ev.id" class="bg-popover-solid text-foreground">
-              {{ ev.title }} ({{ ev.totalPrints }} imp. pendientes/totales)
-            </option>
-          }
-        </select>
-      </div>
+    <!-- Selector Desplegable de Evento (Full Width en Móvil) -->
+    <div class="flex items-center gap-1 bg-card border border-border px-2.5 py-1.5 rounded-md text-xs w-full sm:w-80">
+      <span class="text-muted-foreground font-semibold shrink-0">Evento:</span>
+      <select
+        [value]="selectedEventId()"
+        (change)="onEventChange($event)"
+        class="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer w-full text-ellipsis overflow-hidden"
+      >
+        <option value="ALL" class="bg-popover-solid text-foreground">Todos los Eventos ({{ eventsList().length }})</option>
+        @for (ev of eventsList(); track ev.id) {
+          <option [value]="ev.id" class="bg-popover-solid text-foreground">
+            {{ ev.title }} ({{ ev.totalPrints }} imp.)
+          </option>
+        }
+      </select>
+    </div>
 
-      <!-- Tabs de Estado (Todas, Pendientes, Imprimiendo, Entregados) -->
-      <div class="flex items-center bg-muted/40 p-1 rounded-md border border-border/80 text-xs font-bold">
+    <!-- Mobile Row: Status Filter Tabs + View Switcher (Debajo del evento en móvil) -->
+    <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar">
+      
+      <!-- Tabs de Estado con Scroll Horizontal en Móvil sin cortarse -->
+      <div class="flex items-center bg-muted/40 p-1 rounded-md border border-border/80 text-xs font-bold shrink-0 overflow-x-auto no-scrollbar">
         <button
           (click)="activeStatusTab.set('TODAS')"
-          class="px-3 py-1 rounded text-xs transition-all cursor-pointer"
+          class="px-2.5 py-1 rounded text-xs transition-all cursor-pointer whitespace-nowrap"
           [class.bg-background]="activeStatusTab() === 'TODAS'"
           [class.text-foreground]="activeStatusTab() === 'TODAS'"
           [class.shadow-sm]="activeStatusTab() === 'TODAS'"
@@ -100,7 +102,7 @@
         </button>
         <button
           (click)="activeStatusTab.set('PENDING')"
-          class="px-3 py-1 rounded text-xs transition-all cursor-pointer flex items-center gap-1.5"
+          class="px-2.5 py-1 rounded text-xs transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
           [class.bg-background]="activeStatusTab() === 'PENDING'"
           [class.text-amber-400]="activeStatusTab() === 'PENDING'"
           [class.shadow-sm]="activeStatusTab() === 'PENDING'"
@@ -111,7 +113,7 @@
         </button>
         <button
           (click)="activeStatusTab.set('PRINTING')"
-          class="px-3 py-1 rounded text-xs transition-all cursor-pointer flex items-center gap-1.5"
+          class="px-2.5 py-1 rounded text-xs transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
           [class.bg-background]="activeStatusTab() === 'PRINTING'"
           [class.text-primary]="activeStatusTab() === 'PRINTING'"
           [class.shadow-sm]="activeStatusTab() === 'PRINTING'"
@@ -122,7 +124,7 @@
         </button>
         <button
           (click)="activeStatusTab.set('PRINTED')"
-          class="px-3 py-1 rounded text-xs transition-all cursor-pointer flex items-center gap-1.5"
+          class="px-2.5 py-1 rounded text-xs transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
           [class.bg-background]="activeStatusTab() === 'PRINTED'"
           [class.text-emerald-400]="activeStatusTab() === 'PRINTED'"
           [class.shadow-sm]="activeStatusTab() === 'PRINTED'"
@@ -131,14 +133,13 @@
           <span>Entregados</span>
         </button>
       </div>
-    </div>
 
-    <!-- View Switcher Reutilizable -->
-    <div class="flex items-center gap-2">
+      <!-- View Switcher Reutilizable -->
       <app-view-switcher
         [mode]="viewMode()"
         (modeChange)="viewMode.set($event)"
       />
+
     </div>
 
   </div>
