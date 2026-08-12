@@ -1,4 +1,12 @@
 /* Estilos específicos para el widget Sidebar navegacional */
-:host {
-  display: block;
+@media (max-width: 767.98px) {
+  :host {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  :host {
+    display: block;
+  }
 }
