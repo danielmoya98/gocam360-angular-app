@@ -1,4 +1,4 @@
-<div class="h-full flex flex-col min-h-0 space-y-4 overflow-hidden pb-1">
+<div class="space-y-4 pb-4 md:pb-1 md:h-full md:flex md:flex-col md:min-h-0 md:overflow-hidden">
   
   <!-- Standardized Page Title Header -->
   <app-page-header
@@ -38,16 +38,17 @@
       [value]="activeEventsCount()"
       description="Capturando fotos 360°"
       icon="camera"
-      iconColorClass="text-emerald-400"
+      iconColorClass="text-emerald-500"
       badgeText="EN VIVO"
       badgeVariant="emerald"
-      [isLive]="true"
+      valueColorClass="text-foreground"
     />
     <app-kpi-card
       label="Fotos Capturadas"
       [value]="totalPhotosCount()"
       description="Subidas a la galería"
       icon="camera"
+      iconColorClass="text-blue-500"
       badgeText="HD"
       badgeVariant="primary"
     />
@@ -62,19 +63,23 @@
     />
   </div>
 
-  <!-- Toolbar: Search Bar, Status Filter Pills & View Switcher -->
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
+  <!-- Toolbar: Search Bar at Top, Status Pills + View Switcher below on Mobile -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
     
-    <div class="flex items-center gap-2 w-full sm:w-auto">
-      <!-- Search Input Reutilizable app-search-input -->
+    <!-- Top Search Input (W-full on mobile, flex-1 on desktop) -->
+    <div class="w-full sm:w-80 lg:w-96">
       <app-search-input
         [value]="searchQuery()"
         placeholder="Buscar evento o ubicación..."
         (searchInput)="onSearchInput($event)"
       />
+    </div>
 
+    <!-- Mobile Row: Status Filter Pills + View Switcher (Debajo del buscador en móvil) -->
+    <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar">
+      
       <!-- Status Filter Pills Segmented -->
-      <div class="flex items-center bg-muted/40 p-1 rounded-md border border-border/80 text-xs font-bold">
+      <div class="flex items-center bg-muted/40 p-1 rounded-md border border-border/80 text-xs font-bold shrink-0">
         <button
           (click)="setStatusFilter('ALL')"
           class="px-2.5 py-1 rounded text-xs transition-all cursor-pointer"
@@ -107,15 +112,14 @@
           <span>Finalizados</span>
         </button>
       </div>
-    </div>
 
-    <!-- View Switcher Reutilizable -->
-    <div class="flex items-center gap-2">
+      <!-- View Switcher Reutilizable -->
       <app-view-switcher
         [mode]="viewMode()"
         (modeChange)="viewMode.set($event)"
       />
     </div>
+
   </div>
 
   <!-- MAIN CONTAINER: CARDS / TABLE WITH SKELETON LOADING & FULL FLEX HEIGHT -->
@@ -292,7 +296,7 @@
       <!-- VISTA TABLA LISTA -->
       <div class="flex-1 rounded-lg border border-border/80 bg-popover-solid shadow-none overflow-hidden flex flex-col justify-between min-h-0 view-mode-container animate-in fade-in duration-300">
         <div class="overflow-x-auto overflow-y-auto flex-1 no-scrollbar bg-popover-solid">
-          <table class="w-full text-left text-xs">
+          <table class="w-full text-left text-xs min-w-[750px]">
             <thead class="bg-popover-solid border-b border-border/60 text-muted-foreground font-bold uppercase tracking-wider text-[10px] sticky top-0 z-20 shadow-xs">
               <tr>
                 <th class="py-2.5 px-4 bg-popover-solid">Evento & Anfitrión</th>

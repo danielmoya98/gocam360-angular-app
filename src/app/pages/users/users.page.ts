@@ -30,13 +30,12 @@ import { PreferencesService } from '../../shared/services/preferences.service';
     ConfirmDialogComponent,
     PageHeaderComponent,
     KpiCardComponent,
-    DataTableComponent,
     SearchInputComponent,
     ViewSwitcherComponent,
     TablePaginationComponent,
     ErrorBoundaryComponent,
     IconComponent,
-    DatePipe,
+    DatePipe
   ],
   templateUrl: './users.page.html',
   styleUrl: './users.page.css',
@@ -290,8 +289,8 @@ export class UsersPage implements OnInit {
       const formVal = this.adminModel();
 
       if (this.drawerMode() === 'create') {
-        const finalPassword = formVal.password && formVal.password.trim().length >= 6 
-          ? formVal.password.trim() 
+        const finalPassword = formVal.password && formVal.password.trim().length >= 6
+          ? formVal.password.trim()
           : 'Admin360#';
 
         const payload: CreateAdminDto = {

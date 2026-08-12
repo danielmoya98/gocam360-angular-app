@@ -1,4 +1,4 @@
-<div class="h-full flex flex-col min-h-0 space-y-4 overflow-hidden pb-1">
+<div class="space-y-4 pb-4 md:pb-1 md:h-full md:flex md:flex-col md:min-h-0 md:overflow-hidden">
   
   <!-- Standardized Page Title Header -->
   <app-page-header
@@ -63,104 +63,108 @@
     />
   </div>
 
-  <!-- Toolbar: Search Bar, Bulk Actions, Status Filter, Role Filter, Column Visibility & View Switcher -->
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
+  <!-- Toolbar: Search Bar at Top, Filter Dropdowns + View Switcher below on Mobile -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
     
-    <!-- Left: Search Input, Bulk Delete & Filter Dropdowns -->
-    <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
-      
-      <!-- Search Bar Reutilizable app-search-input -->
+    <!-- Top Search Bar (W-full on mobile, flex-1 on desktop) -->
+    <div class="w-full sm:w-80 lg:w-96">
       <app-search-input
         [value]="searchQuery()"
         placeholder="Buscar por nombre o correo..."
         (searchInput)="onSearchInput($event)"
       />
-
-      <!-- Bulk Action Button -->
-      @if (selectedAdminIds().length > 0) {
-        <button
-          type="button"
-          (click)="openBulkDeleteDialog()"
-          class="px-2.5 py-1 rounded-md bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 text-xs font-bold flex items-center gap-1.5 transition-all animate-in fade-in cursor-pointer"
-        >
-          <app-icon name="trash" class="w-3.5 h-3.5 text-rose-400" />
-          <span>Eliminar ({{ selectedAdminIds().length }})</span>
-        </button>
-      }
-
-      <!-- Status Dropdown Filter (Con bg-popover-solid de opacidad) -->
-      <div class="relative">
-        <button
-          type="button"
-          (click)="showStatusDropdown.update(v => !v); showRoleDropdown.set(false)"
-          class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer"
-        >
-          <app-icon name="filter" class="w-3.5 h-3.5 text-muted-foreground" />
-          <span>Estado</span>
-          <app-icon name="chevron-down" class="w-3 h-3 text-muted-foreground" />
-        </button>
-
-        @if (showStatusDropdown()) {
-          <div
-            class="absolute left-0 top-full mt-1.5 w-44 bg-popover-solid text-popover-foreground border border-border rounded-lg shadow-2xl p-2 z-[9999] space-y-1 text-xs animate-dropdown-smooth"
-            (click)="$event.stopPropagation()"
-          >
-            <label (click)="setStatusFilter('ALL')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-medium">
-              <input type="radio" name="status" [checked]="selectedStatusFilter() === 'ALL'" />
-              <span>Todos los Estados</span>
-            </label>
-            <label (click)="setStatusFilter('ACTIVE')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-medium text-emerald-400">
-              <input type="radio" name="status" [checked]="selectedStatusFilter() === 'ACTIVE'" />
-              <span>Activos</span>
-            </label>
-            <label (click)="setStatusFilter('INACTIVE')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-medium text-rose-400">
-              <input type="radio" name="status" [checked]="selectedStatusFilter() === 'INACTIVE'" />
-              <span>Inactivos</span>
-            </label>
-          </div>
-        }
-      </div>
-
-      <!-- Role Dropdown Filter (Con bg-popover-solid de opacidad) -->
-      <div class="relative">
-        <button
-          type="button"
-          (click)="showRoleDropdown.update(v => !v); showStatusDropdown.set(false)"
-          class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer"
-        >
-          <app-icon name="shield" class="w-3.5 h-3.5 text-muted-foreground" />
-          <span>Rol</span>
-          <app-icon name="chevron-down" class="w-3 h-3 text-muted-foreground" />
-        </button>
-
-        @if (showRoleDropdown()) {
-          <div
-            class="absolute left-0 top-full mt-1.5 w-44 bg-popover-solid text-popover-foreground border border-border rounded-lg shadow-2xl p-2 z-[9999] space-y-1 text-xs animate-dropdown-smooth"
-            (click)="$event.stopPropagation()"
-          >
-            <label (click)="setRoleFilter('ALL')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-medium">
-              <input type="radio" name="role" [checked]="selectedRoleFilter() === 'ALL'" />
-              <span>Todos los Roles</span>
-            </label>
-            <label (click)="setRoleFilter('SUPER_ADMIN')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-medium">
-              <input type="radio" name="role" [checked]="selectedRoleFilter() === 'SUPER_ADMIN'" />
-              <span>SUPERADMIN</span>
-            </label>
-            <label (click)="setRoleFilter('ADMIN')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-medium">
-              <input type="radio" name="role" [checked]="selectedRoleFilter() === 'ADMIN'" />
-              <span>ADMIN</span>
-            </label>
-          </div>
-        }
-      </div>
     </div>
 
-    <!-- Right Action Buttons: View Switcher Reutilizable -->
-    <div class="flex items-center gap-2">
+    <!-- Mobile Row: Filter Dropdowns on Left + View Switcher on Right (Debajo del buscador en móvil) -->
+    <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+      
+      <!-- Filter Dropdowns & Bulk Actions Group -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <!-- Bulk Action Button -->
+        @if (selectedAdminIds().length > 0) {
+          <button
+            type="button"
+            (click)="openBulkDeleteDialog()"
+            class="px-2.5 py-1 rounded-md bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 text-xs font-bold flex items-center gap-1.5 transition-all animate-in fade-in cursor-pointer"
+          >
+            <app-icon name="trash" class="w-3.5 h-3.5 text-rose-400" />
+            <span>Eliminar ({{ selectedAdminIds().length }})</span>
+          </button>
+        }
+
+        <!-- Status Dropdown Filter -->
+        <div class="relative">
+          <button
+            type="button"
+            (click)="showStatusDropdown.update(v => !v); showRoleDropdown.set(false)"
+            class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+          >
+            <app-icon name="filter" class="w-3.5 h-3.5 text-muted-foreground" />
+            <span>Estado</span>
+            <app-icon name="chevron-down" class="w-3 h-3 text-muted-foreground" />
+          </button>
+
+          @if (showStatusDropdown()) {
+            <div
+              class="absolute left-0 top-full mt-1.5 w-48 bg-popover-solid text-popover-foreground border border-border rounded-xl shadow-2xl p-2 z-[9999] space-y-1 text-xs animate-dropdown-smooth"
+              (click)="$event.stopPropagation()"
+            >
+              <label (click)="setStatusFilter('ALL')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-semibold">
+                <input type="radio" name="status" [checked]="selectedStatusFilter() === 'ALL'" />
+                <span>Todos los Estados</span>
+              </label>
+              <label (click)="setStatusFilter('ACTIVE')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-semibold text-emerald-400">
+                <input type="radio" name="status" [checked]="selectedStatusFilter() === 'ACTIVE'" />
+                <span>Activos</span>
+              </label>
+              <label (click)="setStatusFilter('INACTIVE')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-semibold text-rose-400">
+                <input type="radio" name="status" [checked]="selectedStatusFilter() === 'INACTIVE'" />
+                <span>Inactivos</span>
+              </label>
+            </div>
+          }
+        </div>
+
+        <!-- Role Dropdown Filter -->
+        <div class="relative">
+          <button
+            type="button"
+            (click)="showRoleDropdown.update(v => !v); showStatusDropdown.set(false)"
+            class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+          >
+            <app-icon name="shield" class="w-3.5 h-3.5 text-muted-foreground" />
+            <span>Rol</span>
+            <app-icon name="chevron-down" class="w-3 h-3 text-muted-foreground" />
+          </button>
+
+          @if (showRoleDropdown()) {
+            <div
+              class="absolute left-0 top-full mt-1.5 w-48 bg-popover-solid text-popover-foreground border border-border rounded-xl shadow-2xl p-2 z-[9999] space-y-1 text-xs animate-dropdown-smooth"
+              (click)="$event.stopPropagation()"
+            >
+              <label (click)="setRoleFilter('ALL')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-semibold">
+                <input type="radio" name="role" [checked]="selectedRoleFilter() === 'ALL'" />
+                <span>Todos los Roles</span>
+              </label>
+              <label (click)="setRoleFilter('SUPER_ADMIN')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-semibold">
+                <input type="radio" name="role" [checked]="selectedRoleFilter() === 'SUPER_ADMIN'" />
+                <span>SUPERADMIN</span>
+              </label>
+              <label (click)="setRoleFilter('ADMIN')" class="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer font-semibold">
+                <input type="radio" name="role" [checked]="selectedRoleFilter() === 'ADMIN'" />
+                <span>ADMIN</span>
+              </label>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- View Switcher Reutilizable -->
       <app-view-switcher
         [mode]="viewMode()"
         (modeChange)="viewMode.set($event)"
       />
+
     </div>
 
   </div>
@@ -183,7 +187,7 @@
     @if (viewMode() === 'table') {
       <div class="flex-1 rounded-lg border border-border/80 bg-popover-solid shadow-none overflow-hidden flex flex-col justify-between min-h-0 view-mode-container animate-in fade-in duration-300">
         <div class="overflow-x-auto overflow-y-auto flex-1 no-scrollbar bg-popover-solid">
-          <table class="w-full text-left text-xs">
+          <table class="w-full text-left text-xs min-w-[750px]">
             <!-- Header 100% Opaco y Sólido sin Transparencia (bg-popover-solid) -->
             <thead class="bg-popover-solid border-b border-border/60 text-muted-foreground font-bold uppercase tracking-wider text-[10px] sticky top-0 z-20 shadow-xs">
               <tr>
