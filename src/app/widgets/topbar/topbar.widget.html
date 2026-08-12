@@ -24,10 +24,10 @@
       <span class="text-xs font-extrabold tracking-tight">Menú</span>
     </button>
 
-    <div class="h-4 w-px bg-border/60"></div>
+    <div class="hidden md:block h-4 w-px bg-border/60"></div>
 
-    <!-- Breadcrumbs Navigation -->
-    <nav class="flex items-center gap-1.5 text-xs font-semibold">
+    <!-- Breadcrumbs Navigation (Oculto en móvil <768px, visible en tablet/desktop) -->
+    <nav class="hidden md:flex items-center gap-1.5 text-xs font-semibold">
       @for (crumb of breadcrumbs(); track crumb.path; let isLast = $last) {
         @if (isLast) {
           <span class="text-foreground font-bold px-1.5 py-0.5 rounded bg-muted/40">

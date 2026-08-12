@@ -1,21 +1,21 @@
-<div class="p-2.5 border-t border-border/60 bg-popover-solid flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground shrink-0 w-full" role="navigation" aria-label="Paginación de tabla">
-  <div>
+<div class="p-2.5 sm:p-3 border-t border-border/60 bg-popover-solid flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4 text-xs text-muted-foreground shrink-0 w-full" role="navigation" aria-label="Paginación de tabla">
+  <div class="text-center sm:text-left text-[11px] sm:text-xs">
     @if (showSelectionInfo) {
-      <span>{{ selectedCount }} de {{ totalCount }} filas seleccionadas</span>
+      <span class="font-medium text-foreground/80">{{ selectedCount }} de {{ totalCount }} filas seleccionadas</span>
     } @else {
-      <span>Mostrando {{ totalCount }} registros</span>
+      <span class="font-medium text-foreground/80">Mostrando {{ totalCount }} registros</span>
     }
   </div>
 
-  <div class="flex items-center gap-4">
-    <div class="flex items-center gap-2">
-      <label for="page-size-select" class="text-xs">Filas por página:</label>
+  <div class="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-4 w-full sm:w-auto">
+    <div class="flex items-center gap-1.5">
+      <label for="page-size-select" class="text-[11px] sm:text-xs font-medium">Filas por página:</label>
       <select
         id="page-size-select"
         [value]="pageSize"
         (change)="onPageSizeSelect($event)"
         aria-label="Seleccionar número de filas por página"
-        class="px-2 py-0.5 rounded border border-border bg-card text-foreground text-xs focus:outline-none cursor-pointer"
+        class="h-7 px-2 py-0 rounded-md border border-border bg-card text-foreground text-xs font-bold focus:outline-none cursor-pointer"
       >
         @for (opt of pageSizeOptions; track opt) {
           <option [value]="opt">{{ opt }}</option>
@@ -23,24 +23,24 @@
       </select>
     </div>
 
-    <span class="font-bold text-foreground" aria-live="polite">Página {{ currentPage }} de {{ totalPages }}</span>
+    <span class="font-bold text-foreground text-[11px] sm:text-xs" aria-live="polite">Página {{ currentPage }} de {{ totalPages }}</span>
 
     <div class="flex items-center gap-1">
       <button
         type="button"
         [disabled]="currentPage === 1"
         (click)="goToPage(1)"
-        class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+        class="w-7 h-7 sm:w-6 sm:h-6 rounded-md border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors flex items-center justify-center"
         title="Primera página"
         aria-label="Ir a la primera página"
       >
-        K
+        «
       </button>
       <button
         type="button"
         [disabled]="currentPage === 1"
         (click)="goToPage(currentPage - 1)"
-        class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+        class="w-7 h-7 sm:w-6 sm:h-6 rounded-md border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors flex items-center justify-center"
         title="Página anterior"
         aria-label="Ir a la página anterior"
       >
@@ -50,7 +50,7 @@
         type="button"
         [disabled]="currentPage >= totalPages"
         (click)="goToPage(currentPage + 1)"
-        class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+        class="w-7 h-7 sm:w-6 sm:h-6 rounded-md border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors flex items-center justify-center"
         title="Página siguiente"
         aria-label="Ir a la página siguiente"
       >
@@ -60,11 +60,11 @@
         type="button"
         [disabled]="currentPage >= totalPages"
         (click)="goToPage(totalPages)"
-        class="px-2 py-0.5 rounded border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+        class="w-7 h-7 sm:w-6 sm:h-6 rounded-md border border-border bg-card text-xs hover:bg-muted font-mono disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors flex items-center justify-center"
         title="Última página"
         aria-label="Ir a la última página"
       >
-        ❯
+        »
       </button>
     </div>
   </div>
