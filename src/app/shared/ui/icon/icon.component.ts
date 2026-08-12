@@ -39,7 +39,9 @@ export type IconName =
   | 'camera'
   | 'phone'
   | 'building'
-  | 'info';
+  | 'info'
+  | 'panel-left-close'
+  | 'panel-left-open';
 
 @Component({
   selector: 'app-icon',
@@ -171,6 +173,16 @@ export type IconName =
         }
         @case ('info') {
           <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        }
+        @case ('panel-left-close') {
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 4v16" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-3-3 3-3" />
+        }
+        @case ('panel-left-open') {
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 4v16" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 9l3 3-3 3" />
         }
       }
     </svg>

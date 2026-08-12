@@ -2,14 +2,19 @@
   
   <!-- Left: Toggle Sidebar (Desktop/Tablet) & Mobile Drawer Navigation Button -->
   <div class="flex items-center gap-3">
-    <!-- Desktop / Tablet Toggle Sidebar -->
+    <!-- Desktop / Tablet Toggle Sidebar (Con iconos de flecha acordes panel-left) -->
     <button
       type="button"
       (click)="toggleSidebar.emit()"
-      class="hidden md:flex p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-      title="Alternar Menú"
+      class="hidden md:flex p-1.5 rounded-md border border-border/60 bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer items-center justify-center shadow-xs active:scale-95"
+      [title]="isSidebarCollapsed ? 'Expandir Menú Lateral' : 'Colapsar Menú Lateral'"
+      [attr.aria-label]="isSidebarCollapsed ? 'Expandir menú lateral' : 'Colapsar menú lateral'"
     >
-      <app-icon name="dashboard" class="w-4 h-4" />
+      @if (isSidebarCollapsed) {
+        <app-icon name="panel-left-open" class="w-4 h-4 text-primary" />
+      } @else {
+        <app-icon name="panel-left-close" class="w-4 h-4" />
+      }
     </button>
 
     <!-- Mobile Drawer Menu Trigger Button (Opens Mobile Sidebar Drawer from right-to-left) -->
