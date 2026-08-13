@@ -23,7 +23,7 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
   private readonly _toast = inject(ToastService);
 
   protected readonly currentStep = signal<StepType>('LOGIN');
-
+  protected readonly currentGuestId = signal<string | null>(null);
   protected readonly displayEventCode = signal('');
   protected readonly guestName = signal('');
   protected readonly guestPhone = signal('');
@@ -90,55 +90,78 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
     this._guestService.getPublicEvent(code).subscribe({
       next: (data) => {
         this.eventData.set(data);
-        if (data.frames && data.frames.length > 0) {
+        if (data.frames?.length) {
           this.framesList.set(data.frames);
           this.selectedFrameId.set(data.frames[0].id);
         }
-        
+
         this._guestService.joinEvent({ eventCode: code, guestName: name, guestPhone: phone }).subscribe({
-          next: () => {
+          next: (res) => {
+            if (res?.guestId) {
+              this.currentGuestId.set(res.guestId); // 👈 Asignar ID dinámico real
+            }
             this.isSubmitting.set(false);
             this.currentStep.set('WELCOME');
             this._toast.success('Conectado', `Bienvenido al evento ${data.name}`);
           },
-          error: () => {
+          error: (err) => {
             this.isSubmitting.set(false);
-            this.currentStep.set('WELCOME');
+            this.currentStep.set('LOGIN');
+            this._toast.error('Error al ingresar', err?.error?.message || 'No se pudo unir al evento');
           },
         });
       },
       error: () => {
-        const mockEvent: PublicEventDto = {
-          id: 'ev-1',
-          name: 'Lanzamiento L\'Oréal 360°',
-          status: 'ACTIVE',
-          frames: [
-            { id: 'f1', name: 'Gold Celebration', overlayUrl: '' },
-            { id: 'f2', name: 'Emerald Elegant', overlayUrl: '' },
-          ],
-        };
-        this.eventData.set(mockEvent);
-        this.framesList.set(mockEvent.frames);
-        this.selectedFrameId.set(mockEvent.frames[0].id);
-
-        setTimeout(() => {
-          this.isSubmitting.set(false);
-          this.currentStep.set('WELCOME');
-        }, 1200);
+        this.isSubmitting.set(false);
+        this.currentStep.set('LOGIN');
+        this._toast.error('Evento no encontrado', 'Verifica el código ingresado.');
       },
     });
   }
 
-  onFileSelected(event: Event): void {
+  private compressImage(file: File, maxWidth = 1080, quality = 0.8): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event: any) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return reject('No canvas context');
+
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+          resolve(compressedBase64);
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  }
+
+  async onFileSelected(event: Event): Promise<void> {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files[0]) {
-      const file = target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.selectedPhotoUrl.set(e.target.result);
+      try {
+        const compressedBase64 = await this.compressImage(target.files[0]);
+        this.selectedPhotoUrl.set(compressedBase64);
         this.currentStep.set('FRAME');
-      };
-      reader.readAsDataURL(file);
+      } catch {
+        this._toast.error('Error', 'No se pudo procesar la imagen seleccionada.');
+      }
     }
   }
 
@@ -148,10 +171,18 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
   }
 
   sendToPrintQueue(): void {
+    const guestId = this.currentGuestId();
+    const eventId = this.eventData()?.id;
+
+    if (!guestId || !eventId) {
+      this._toast.error('Error de Sesión', 'No se encontró el registro del invitado. Por favor reingresa.');
+      return;
+    }
+
     this.isUploading.set(true);
     const payload = {
-      eventId: this.eventData()?.id || 'ev-1',
-      guestId: 'guest-1',
+      eventId,
+      guestId, // 👈 Usar el ID dinámico en lugar de 'guest-1'
       frameId: this.selectedFrameId(),
       photoBase64: this.selectedPhotoUrl(),
     };
@@ -162,12 +193,9 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
         this.currentStep.set('SUCCESS');
         this._toast.success('Foto Enviada', 'Tu orden ha ingresado a la cola de impresión.');
       },
-      error: () => {
-        setTimeout(() => {
-          this.isUploading.set(false);
-          this.currentStep.set('SUCCESS');
-          this._toast.success('Foto Enviada', 'Tu orden ha ingresado a la cola de impresión.');
-        }, 1000);
+      error: (err) => {
+        this.isUploading.set(false);
+        this._toast.error('Error al enviar', err?.error?.message || 'No se pudo procesar la orden.');
       },
     });
   }

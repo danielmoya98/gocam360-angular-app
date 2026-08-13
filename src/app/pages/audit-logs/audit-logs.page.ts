@@ -17,10 +17,9 @@ export type { AuditLogDto };
   imports: [
     IconComponent,
     DatePipe,
-    HlmInputDirective,
     PageHeaderComponent,
     SearchInputComponent,
-    TablePaginationComponent,
+    TablePaginationComponent
   ],
   templateUrl: './audit-logs.page.html',
   styleUrl: './audit-logs.page.css',

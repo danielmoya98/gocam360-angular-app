@@ -16,12 +16,10 @@ import { CrmLeadsService, CrmLeadDto, LeadStatus } from './services/crm-leads.se
   imports: [
     IconComponent,
     DatePipe,
-    HlmInputDirective,
     PageHeaderComponent,
     KpiCardComponent,
-    SegmentedPillsComponent,
     SearchInputComponent,
-    TablePaginationComponent,
+    TablePaginationComponent
   ],
   templateUrl: './crm-leads.page.html',
   styleUrl: './crm-leads.page.css',

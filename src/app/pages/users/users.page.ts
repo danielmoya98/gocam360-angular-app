@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { form, FormField, submit, required, email } from '@angular/forms/signals';
+import { form, FormField, submit, required, email, minLength } from '@angular/forms/signals';
 import { UserRole } from '../../shared/models/user.model';
 import { HlmButtonDirective } from '../../shared/ui/button/hlm-button.directive';
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
@@ -17,7 +17,6 @@ import { ToastService } from '../../shared/services/toast.service';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { UsersService, AdminUserResponseDto, CreateAdminDto, UpdateAdminDto } from './services/users.service';
 import { PreferencesService } from '../../shared/services/preferences.service';
-
 
 @Component({
   selector: 'app-users-page',
@@ -82,6 +81,8 @@ export class UsersPage implements OnInit {
     required(s.fullName, { message: 'El nombre completo es obligatorio' });
     required(s.email, { message: 'El correo electrónico es obligatorio' });
     email(s.email, { message: 'Ingresa un correo electrónico válido' });
+    // Nota: Si deseas validar minLength en la señal cuando el campo no está vacío:
+    minLength(s.password, 8, { message: 'La contraseña debe tener al menos 8 caracteres' });
   });
 
   ngOnInit(): void {
@@ -289,9 +290,10 @@ export class UsersPage implements OnInit {
       const formVal = this.adminModel();
 
       if (this.drawerMode() === 'create') {
-        const finalPassword = formVal.password && formVal.password.trim().length >= 6
+        // Usar 8 caracteres en el fallback de la contraseña por defecto
+        const finalPassword = formVal.password && formVal.password.trim().length >= 8
           ? formVal.password.trim()
-          : 'Admin360#';
+          : 'Admin360#2026'; // Contraseña por defecto válida (>= 8 caracteres)
 
         const payload: CreateAdminDto = {
           fullName: formVal.fullName,
@@ -322,8 +324,9 @@ export class UsersPage implements OnInit {
           status: formVal.status,
         };
 
-        if (formVal.password && formVal.password.length >= 8) {
-          payload.password = formVal.password;
+        // Exigir mínimo 8 caracteres si se desea actualizar la clave
+        if (formVal.password && formVal.password.trim().length >= 8) {
+          payload.password = formVal.password.trim();
         }
 
         this._usersService.update(targetId, payload).subscribe({

@@ -4,7 +4,7 @@ import { IconComponent, IconName } from '../icon/icon.component';
 @Component({
   selector: 'app-page-header',
   standalone: true,
-  imports: [IconComponent],
+  imports: [],
   templateUrl: './page-header.component.html',
   styleUrl: './page-header.component.css',
 })

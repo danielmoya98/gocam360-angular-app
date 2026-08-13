@@ -17,12 +17,10 @@ import { PrintsService, PrintRequestItemDto, PrintStatus } from './services/prin
   imports: [
     IconComponent,
     DatePipe,
-    RouterLink,
     PageHeaderComponent,
     KpiCardComponent,
-    SegmentedPillsComponent,
     ViewSwitcherComponent,
-    TablePaginationComponent,
+    TablePaginationComponent
   ],
   templateUrl: './prints.page.html',
   styleUrl: './prints.page.css',

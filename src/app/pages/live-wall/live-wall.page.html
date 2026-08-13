@@ -1,6 +1,6 @@
 <!-- Dark Fullscreen Standalone View -->
 <div class="fixed inset-0 z-[99999] bg-zinc-950 text-white flex flex-col justify-between p-6 select-none overflow-hidden font-sans">
-  
+
   <!-- Top Bar: Event Title, QR Badge & Controls -->
   <div class="flex items-center justify-between gap-4 z-20 bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-zinc-800 shadow-2xl">
     <div class="flex items-center gap-3">
@@ -47,7 +47,7 @@
             [alt]="photo.guestName"
             class="max-h-[60vh] max-w-[80vw] object-contain rounded-2xl shadow-2xl transition-all duration-700"
           />
-          
+
           <!-- Floating Overlay Badge at Bottom Left -->
           <div class="absolute bottom-6 left-6 px-4 py-2 rounded-2xl bg-zinc-950/80 backdrop-blur-md border border-zinc-800 flex items-center gap-3">
             <div class="w-8 h-8 rounded-full bg-primary/20 text-primary font-bold flex items-center justify-center text-xs">
@@ -75,20 +75,28 @@
   </div>
 
   <!-- FOOTER: QR Invitation Bar & Mini Gallery Strip -->
+  <!-- Reemplazar el bloque del Footer en live-wall.page.html con este fragmento: -->
+
   <div class="flex items-center justify-between gap-6 z-20 bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-zinc-800">
-    
-    <!-- Left: Scanning Invitation -->
+
+    <!-- Izquierda: Invitación con Código QR Dinámico -->
     <div class="flex items-center gap-4">
-      <div class="p-2 rounded-xl bg-white text-zinc-950 font-black text-xs shrink-0 shadow-lg">
-        📱 QR SCAN
-      </div>
+      @if (getQrCodeUrl()) {
+        <div class="p-1.5 rounded-xl bg-white text-zinc-950 shrink-0 shadow-lg w-16 h-16 flex items-center justify-center">
+          <img [src]="getQrCodeUrl()" alt="Escanear QR" class="w-full h-full object-contain" />
+        </div>
+      } @else {
+        <div class="p-2 rounded-xl bg-white text-zinc-950 font-black text-xs shrink-0 shadow-lg">
+          📱 QR SCAN
+        </div>
+      }
       <div>
-        <p class="text-sm font-extrabold text-white">¡Sube tu foto y mírale aquí en pantalla gigante!</p>
-        <p class="text-xs text-zinc-400">Escanea el código con la cámara de tu celular para unirte al evento.</p>
+        <p class="text-sm font-extrabold text-white">¡Sube tu foto y mírala aquí en pantalla gigante!</p>
+        <p class="text-xs text-zinc-400">Escanea el código QR con la cámara de tu celular para unirte al evento.</p>
       </div>
     </div>
 
-    <!-- Right: Rotating Thumbnail Strip -->
+    <!-- Derecha: Tira de miniaturas de fotos recibidas -->
     <div class="hidden md:flex items-center gap-2 overflow-x-auto no-scrollbar max-w-lg">
       @for (p of eventData()?.photos; track p.id; let idx = $index) {
         <button
@@ -104,6 +112,7 @@
       }
     </div>
 
+  </div>
   </div>
 
 </div>

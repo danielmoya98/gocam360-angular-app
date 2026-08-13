@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { ApiClientService } from '../../core/services/api-client.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 export interface LiveWallPhotoDto {
   id: string;
@@ -32,70 +33,52 @@ export interface LiveWallDataDto {
 export class LiveWallPage implements OnInit, OnDestroy {
   private readonly _route = inject(ActivatedRoute);
   private readonly _api = inject(ApiClientService);
+  private readonly _toast = inject(ToastService);
 
   protected readonly eventData = signal<LiveWallDataDto | null>(null);
   protected readonly activePhotoIndex = signal(0);
-
-  private intervalId: any;
-
   protected readonly currentPhoto = signal<LiveWallPhotoDto | null>(null);
 
+  private rotationInterval: any;
+  private syncInterval: any;
+
   ngOnInit(): void {
-    const eventId = this._route.snapshot.paramMap.get('id') || 'demo';
+    const eventId = this._route.snapshot.paramMap.get('id');
+    if (!eventId) return;
+
+    // 1. Carga inicial de datos desde el backend
     this.loadWallData(eventId);
 
-    // Auto-rotation timer every 5 seconds
-    this.intervalId = setInterval(() => {
-      this.rotatePhoto();
-    }, 5000);
+    // 2. Timer de rotación local cada 5 segundos
+    this.rotationInterval = setInterval(() => this.rotatePhoto(), 5000);
+
+    // 3. Polling silencioso cada 12 segundos para sincronizar fotos nuevas desde Render
+    this.syncInterval = setInterval(() => this.loadWallData(eventId, true), 12000);
   }
 
   ngOnDestroy(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
+    if (this.rotationInterval) clearInterval(this.rotationInterval);
+    if (this.syncInterval) clearInterval(this.syncInterval);
   }
 
-  private loadWallData(eventId: string): void {
-    this._api.get<LiveWallDataDto>(`/guest-experience/live-wall/${eventId}`).subscribe({
+  private loadWallData(eventId: string, isSilentSync = false): void {
+    // 👈 Ruta corregida coincidiendo con GuestExperienceController en NestJS
+    this._api.get<LiveWallDataDto>(`/guest-experience/event/${eventId}/live-wall`).subscribe({
       next: (data) => {
+        const previousCount = this.eventData()?.photos?.length ?? 0;
         this.eventData.set(data);
+
         if (data.photos && data.photos.length > 0) {
-          this.currentPhoto.set(data.photos[0]);
+          // Si no había foto actual o ingresaron fotos nuevas, actualizar la lista
+          if (!this.currentPhoto() || data.photos.length > previousCount) {
+            this.currentPhoto.set(data.photos[this.activePhotoIndex() % data.photos.length]);
+          }
         }
       },
       error: () => {
-        const mockData: LiveWallDataDto = {
-          id: eventId,
-          name: 'Gala Corporativa L\'Oréal 360°',
-          accessCode: 'LOREAL360',
-          qrToken: 'qr-token-demo',
-          photos: [
-            {
-              id: 'p1',
-              storagePath: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&auto=format&fit=crop&q=80',
-              guestName: 'Sofía Martínez',
-              uploadedAt: new Date().toISOString(),
-              likesCount: 14,
-            },
-            {
-              id: 'p2',
-              storagePath: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&auto=format&fit=crop&q=80',
-              guestName: 'Alejandro Rivera',
-              uploadedAt: new Date(Date.now() - 300000).toISOString(),
-              likesCount: 22,
-            },
-            {
-              id: 'p3',
-              storagePath: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1200&auto=format&fit=crop&q=80',
-              guestName: 'Marcos Chen',
-              uploadedAt: new Date(Date.now() - 600000).toISOString(),
-              likesCount: 9,
-            },
-          ],
-        };
-        this.eventData.set(mockData);
-        this.currentPhoto.set(mockData.photos[0]);
+        if (!isSilentSync) {
+          this._toast.error('Error de Conexión', 'No se pudo conectar con el servidor del proyector.');
+        }
       },
     });
   }
@@ -115,5 +98,13 @@ export class LiveWallPage implements OnInit, OnDestroy {
 
     this.activePhotoIndex.set(idx);
     this.currentPhoto.set(photos[idx]);
+  }
+
+  // Generador dinámico de URL del código QR para ser escaneado desde la proyección
+  getQrCodeUrl(): string {
+    const code = this.eventData()?.accessCode;
+    if (!code) return '';
+    const joinUrl = `${window.location.origin}/guest/event-join?code=${code}`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(joinUrl)}`;
   }
 }

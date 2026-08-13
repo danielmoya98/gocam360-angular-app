@@ -1,5 +1,5 @@
 <div class="space-y-4 pb-4 md:pb-1 md:h-full md:flex md:flex-col md:min-h-0 md:overflow-hidden">
-  
+
   <!-- Standardized Page Title Header -->
   <app-page-header
     title="Cola de Impresión & Eventos Activos"
@@ -67,7 +67,7 @@
 
   <!-- Selector por Evento + Filtros de Estado + View Switcher en Móvil -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
-    
+
     <!-- Selector Desplegable de Evento (Full Width en Móvil) -->
     <div class="flex items-center gap-1 bg-card border border-border px-2.5 py-1.5 rounded-md text-xs w-full sm:w-80">
       <span class="text-muted-foreground font-semibold shrink-0">Evento:</span>
@@ -87,7 +87,7 @@
 
     <!-- Mobile Row: Status Filter Tabs + View Switcher (Debajo del evento en móvil) -->
     <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar">
-      
+
       <!-- Tabs de Estado con Scroll Horizontal en Móvil sin cortarse -->
       <div class="flex items-center bg-muted/40 p-1 rounded-md border border-border/80 text-xs font-bold shrink-0 overflow-x-auto no-scrollbar">
         <button
@@ -159,14 +159,18 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 animate-in fade-in duration-300">
           @for (item of filteredPrintItems(); track item.id) {
             <div class="p-4 rounded-xl border border-border/80 bg-card shadow-none hover:border-primary/50 transition-all flex flex-col justify-between group space-y-3">
-              
+
               <div class="flex items-start gap-3">
                 <!-- Photo Thumbnail con Preview Trigger -->
                 <div
-                  (click)="openPreviewModal(item.photo.originalPath)"
+                  (click)="openPreviewModal(item.photo.storagePath)"
                   class="relative w-20 h-20 rounded-lg overflow-hidden border border-border bg-muted shrink-0 cursor-pointer group/img"
                 >
-                  <img [src]="item.photo.originalPath" [alt]="item.photo.guest.name" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform" />
+                  <img
+                    [src]="item.photo.storagePath"
+                    [alt]="item.photo.guest.name"
+                    class="w-full h-full object-cover group-hover/img:scale-105 transition-transform"
+                  />
                   <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-[10px] font-bold">
                     👁️ Preview
                   </div>
@@ -190,7 +194,7 @@
                   </div>
 
                   <p class="text-[11px] text-muted-foreground font-mono truncate">📱 Tel: {{ item.photo.guest.phone }}</p>
-                  
+
                   <!-- Evento Asociado -->
                   <p class="text-[10px] text-primary font-bold truncate">
                     🎉 Evento: {{ getEventName(item.eventId) }}
@@ -354,7 +358,7 @@
           <h3 class="text-sm font-bold text-foreground">Vista Previa de Impresión HD</h3>
           <button (click)="closePreviewModal()" class="text-muted-foreground hover:text-foreground cursor-pointer text-xs">✕</button>
         </div>
-        
+
         <div class="rounded-xl overflow-hidden border border-border bg-black flex items-center justify-center max-h-[60vh]">
           <img [src]="previewState().url" alt="Preview Foto HD" class="w-full h-full object-contain" />
         </div>

@@ -102,13 +102,13 @@ export class UsersService {
   /**
    * Eliminar múltiples administradores via DELETE /users/bulk
    */
-  bulkRemove(ids: string[]): Observable<{ message: string }> {
-    return this._api.delete<{ message: string }>('/users/bulk', { ids }).pipe(
-      tap(() => {
-        if (this._users()) {
-          this._users.update((list) => (list || []).filter((u) => !ids.includes(u.id)));
-        }
-      })
-    );
-  }
+   bulkRemove(ids: string[]): Observable<{ message: string }> {
+     return this._api.post<{ message: string }>('/users/bulk-delete', { ids }).pipe(
+       tap(() => {
+         if (this._users()) {
+           this._users.update((list) => (list || []).filter((u) => !ids.includes(u.id)));
+         }
+       })
+     );
+   }
 }
