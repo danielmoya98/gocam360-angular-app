@@ -8,7 +8,8 @@ export interface PrintRequestGuestDto {
 
 export interface PrintRequestPhotoDto {
   id: string;
-  originalPath: string;
+  storagePath: string; // 👈 Asegúrate de que esta propiedad exista aquí
+  originalPath?: string; // Opcional por compatibilidad
   renderedPath?: string;
   thumbnailPath?: string;
   width?: number;
