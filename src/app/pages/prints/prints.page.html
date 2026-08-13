@@ -1,24 +1,16 @@
 <div class="space-y-4 pb-4 md:pb-1 md:h-full md:flex md:flex-col md:min-h-0 md:overflow-hidden">
 
   <!-- Standardized Page Title Header -->
-  <app-page-header
-    title="Cola de Impresión & Eventos Activos"
-    subtitle="Monitorea los eventos registrados, las fotografías capturadas por evento y sus impresiones pendientes."
-  >
+  <app-page-header title="Cola de Impresión & Eventos Activos"
+    subtitle="Monitorea los eventos registrados, las fotografías capturadas por evento y sus impresiones pendientes.">
     <ng-container actions>
-      <button
-        type="button"
-        (click)="loadAllData(true)"
-        class="px-3 py-1.5 rounded-md border border-border bg-card hover:bg-muted font-semibold text-xs transition-all active:scale-95 flex items-center gap-1.5 text-foreground cursor-pointer"
-      >
+      <button type="button" (click)="loadAllData(true)"
+        class="px-3 py-1.5 rounded-md border border-border bg-card hover:bg-muted font-semibold text-xs transition-all active:scale-95 flex items-center gap-1.5 text-foreground cursor-pointer">
         <app-icon name="refresh" class="w-3.5 h-3.5" [class.animate-spin]="isLoading()" />
         <span>Actualizar Cola</span>
       </button>
-      <button
-        type="button"
-        (click)="downloadAllZip()"
-        class="px-3 py-1.5 rounded-md bg-foreground text-background font-semibold text-xs shadow-sm hover:opacity-90 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
-      >
+      <button type="button" (click)="downloadAllZip()"
+        class="px-3 py-1.5 rounded-md bg-foreground text-background font-semibold text-xs shadow-sm hover:opacity-90 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer">
         <app-icon name="zip" class="w-3.5 h-3.5" />
         <span>Descargar ZIP Fotos</span>
       </button>
@@ -27,42 +19,17 @@
 
   <!-- Top Section: 4 KPI Cards Grid Reutilizando Datos de Eventos + Impresiones -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
-    <app-kpi-card
-      label="Eventos Registrados"
-      [value]="eventsList().length"
-      description="Conectados con la API NestJS"
-      icon="events"
-    />
-    <app-kpi-card
-      label="Pendientes de Impresión"
-      [value]="pendingRequestsCount()"
-      description="Solicitudes en espera de papel"
-      icon="clock"
-      iconColorClass="text-amber-500"
-      badgeText="COLA ACTIVA"
-      badgeVariant="amber"
-      valueColorClass="text-amber-400"
-    />
-    <app-kpi-card
-      label="Imprimiendo en Vivo"
-      [value]="printingRequestsCount()"
-      description="En proceso en la estación física"
-      icon="printer"
-      iconColorClass="text-primary"
-      badgeText="HARDWARE"
-      badgeVariant="primary"
-      valueColorClass="text-primary"
-    />
-    <app-kpi-card
-      label="Fotos Capturadas Totales"
-      [value]="totalPhotosCount()"
-      description="Fotos guardadas en base de datos"
-      icon="camera"
-      iconColorClass="text-emerald-500"
-      badgeText="GALERÍA"
-      badgeVariant="emerald"
-      valueColorClass="text-emerald-500"
-    />
+    <app-kpi-card label="Eventos Registrados" [value]="eventsList().length" description="Conectados con la API NestJS"
+      icon="events" />
+    <app-kpi-card label="Pendientes de Impresión" [value]="pendingRequestsCount()"
+      description="Solicitudes en espera de papel" icon="clock" iconColorClass="text-amber-500" badgeText="COLA ACTIVA"
+      badgeVariant="amber" valueColorClass="text-amber-400" />
+    <app-kpi-card label="Imprimiendo en Vivo" [value]="printingRequestsCount()"
+      description="En proceso en la estación física" icon="printer" iconColorClass="text-primary" badgeText="HARDWARE"
+      badgeVariant="primary" valueColorClass="text-primary" />
+    <app-kpi-card label="Fotos Capturadas Totales" [value]="totalPhotosCount()"
+      description="Fotos guardadas en base de datos" icon="camera" iconColorClass="text-emerald-500" badgeText="GALERÍA"
+      badgeVariant="emerald" valueColorClass="text-emerald-500" />
   </div>
 
   <!-- Selector por Evento + Filtros de Estado + View Switcher en Móvil -->
@@ -71,16 +38,14 @@
     <!-- Selector Desplegable de Evento (Full Width en Móvil) -->
     <div class="flex items-center gap-1 bg-card border border-border px-2.5 py-1.5 rounded-md text-xs w-full sm:w-80">
       <span class="text-muted-foreground font-semibold shrink-0">Evento:</span>
-      <select
-        [value]="selectedEventId()"
-        (change)="onEventChange($event)"
-        class="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer w-full text-ellipsis overflow-hidden"
-      >
-        <option value="ALL" class="bg-popover-solid text-foreground">Todos los Eventos ({{ eventsList().length }})</option>
+      <select [value]="selectedEventId()" (change)="onEventChange($event)"
+        class="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer w-full text-ellipsis overflow-hidden">
+        <option value="ALL" class="bg-popover-solid text-foreground">Todos los Eventos ({{ eventsList().length }})
+        </option>
         @for (ev of eventsList(); track ev.id) {
-          <option [value]="ev.id" class="bg-popover-solid text-foreground">
-            {{ ev.title }} ({{ ev.totalPrints }} imp.)
-          </option>
+        <option [value]="ev.id" class="bg-popover-solid text-foreground">
+          {{ ev.title }} ({{ ev.totalPrints }} imp.)
+        </option>
         }
       </select>
     </div>
@@ -89,56 +54,44 @@
     <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar">
 
       <!-- Tabs de Estado con Scroll Horizontal en Móvil sin cortarse -->
-      <div class="flex items-center bg-muted/40 p-1 rounded-md border border-border/80 text-xs font-bold shrink-0 overflow-x-auto no-scrollbar">
-        <button
-          (click)="activeStatusTab.set('TODAS')"
+      <div
+        class="flex items-center bg-muted/40 p-1 rounded-md border border-border/80 text-xs font-bold shrink-0 overflow-x-auto no-scrollbar">
+        <button (click)="activeStatusTab.set('TODAS')"
           class="px-2.5 py-1 rounded text-xs transition-all cursor-pointer whitespace-nowrap"
-          [class.bg-background]="activeStatusTab() === 'TODAS'"
-          [class.text-foreground]="activeStatusTab() === 'TODAS'"
+          [class.bg-background]="activeStatusTab() === 'TODAS'" [class.text-foreground]="activeStatusTab() === 'TODAS'"
           [class.shadow-sm]="activeStatusTab() === 'TODAS'"
-          [class.text-muted-foreground]="activeStatusTab() !== 'TODAS'"
-        >
+          [class.text-muted-foreground]="activeStatusTab() !== 'TODAS'">
           Todas ({{ totalRequestsCount() }})
         </button>
-        <button
-          (click)="activeStatusTab.set('PENDING')"
+        <button (click)="activeStatusTab.set('PENDING')"
           class="px-2.5 py-1 rounded text-xs transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
           [class.bg-background]="activeStatusTab() === 'PENDING'"
-          [class.text-amber-400]="activeStatusTab() === 'PENDING'"
-          [class.shadow-sm]="activeStatusTab() === 'PENDING'"
-          [class.text-muted-foreground]="activeStatusTab() !== 'PENDING'"
-        >
+          [class.text-amber-400]="activeStatusTab() === 'PENDING'" [class.shadow-sm]="activeStatusTab() === 'PENDING'"
+          [class.text-muted-foreground]="activeStatusTab() !== 'PENDING'">
           <span>Pendientes</span>
-          <span class="px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-400 text-[9px] font-mono">{{ pendingRequestsCount() }}</span>
+          <span class="px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-400 text-[9px] font-mono">{{
+            pendingRequestsCount() }}</span>
         </button>
-        <button
-          (click)="activeStatusTab.set('PRINTING')"
+        <button (click)="activeStatusTab.set('PRINTING')"
           class="px-2.5 py-1 rounded text-xs transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
           [class.bg-background]="activeStatusTab() === 'PRINTING'"
-          [class.text-primary]="activeStatusTab() === 'PRINTING'"
-          [class.shadow-sm]="activeStatusTab() === 'PRINTING'"
-          [class.text-muted-foreground]="activeStatusTab() !== 'PRINTING'"
-        >
+          [class.text-primary]="activeStatusTab() === 'PRINTING'" [class.shadow-sm]="activeStatusTab() === 'PRINTING'"
+          [class.text-muted-foreground]="activeStatusTab() !== 'PRINTING'">
           <span>Imprimiendo</span>
-          <span class="px-1.5 py-0.2 rounded-full bg-primary/10 text-primary text-[9px] font-mono">{{ printingRequestsCount() }}</span>
+          <span class="px-1.5 py-0.2 rounded-full bg-primary/10 text-primary text-[9px] font-mono">{{
+            printingRequestsCount() }}</span>
         </button>
-        <button
-          (click)="activeStatusTab.set('PRINTED')"
+        <button (click)="activeStatusTab.set('PRINTED')"
           class="px-2.5 py-1 rounded text-xs transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
           [class.bg-background]="activeStatusTab() === 'PRINTED'"
-          [class.text-emerald-400]="activeStatusTab() === 'PRINTED'"
-          [class.shadow-sm]="activeStatusTab() === 'PRINTED'"
-          [class.text-muted-foreground]="activeStatusTab() !== 'PRINTED'"
-        >
+          [class.text-emerald-400]="activeStatusTab() === 'PRINTED'" [class.shadow-sm]="activeStatusTab() === 'PRINTED'"
+          [class.text-muted-foreground]="activeStatusTab() !== 'PRINTED'">
           <span>Entregados</span>
         </button>
       </div>
 
       <!-- View Switcher Reutilizable -->
-      <app-view-switcher
-        [mode]="viewMode()"
-        (modeChange)="viewMode.set($event)"
-      />
+      <app-view-switcher [mode]="viewMode()" (modeChange)="viewMode.set($event)" />
 
     </div>
 
@@ -146,230 +99,235 @@
 
   <!-- MAIN CONTENT AREA: CARDS / TABLE LIST -->
   @if (isLoading()) {
-    <div class="flex-1 rounded-lg border border-border/80 bg-card p-4 space-y-3 animate-pulse">
-      <div class="h-8 bg-muted/60 rounded-md w-full"></div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        <div class="h-40 bg-muted/40 rounded-md"></div>
-        <div class="h-40 bg-muted/40 rounded-md"></div>
-      </div>
+  <div class="flex-1 rounded-lg border border-border/80 bg-card p-4 space-y-3 animate-pulse">
+    <div class="h-8 bg-muted/60 rounded-md w-full"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div class="h-40 bg-muted/40 rounded-md"></div>
+      <div class="h-40 bg-muted/40 rounded-md"></div>
     </div>
+  </div>
   } @else {
-    @if (viewMode() === 'cards') {
-      <div class="flex-1 overflow-y-auto pr-1 no-scrollbar">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 animate-in fade-in duration-300">
-          @for (item of filteredPrintItems(); track item.id) {
-            <div class="p-4 rounded-xl border border-border/80 bg-card shadow-none hover:border-primary/50 transition-all flex flex-col justify-between group space-y-3">
+  @if (viewMode() === 'cards') {
+  <div class="flex-1 overflow-y-auto pr-1 no-scrollbar">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 animate-in fade-in duration-300">
+      @for (item of filteredPrintItems(); track item.id) {
+      <div
+        class="p-4 rounded-xl border border-border/80 bg-card shadow-none hover:border-primary/50 transition-all flex flex-col justify-between group space-y-3">
 
-              <div class="flex items-start gap-3">
-                <!-- Photo Thumbnail con Preview Trigger -->
-                <div
-                  (click)="openPreviewModal(item.photo.storagePath)"
-                  class="relative w-20 h-20 rounded-lg overflow-hidden border border-border bg-muted shrink-0 cursor-pointer group/img"
-                >
-                  <img
-                    [src]="item.photo.storagePath"
-                    [alt]="item.photo.guest.name"
-                    class="w-full h-full object-cover group-hover/img:scale-105 transition-transform"
-                  />
-                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-[10px] font-bold">
-                    👁️ Preview
-                  </div>
-                </div>
-
-                <!-- Metadata del Invitado, Evento y Marco -->
-                <div class="space-y-1 text-xs flex-1 min-w-0">
-                  <div class="flex items-center justify-between gap-1">
-                    <h4 class="font-extrabold text-foreground truncate">{{ item.photo.guest.name }}</h4>
-                    @if (item.status === 'PENDING') {
-                      <span class="px-2 py-0.5 rounded-full border border-amber-500/30 text-amber-400 text-[9px] font-bold bg-amber-500/10 shrink-0">● Pendiente</span>
-                    } @else if (item.status === 'PRINTING') {
-                      <span class="px-2 py-0.5 rounded-full border border-primary/30 text-primary text-[9px] font-bold bg-primary/10 shrink-0 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span> Imprimiendo
-                      </span>
-                    } @else if (item.status === 'PRINTED') {
-                      <span class="px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 text-[9px] font-bold bg-emerald-500/10 shrink-0">● Entregado</span>
-                    } @else {
-                      <span class="px-2 py-0.5 rounded-full border border-rose-500/30 text-rose-400 text-[9px] font-bold bg-rose-500/10 shrink-0">● Rechazado</span>
-                    }
-                  </div>
-
-                  <p class="text-[11px] text-muted-foreground font-mono truncate">📱 Tel: {{ item.photo.guest.phone }}</p>
-
-                  <!-- Evento Asociado -->
-                  <p class="text-[10px] text-primary font-bold truncate">
-                    🎉 Evento: {{ getEventName(item.eventId) }}
-                  </p>
-
-                  <span class="inline-block px-2 py-0.5 rounded bg-muted text-[10px] font-bold text-foreground font-mono">
-                    Marco: {{ item.photo.frame?.name || 'Sin Marco' }}
-                  </span>
-                  <p class="text-[10px] text-muted-foreground font-mono">Hora: {{ item.requestedAt | date:'shortTime' }}</p>
-                </div>
-              </div>
-
-              <!-- Botones de Acción -->
-              <div class="flex items-center justify-between gap-2 pt-2 border-t border-border/40">
-                <button
-                  type="button"
-                  (click)="openPreviewModal(item.photo.originalPath)"
-                  class="px-2.5 py-1.5 rounded-lg border border-border text-xs font-semibold hover:bg-muted text-foreground flex items-center gap-1 cursor-pointer"
-                >
-                  <app-icon name="eye" class="w-3.5 h-3.5" /> Ver
-                </button>
-
-                @if (item.status === 'PENDING') {
-                  <div class="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      (click)="changeStatus(item.id, 'CANCELLED')"
-                      class="px-2.5 py-1.5 rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-semibold cursor-pointer"
-                    >
-                      Rechazar
-                    </button>
-                    <button
-                      type="button"
-                      (click)="changeStatus(item.id, 'PRINTING')"
-                      class="px-3 py-1.5 rounded-lg bg-foreground text-background font-bold text-xs shadow-sm hover:opacity-90 transition-all cursor-pointer flex items-center gap-1"
-                    >
-                      <app-icon name="printer" class="w-3.5 h-3.5" />
-                      <span>Imprimir</span>
-                    </button>
-                  </div>
-                } @else if (item.status === 'PRINTING') {
-                  <button
-                    type="button"
-                    (click)="changeStatus(item.id, 'PRINTED')"
-                    class="px-3.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-xs hover:bg-emerald-500/20 transition-all cursor-pointer flex items-center gap-1"
-                  >
-                    <span>✓ Marcar Entregado</span>
-                  </button>
-                } @else if (item.status === 'PRINTED') {
-                  <span class="text-[11px] font-bold text-emerald-400 font-mono">✓ Finalizado</span>
-                }
-              </div>
-
+        <div class="flex items-start gap-3">
+          <!-- Photo Thumbnail con Preview Trigger -->
+          <div (click)="openPreviewModal(item.photo.storagePath)"
+            class="relative w-20 h-20 rounded-lg overflow-hidden border border-border bg-muted shrink-0 cursor-pointer group/img">
+            <img [src]="item.photo.storagePath" [alt]="item.photo.guest.name"
+              class="w-full h-full object-cover group-hover/img:scale-105 transition-transform" />
+            <div
+              class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-[10px] font-bold">
+              👁️ Preview
             </div>
-          } @empty {
-            <div class="col-span-full p-12 text-center text-muted-foreground bg-card border border-border rounded-xl">
-              <div class="max-w-xs mx-auto space-y-2">
-                <app-icon name="search" class="w-8 h-8 mx-auto text-muted-foreground" />
-                <h4 class="text-sm font-bold text-foreground">Sin solicitudes en este evento</h4>
-                <p class="text-xs">No hay impresiones registradas para el filtro seleccionado.</p>
-              </div>
+          </div>
+
+          <!-- Metadata del Invitado, Evento y Marco -->
+          <div class="space-y-1 text-xs flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-1">
+              <h4 class="font-extrabold text-foreground truncate">{{ item.photo.guest.name }}</h4>
+              @if (item.status === 'PENDING') {
+              <span
+                class="px-2 py-0.5 rounded-full border border-amber-500/30 text-amber-400 text-[9px] font-bold bg-amber-500/10 shrink-0">●
+                Pendiente</span>
+              } @else if (item.status === 'PRINTING') {
+              <span
+                class="px-2 py-0.5 rounded-full border border-primary/30 text-primary text-[9px] font-bold bg-primary/10 shrink-0 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span> Imprimiendo
+              </span>
+              } @else if (item.status === 'PRINTED') {
+              <span
+                class="px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 text-[9px] font-bold bg-emerald-500/10 shrink-0">●
+                Entregado</span>
+              } @else {
+              <span
+                class="px-2 py-0.5 rounded-full border border-rose-500/30 text-rose-400 text-[9px] font-bold bg-rose-500/10 shrink-0">●
+                Rechazado</span>
+              }
             </div>
+
+            <p class="text-[11px] text-muted-foreground font-mono truncate">📱 Tel: {{ item.photo.guest.phone }}</p>
+
+            <!-- Evento Asociado -->
+            <p class="text-[10px] text-primary font-bold truncate">
+              🎉 Evento: {{ getEventName(item.eventId) }}
+            </p>
+
+            <span class="inline-block px-2 py-0.5 rounded bg-muted text-[10px] font-bold text-foreground font-mono">
+              Marco: {{ item.photo.frame?.name || 'Sin Marco' }}
+            </span>
+            <p class="text-[10px] text-muted-foreground font-mono">Hora: {{ item.requestedAt | date:'shortTime' }}</p>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex items-center justify-between gap-2 pt-2 border-t border-border/40">
+          <button type="button" (click)="openPreviewModal(item.photo.storagePath)"
+            class="px-2.5 py-1.5 rounded-lg border border-border text-xs font-semibold hover:bg-muted text-foreground flex items-center gap-1 cursor-pointer">
+            <app-icon name="eye" class="w-3.5 h-3.5" /> Ver
+          </button>
+
+          @if (item.status === 'PENDING') {
+          <div class="flex items-center gap-1.5">
+            <button type="button" (click)="changeStatus(item.id, 'CANCELLED')"
+              class="px-2.5 py-1.5 rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-semibold cursor-pointer">
+              Rechazar
+            </button>
+            <button type="button" (click)="changeStatus(item.id, 'PRINTING')"
+              class="px-3 py-1.5 rounded-lg bg-foreground text-background font-bold text-xs shadow-sm hover:opacity-90 transition-all cursor-pointer flex items-center gap-1">
+              <app-icon name="printer" class="w-3.5 h-3.5" />
+              <span>Imprimir</span>
+            </button>
+          </div>
+          } @else if (item.status === 'PRINTING') {
+          <button type="button" (click)="changeStatus(item.id, 'PRINTED')"
+            class="px-3.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-xs hover:bg-emerald-500/20 transition-all cursor-pointer flex items-center gap-1">
+            <span>✓ Marcar Entregado</span>
+          </button>
+          } @else if (item.status === 'PRINTED') {
+          <span class="text-[11px] font-bold text-emerald-400 font-mono">✓ Finalizado</span>
           }
         </div>
-      </div>
-    } @else {
-      <!-- VISTA TABLA LISTA (100% Sólida sin Transparencias bg-popover-solid) -->
-      <div class="flex-1 rounded-lg border border-border/80 bg-popover-solid shadow-none overflow-hidden flex flex-col justify-between min-h-0">
-        <div class="overflow-x-auto overflow-y-auto flex-1 no-scrollbar bg-popover-solid">
-          <table class="w-full text-left text-xs min-w-[700px]">
-            <thead class="bg-popover-solid border-b border-border/60 text-muted-foreground font-bold uppercase tracking-wider text-[10px] sticky top-0 z-20 shadow-xs">
-              <tr>
-                <th class="py-2.5 px-4 bg-popover-solid">Invitado & Foto</th>
-                <th class="py-2.5 px-3 bg-popover-solid">Evento</th>
-                <th class="py-2.5 px-3 bg-popover-solid">Teléfono</th>
-                <th class="py-2.5 px-3 bg-popover-solid">Marco PNG</th>
-                <th class="py-2.5 px-3 bg-popover-solid">Hora</th>
-                <th class="py-2.5 px-3 bg-popover-solid">Estado</th>
-                <th class="py-2.5 px-4 text-right bg-popover-solid">Acciones</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-border/40 font-medium bg-popover-solid">
-              @for (item of paginatedPrintItems(); track item.id) {
-                <tr class="hover:bg-muted/40 transition-colors group">
-                  <td class="py-2.5 px-4">
-                    <div class="flex items-center gap-3">
-                      <img
-                        [src]="item.photo.originalPath"
-                        [alt]="item.photo.guest.name"
-                        (click)="openPreviewModal(item.photo.originalPath)"
-                        class="w-9 h-9 rounded-lg object-cover ring-1 ring-border cursor-pointer shrink-0"
-                      />
-                      <span class="font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{{ item.photo.guest.name }}</span>
-                    </div>
-                  </td>
-                  <td class="py-2.5 px-3 font-bold text-primary text-[11px] truncate max-w-[140px]">{{ getEventName(item.eventId) }}</td>
-                  <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">{{ item.photo.guest.phone }}</td>
-                  <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">{{ item.photo.frame?.name || 'Sin Marco' }}</td>
-                  <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">{{ item.requestedAt | date:'shortTime' }}</td>
-                  <td class="py-2.5 px-3">
-                    @if (item.status === 'PENDING') {
-                      <span class="px-2 py-0.5 rounded-full border border-amber-500/30 text-amber-400 text-[10px] font-semibold bg-amber-500/10">● Pendiente</span>
-                    } @else if (item.status === 'PRINTING') {
-                      <span class="px-2 py-0.5 rounded-full border border-primary/30 text-primary text-[10px] font-semibold bg-primary/10">● Imprimiendo</span>
-                    } @else if (item.status === 'PRINTED') {
-                      <span class="px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold bg-emerald-500/10">● Entregado</span>
-                    } @else {
-                      <span class="px-2 py-0.5 rounded-full border border-rose-500/30 text-rose-400 text-[10px] font-semibold bg-rose-500/10">● Rechazado</span>
-                    }
-                  </td>
-                  <td class="py-2.5 px-4 text-right">
-                    <div class="flex items-center justify-end gap-1.5">
-                      <button (click)="openPreviewModal(item.photo.originalPath)" class="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer">
-                        <app-icon name="eye" class="w-4 h-4" />
-                      </button>
-                      @if (item.status === 'PENDING') {
-                        <button (click)="changeStatus(item.id, 'PRINTING')" class="px-2 py-1 rounded bg-foreground text-background font-bold text-[10px] cursor-pointer">
-                          Imprimir
-                        </button>
-                      } @else if (item.status === 'PRINTING') {
-                        <button (click)="changeStatus(item.id, 'PRINTED')" class="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold text-[10px] cursor-pointer">
-                          Entregar
-                        </button>
-                      }
-                    </div>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="7" class="p-12 text-center text-muted-foreground">
-                    <div class="max-w-xs mx-auto space-y-2">
-                      <app-icon name="search" class="w-8 h-8 mx-auto text-muted-foreground" />
-                      <h4 class="text-sm font-bold text-foreground">Cola de impresión vacía</h4>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
 
-        <!-- Fixed Bottom Pagination Footer Reutilizable -->
-        <app-table-pagination
-          [currentPage]="currentPage()"
-          [totalPages]="totalPages()"
-          [pageSize]="pageSize()"
-          [totalCount]="filteredPrintItems().length"
-          (pageChange)="currentPage.set($event)"
-          (pageSizeChange)="pageSize.set($event); currentPage.set(1)"
-        />
       </div>
-    }
+      } @empty {
+      <div class="col-span-full p-12 text-center text-muted-foreground bg-card border border-border rounded-xl">
+        <div class="max-w-xs mx-auto space-y-2">
+          <app-icon name="search" class="w-8 h-8 mx-auto text-muted-foreground" />
+          <h4 class="text-sm font-bold text-foreground">Sin solicitudes en este evento</h4>
+          <p class="text-xs">No hay impresiones registradas para el filtro seleccionado.</p>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  } @else {
+  <!-- VISTA TABLA LISTA (100% Sólida sin Transparencias bg-popover-solid) -->
+  <div
+    class="flex-1 rounded-lg border border-border/80 bg-popover-solid shadow-none overflow-hidden flex flex-col justify-between min-h-0">
+    <div class="overflow-x-auto overflow-y-auto flex-1 no-scrollbar bg-popover-solid">
+      <table class="w-full text-left text-xs min-w-[700px]">
+        <thead
+          class="bg-popover-solid border-b border-border/60 text-muted-foreground font-bold uppercase tracking-wider text-[10px] sticky top-0 z-20 shadow-xs">
+          <tr>
+            <th class="py-2.5 px-4 bg-popover-solid">Invitado & Foto</th>
+            <th class="py-2.5 px-3 bg-popover-solid">Evento</th>
+            <th class="py-2.5 px-3 bg-popover-solid">Teléfono</th>
+            <th class="py-2.5 px-3 bg-popover-solid">Marco PNG</th>
+            <th class="py-2.5 px-3 bg-popover-solid">Hora</th>
+            <th class="py-2.5 px-3 bg-popover-solid">Estado</th>
+            <th class="py-2.5 px-4 text-right bg-popover-solid">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border/40 font-medium bg-popover-solid">
+          @for (item of paginatedPrintItems(); track item.id) {
+          <tr class="hover:bg-muted/40 transition-colors group">
+            <td class="py-2.5 px-4">
+              <div class="flex items-center gap-3">
+                <img [src]="item.photo.originalPath" [alt]="item.photo.guest.name"
+                  (click)="openPreviewModal(item.photo.storagePath)"
+                  class="w-9 h-9 rounded-lg object-cover ring-1 ring-border cursor-pointer shrink-0" />
+                <span class="font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{{
+                  item.photo.guest.name }}</span>
+              </div>
+            </td>
+            <td class="py-2.5 px-3 font-bold text-primary text-[11px] truncate max-w-[140px]">{{
+              getEventName(item.eventId) }}</td>
+            <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">{{ item.photo.guest.phone }}</td>
+            <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">{{ item.photo.frame?.name || 'Sin Marco'
+              }}</td>
+            <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">{{ item.requestedAt | date:'shortTime'
+              }}</td>
+            <td class="py-2.5 px-3">
+              @if (item.status === 'PENDING') {
+              <span
+                class="px-2 py-0.5 rounded-full border border-amber-500/30 text-amber-400 text-[10px] font-semibold bg-amber-500/10">●
+                Pendiente</span>
+              } @else if (item.status === 'PRINTING') {
+              <span
+                class="px-2 py-0.5 rounded-full border border-primary/30 text-primary text-[10px] font-semibold bg-primary/10">●
+                Imprimiendo</span>
+              } @else if (item.status === 'PRINTED') {
+              <span
+                class="px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold bg-emerald-500/10">●
+                Entregado</span>
+              } @else {
+              <span
+                class="px-2 py-0.5 rounded-full border border-rose-500/30 text-rose-400 text-[10px] font-semibold bg-rose-500/10">●
+                Rechazado</span>
+              }
+            </td>
+            <td class="py-2.5 px-4 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button (click)="openPreviewModal(item.photo.storagePath)"
+                  class="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer">
+                  <app-icon name="eye" class="w-4 h-4" />
+                </button>
+                @if (item.status === 'PENDING') {
+                <button (click)="changeStatus(item.id, 'PRINTING')"
+                  class="px-2 py-1 rounded bg-foreground text-background font-bold text-[10px] cursor-pointer">
+                  Imprimir
+                </button>
+                } @else if (item.status === 'PRINTING') {
+                <button (click)="changeStatus(item.id, 'PRINTED')"
+                  class="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold text-[10px] cursor-pointer">
+                  Entregar
+                </button>
+                }
+              </div>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7" class="p-12 text-center text-muted-foreground">
+              <div class="max-w-xs mx-auto space-y-2">
+                <app-icon name="search" class="w-8 h-8 mx-auto text-muted-foreground" />
+                <h4 class="text-sm font-bold text-foreground">Cola de impresión vacía</h4>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Fixed Bottom Pagination Footer Reutilizable -->
+    <app-table-pagination [currentPage]="currentPage()" [totalPages]="totalPages()" [pageSize]="pageSize()"
+      [totalCount]="filteredPrintItems().length" (pageChange)="currentPage.set($event)"
+      (pageSizeChange)="pageSize.set($event); currentPage.set(1)" />
+  </div>
+  }
   }
 
   <!-- PHOTO PREVIEW MODAL (100% Sólido sin Transparencias y Backdrop Pantalla Completa) -->
   @if (previewState().isOpen) {
-    <div class="fixed inset-0 w-screen h-screen z-[100000] flex items-center justify-center p-4">
-      <div class="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-md" (click)="closePreviewModal()"></div>
-      <div class="relative bg-popover-solid text-popover-foreground border border-border rounded-2xl shadow-2xl p-4 w-full max-w-lg max-h-[85vh] overflow-y-auto space-y-3 z-[100001] animate-in zoom-in-95 duration-200 no-scrollbar">
-        <div class="flex items-center justify-between border-b border-border/60 pb-2">
-          <h3 class="text-sm font-bold text-foreground">Vista Previa de Impresión HD</h3>
-          <button (click)="closePreviewModal()" class="text-muted-foreground hover:text-foreground cursor-pointer text-xs">✕</button>
-        </div>
+  <div class="fixed inset-0 w-screen h-screen z-[100000] flex items-center justify-center p-4">
+    <div class="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-md" (click)="closePreviewModal()"></div>
+    <div
+      class="relative bg-popover-solid text-popover-foreground border border-border rounded-2xl shadow-2xl p-4 w-full max-w-lg max-h-[85vh] overflow-y-auto space-y-3 z-[100001] animate-in zoom-in-95 duration-200 no-scrollbar">
+      <div class="flex items-center justify-between border-b border-border/60 pb-2">
+        <h3 class="text-sm font-bold text-foreground">Vista Previa de Impresión HD</h3>
+        <button (click)="closePreviewModal()"
+          class="text-muted-foreground hover:text-foreground cursor-pointer text-xs">✕</button>
+      </div>
 
-        <div class="rounded-xl overflow-hidden border border-border bg-black flex items-center justify-center max-h-[60vh]">
-          <img [src]="previewState().url" alt="Preview Foto HD" class="w-full h-full object-contain" />
-        </div>
+      <div
+        class="rounded-xl overflow-hidden border border-border bg-black flex items-center justify-center max-h-[60vh]">
+        <img [src]="previewState().url" alt="Preview Foto HD" class="w-full h-full object-contain" />
+      </div>
 
-        <div class="flex justify-end pt-1">
-          <button (click)="closePreviewModal()" class="px-4 py-1.5 text-xs font-bold rounded-lg border border-border bg-card hover:bg-muted text-foreground cursor-pointer">
-            Cerrar
-          </button>
-        </div>
+      <div class="flex justify-end pt-1">
+        <button (click)="closePreviewModal()"
+          class="px-4 py-1.5 text-xs font-bold rounded-lg border border-border bg-card hover:bg-muted text-foreground cursor-pointer">
+          Cerrar
+        </button>
       </div>
     </div>
+  </div>
   }
 
 </div>
