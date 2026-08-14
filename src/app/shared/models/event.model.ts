@@ -69,6 +69,11 @@ export interface EventItemResponseDto {
   eventFrames?: EventFrameDto[];
 }
 
+export interface CreateFrameItemDto {
+  name: string;
+  overlayBase64: string;
+}
+
 export interface CreateEventDto {
   name: string;
   description?: string;
@@ -85,6 +90,7 @@ export interface CreateEventDto {
   galleryRetentionDays?: number;
   primaryColor?: string;
   logoUrl?: string;
+  frames?: CreateFrameItemDto[];
 }
 
 export interface UpdateEventDto {
@@ -104,4 +110,5 @@ export interface UpdateEventDto {
   primaryColor?: string;
   logoUrl?: string;
   status?: EventStatus;
+  frames?: CreateFrameItemDto[];
 }

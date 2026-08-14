@@ -403,6 +403,10 @@ export class EventsPage implements OnInit {
           galleryRetentionDays: Number(formVal.galleryRetentionDays),
         };
 
+        const customFrames = this.eventFramesList()
+          .filter((f) => f.previewUrl.startsWith('data:image'))
+          .map((f) => ({ name: f.name, overlayBase64: f.previewUrl }));
+
         if (formVal.description?.trim()) payload.description = formVal.description.trim();
         if (formVal.hostPhone?.trim()) payload.hostPhone = formVal.hostPhone.trim();
         if (formVal.hostEmail?.trim()) payload.hostEmail = formVal.hostEmail.trim();
@@ -410,6 +414,7 @@ export class EventsPage implements OnInit {
         if (formVal.primaryColor?.trim()) payload.primaryColor = formVal.primaryColor.trim();
         if (formVal.coverImage?.trim()) payload.coverImage = formVal.coverImage.trim();
         if (formVal.logoUrl?.trim()) payload.logoUrl = formVal.logoUrl.trim();
+        if (customFrames.length > 0) payload.frames = customFrames;
 
         this._eventsService.create(payload).subscribe({
           next: (newEv) => {
@@ -427,6 +432,10 @@ export class EventsPage implements OnInit {
 
       } else if (this.drawerMode() === 'edit' && this.selectedEvent()) {
         const targetId = this.selectedEvent()!.id;
+        const customFrames = this.eventFramesList()
+          .filter((f) => f.previewUrl.startsWith('data:image'))
+          .map((f) => ({ name: f.name, overlayBase64: f.previewUrl }));
+
         const payload: UpdateEventDto = {
           name: formVal.name,
           hostName: formVal.hostName,
@@ -445,6 +454,7 @@ export class EventsPage implements OnInit {
         if (formVal.primaryColor?.trim()) payload.primaryColor = formVal.primaryColor.trim();
         if (formVal.coverImage?.trim()) payload.coverImage = formVal.coverImage.trim();
         if (formVal.logoUrl?.trim()) payload.logoUrl = formVal.logoUrl.trim();
+        if (customFrames.length > 0) payload.frames = customFrames;
 
         this._eventsService.update(targetId, payload).subscribe({
           next: (updatedEv) => {
