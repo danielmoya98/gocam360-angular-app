@@ -394,14 +394,7 @@ export class EventsPage implements OnInit {
       if (this.drawerMode() === 'create') {
         const payload: CreateEventDto = {
           name: formVal.name,
-          description: formVal.description,
           hostName: formVal.hostName,
-          hostPhone: formVal.hostPhone,
-          hostEmail: formVal.hostEmail,
-          location: formVal.location,
-          primaryColor: formVal.primaryColor,
-          coverImage: formVal.coverImage,
-          logoUrl: formVal.logoUrl,
           eventDate: eventDateIso,
           startTime: startTimeIso,
           endTime: endTimeIso,
@@ -409,6 +402,14 @@ export class EventsPage implements OnInit {
           maxPrintsPerGuest: Number(formVal.maxPrintsPerGuest),
           galleryRetentionDays: Number(formVal.galleryRetentionDays),
         };
+
+        if (formVal.description?.trim()) payload.description = formVal.description.trim();
+        if (formVal.hostPhone?.trim()) payload.hostPhone = formVal.hostPhone.trim();
+        if (formVal.hostEmail?.trim()) payload.hostEmail = formVal.hostEmail.trim();
+        if (formVal.location?.trim()) payload.location = formVal.location.trim();
+        if (formVal.primaryColor?.trim()) payload.primaryColor = formVal.primaryColor.trim();
+        if (formVal.coverImage?.trim()) payload.coverImage = formVal.coverImage.trim();
+        if (formVal.logoUrl?.trim()) payload.logoUrl = formVal.logoUrl.trim();
 
         this._eventsService.create(payload).subscribe({
           next: (newEv) => {
@@ -419,8 +420,8 @@ export class EventsPage implements OnInit {
           },
           error: (err) => {
             this.isSubmitting.set(false);
-            const msg = err?.error?.message || 'No se pudo crear el evento';
-            this._toastService.error('Error', msg);
+            const msg = Array.isArray(err?.error?.message) ? err.error.message.join(', ') : (err?.error?.message || 'No se pudo crear el evento');
+            this._toastService.error('Error de Validación', msg);
           },
         });
 
@@ -428,14 +429,7 @@ export class EventsPage implements OnInit {
         const targetId = this.selectedEvent()!.id;
         const payload: UpdateEventDto = {
           name: formVal.name,
-          description: formVal.description,
           hostName: formVal.hostName,
-          hostPhone: formVal.hostPhone,
-          hostEmail: formVal.hostEmail,
-          location: formVal.location,
-          primaryColor: formVal.primaryColor,
-          coverImage: formVal.coverImage,
-          logoUrl: formVal.logoUrl,
           eventDate: eventDateIso,
           startTime: startTimeIso,
           endTime: endTimeIso,
@@ -443,6 +437,14 @@ export class EventsPage implements OnInit {
           maxPrintsPerGuest: Number(formVal.maxPrintsPerGuest),
           galleryRetentionDays: Number(formVal.galleryRetentionDays),
         };
+
+        if (formVal.description?.trim()) payload.description = formVal.description.trim();
+        if (formVal.hostPhone?.trim()) payload.hostPhone = formVal.hostPhone.trim();
+        if (formVal.hostEmail?.trim()) payload.hostEmail = formVal.hostEmail.trim();
+        if (formVal.location?.trim()) payload.location = formVal.location.trim();
+        if (formVal.primaryColor?.trim()) payload.primaryColor = formVal.primaryColor.trim();
+        if (formVal.coverImage?.trim()) payload.coverImage = formVal.coverImage.trim();
+        if (formVal.logoUrl?.trim()) payload.logoUrl = formVal.logoUrl.trim();
 
         this._eventsService.update(targetId, payload).subscribe({
           next: (updatedEv) => {
