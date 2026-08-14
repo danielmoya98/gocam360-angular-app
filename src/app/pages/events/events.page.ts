@@ -1,14 +1,13 @@
 import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { form, FormField, submit, required, email, min, max } from '@angular/forms/signals';
+import { form, FormField, submit, required } from '@angular/forms/signals';
 import { HlmButtonDirective } from '../../shared/ui/button/hlm-button.directive';
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { DrawerComponent } from '../../shared/ui/drawer/drawer.component';
 import { ConfirmDialogComponent } from '../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
 import { KpiCardComponent } from '../../shared/ui/kpi-card/kpi-card.component';
-import { SegmentedPillsComponent } from '../../shared/ui/segmented-pills/segmented-pills.component';
 import { SearchInputComponent } from '../../shared/ui/search-input/search-input.component';
 import { ViewSwitcherComponent } from '../../shared/ui/view-switcher/view-switcher.component';
 import { TablePaginationComponent } from '../../shared/ui/table-pagination/table-pagination.component';
@@ -16,6 +15,8 @@ import { ErrorBoundaryComponent } from '../../shared/ui/error-boundary/error-bou
 import { ToastService } from '../../shared/services/toast.service';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { PrintPhotoItem, PrintQueueModalComponent } from './print-queue-modal.component';
+import { EventQrModalComponent } from './event-qr-modal.component';
+import { ClickOutsideDirective } from '../../shared/directives/click-outside.directive';
 import { EventsService, EventItemResponseDto, CreateEventDto, UpdateEventDto } from './services/events.service';
 import { PreferencesService } from '../../shared/services/preferences.service';
 
@@ -29,6 +30,8 @@ import { PreferencesService } from '../../shared/services/preferences.service';
     DrawerComponent,
     ConfirmDialogComponent,
     PrintQueueModalComponent,
+    EventQrModalComponent,
+    ClickOutsideDirective,
     PageHeaderComponent,
     KpiCardComponent,
     SearchInputComponent,
@@ -99,6 +102,9 @@ export class EventsPage implements OnInit {
     hostPhone: '',
     hostEmail: '',
     location: '',
+    primaryColor: '#6366f1',
+    coverImage: '',
+    logoUrl: '',
     eventDate: new Date().toISOString().substring(0, 10),
     startTime: '18:00',
     endTime: '23:00',
@@ -159,9 +165,9 @@ export class EventsPage implements OnInit {
     if (query) {
       list = list.filter(
         (e) =>
-          e.title.toLowerCase().includes(query) ||
-          e.location.toLowerCase().includes(query) ||
-          e.hostName.toLowerCase().includes(query)
+          (e.title || e.name || '').toLowerCase().includes(query) ||
+          (e.location || '').toLowerCase().includes(query) ||
+          (e.hostName || '').toLowerCase().includes(query)
       );
     }
 
@@ -201,8 +207,13 @@ export class EventsPage implements OnInit {
     this._preferencesService.savePageFilter('events', { searchQuery: '', statusFilter: 'ALL' });
   }
 
-  toggleRowMenu(id: string): void {
+  toggleRowMenu(id: string, event?: Event): void {
+    event?.stopPropagation();
     this.activeRowMenuId.update((curr) => (curr === id ? null : id));
+  }
+
+  closeRowMenu(): void {
+    this.activeRowMenuId.set(null);
   }
 
   goToPrintQueue(ev?: EventItemResponseDto): void {
@@ -240,6 +251,9 @@ export class EventsPage implements OnInit {
       hostPhone: '',
       hostEmail: '',
       location: '',
+      primaryColor: '#6366f1',
+      coverImage: '',
+      logoUrl: '',
       eventDate: new Date().toISOString().substring(0, 10),
       startTime: '18:00',
       endTime: '23:00',
@@ -263,15 +277,18 @@ export class EventsPage implements OnInit {
     this.activeRowMenuId.set(null);
     this.activeDrawerTab.set('general');
     this.eventModel.set({
-      name: ev.title,
+      name: ev.name || ev.title,
       description: ev.description || '',
       hostName: ev.hostName,
       hostPhone: ev.hostPhone || '',
       hostEmail: ev.hostEmail || '',
-      location: ev.location,
-      eventDate: typeof ev.date === 'string' ? ev.date.substring(0, 10) : new Date(ev.date).toISOString().substring(0, 10),
-      startTime: '18:00',
-      endTime: '23:00',
+      location: ev.location || '',
+      primaryColor: ev.primaryColor || '#6366f1',
+      coverImage: ev.coverImage || '',
+      logoUrl: ev.logoUrl || '',
+      eventDate: typeof ev.eventDate === 'string' ? ev.eventDate.substring(0, 10) : new Date(ev.eventDate || ev.date).toISOString().substring(0, 10),
+      startTime: typeof ev.startTime === 'string' ? ev.startTime.substring(0, 5) : '18:00',
+      endTime: typeof ev.endTime === 'string' ? ev.endTime.substring(0, 5) : '23:00',
       maxPhotosPerGuest: ev.maxPhotosPerGuest || 10,
       maxPrintsPerGuest: ev.maxPrintsPerGuest || 1,
       galleryRetentionDays: ev.galleryRetentionDays || 7,
@@ -289,12 +306,13 @@ export class EventsPage implements OnInit {
   openGuestViewLocal(ev: EventItemResponseDto): void {
     this.isQrModalOpen.set(false);
     this._router.navigate(['/guest/event-join'], {
-      queryParams: { code: ev.uniqueCode },
+      queryParams: { code: ev.accessCode || ev.uniqueCode },
     });
   }
 
   copyQrLink(ev: EventItemResponseDto): void {
-    navigator.clipboard.writeText(`${window.location.origin}/guest/event-join?code=${ev.uniqueCode}`);
+    const code = ev.accessCode || ev.uniqueCode;
+    navigator.clipboard.writeText(`${window.location.origin}/guest/event-join?code=${code}`);
     this._toastService.success('Enlace Copiado', 'Link directo del evento copiado al portapapeles');
     this.isQrModalOpen.set(false);
   }
@@ -305,7 +323,10 @@ export class EventsPage implements OnInit {
       this.isSubmitting.set(true);
 
       const formVal = this.eventModel();
-      const eventDateIso = formVal.eventDate ? new Date(formVal.eventDate).toISOString() : new Date().toISOString();
+      const dateStr = formVal.eventDate || new Date().toISOString().substring(0, 10);
+      const eventDateIso = new Date(`${dateStr}T00:00:00.000Z`).toISOString();
+      const startTimeIso = new Date(`${dateStr}T${formVal.startTime || '18:00'}:00.000Z`).toISOString();
+      const endTimeIso = new Date(`${dateStr}T${formVal.endTime || '23:00'}:00.000Z`).toISOString();
 
       if (this.drawerMode() === 'create') {
         const payload: CreateEventDto = {
@@ -315,9 +336,12 @@ export class EventsPage implements OnInit {
           hostPhone: formVal.hostPhone,
           hostEmail: formVal.hostEmail,
           location: formVal.location,
+          primaryColor: formVal.primaryColor,
+          coverImage: formVal.coverImage,
+          logoUrl: formVal.logoUrl,
           eventDate: eventDateIso,
-          startTime: eventDateIso,
-          endTime: eventDateIso,
+          startTime: startTimeIso,
+          endTime: endTimeIso,
           maxPhotosPerGuest: Number(formVal.maxPhotosPerGuest),
           maxPrintsPerGuest: Number(formVal.maxPrintsPerGuest),
           galleryRetentionDays: Number(formVal.galleryRetentionDays),
@@ -346,7 +370,12 @@ export class EventsPage implements OnInit {
           hostPhone: formVal.hostPhone,
           hostEmail: formVal.hostEmail,
           location: formVal.location,
+          primaryColor: formVal.primaryColor,
+          coverImage: formVal.coverImage,
+          logoUrl: formVal.logoUrl,
           eventDate: eventDateIso,
+          startTime: startTimeIso,
+          endTime: endTimeIso,
           maxPhotosPerGuest: Number(formVal.maxPhotosPerGuest),
           maxPrintsPerGuest: Number(formVal.maxPrintsPerGuest),
           galleryRetentionDays: Number(formVal.galleryRetentionDays),

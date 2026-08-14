@@ -240,9 +240,9 @@
 
                 <!-- Acciones Rápidas del Evento (Solo Menú de 3 Puntos alineado a la derecha) -->
                 <div class="pt-2 border-t border-border/40 flex items-center justify-end">
-                  <div class="relative">
+                  <div class="relative" (appClickOutside)="closeRowMenu()">
                     <button
-                      (click)="toggleRowMenu(event.id)"
+                      (click)="toggleRowMenu(event.id, $event)"
                       class="p-1.5 rounded-lg border border-border/80 bg-card hover:bg-muted text-foreground transition-all cursor-pointer flex items-center gap-1"
                       title="Opciones del Evento"
                     >
@@ -341,10 +341,10 @@
                     <span class="text-primary font-bold">{{ event.totalPhotos }} fotos</span> • 
                     <span class="text-amber-500 font-bold">{{ event.totalPrints }} imp.</span>
                   </td>
-                  <td class="py-2.5 px-4 text-right relative">
+                  <td class="py-2.5 px-4 text-right relative" (appClickOutside)="closeRowMenu()">
                     <button
                       type="button"
-                      (click)="toggleRowMenu(event.id)"
+                      (click)="toggleRowMenu(event.id, $event)"
                       class="text-muted-foreground hover:text-foreground text-xs p-1 rounded hover:bg-muted cursor-pointer transition-colors"
                     >
                       <app-icon name="more" class="w-4 h-4" />
@@ -592,43 +592,11 @@
     }
   </app-drawer>
 
-  <!-- QR CODE MODAL (100% Sólido sin Transparencias y Backdrop Pantalla Completa) -->
-  @if (isQrModalOpen() && selectedEvent(); as ev) {
-    <div class="fixed inset-0 w-screen h-screen z-[100000] flex items-center justify-center p-4">
-      <div class="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-md" (click)="isQrModalOpen.set(false)"></div>
-      <div class="relative bg-popover-solid text-popover-foreground border border-border rounded-2xl shadow-2xl p-5 w-full max-w-sm max-h-[85vh] overflow-y-auto space-y-4 z-[100001] animate-in zoom-in-95 duration-200 flex flex-col justify-between no-scrollbar">
-        <div class="flex items-center justify-between border-b border-border/60 pb-2 shrink-0">
-          <h3 class="text-sm font-bold text-foreground">Código QR de Invitados</h3>
-          <button (click)="isQrModalOpen.set(false)" class="text-muted-foreground hover:text-foreground cursor-pointer text-xs">✕</button>
-        </div>
-        
-        <div class="text-center space-y-2 flex-1">
-          <h4 class="text-sm font-extrabold text-foreground leading-tight">{{ ev.title }}</h4>
-          <p class="text-[11px] text-muted-foreground">Pide a tus invitados que escaneen este código o ingresen la clave de acceso:</p>
-          
-          <div class="p-2.5 bg-white rounded-xl border border-border flex items-center justify-center mx-auto w-40 h-40 my-2 shadow-xs">
-            <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + ev.qrToken" alt="QR Evento" class="w-full h-full object-contain" />
-          </div>
-
-          <div class="p-2 rounded-lg bg-muted border border-border font-mono text-center">
-            <span class="text-[10px] text-muted-foreground block uppercase">Código de Acceso</span>
-            <span class="text-sm font-extrabold text-primary tracking-widest">{{ ev.uniqueCode }}</span>
-          </div>
-        </div>
-
-        <div class="space-y-2 shrink-0 mt-2">
-          <button (click)="openGuestViewLocal(ev)" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm cursor-pointer flex items-center justify-center gap-1.5">
-            <span>⚡ Abrir Vista Invitado en Local</span>
-          </button>
-          
-          <button (click)="copyQrLink(ev)" class="w-full py-2 rounded-lg bg-foreground text-background font-bold text-xs shadow-sm cursor-pointer flex items-center justify-center gap-1.5">
-            <app-icon name="qr" class="w-4 h-4" />
-            <span>Copiar Enlace de Invitado</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  }
+  <!-- QR CODE MODAL REUTILIZABLE (Animado con Backdrop y QR Dinámico) -->
+  <app-event-qr-modal
+    [(isOpen)]="isQrModalOpen"
+    [event]="selectedEvent()"
+  />
 
   <!-- PRINT QUEUE & PHOTOS MODAL (100% Sólido sin Transparencias) -->
   <app-print-queue-modal

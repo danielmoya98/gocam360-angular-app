@@ -1,17 +1,17 @@
-import { Component, EventEmitter, Input, Output, signal, HostListener } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, HostListener, computed } from '@angular/core';
 
 export interface EventItem {
   id: string;
   title: string;
-  category: string;
-  date: string;
-  time: string;
-  location: string;
-  image: string;
-  status: 'Live' | 'Scheduled' | 'Completed';
-  guestsCount: number;
-  printQueueCount: number;
-  qrCodeUrl: string;
+  category?: string;
+  date?: string | Date;
+  time?: string;
+  location?: string;
+  image?: string;
+  status?: string;
+  guestsCount?: number;
+  printQueueCount?: number;
+  qrCodeUrl?: string;
   uniqueCode?: string;
 }
 
@@ -25,16 +25,16 @@ export interface EventItem {
     @if (isVisible()) {
       <!-- Fixed Fullscreen Backdrop con Blur Completo y Z-Index de Prioridad (z-[250000]) -->
       <div
-        class="fixed inset-0 bg-black/75 backdrop-blur-md z-[250000] flex items-center justify-center p-4 transition-opacity duration-300 ease-out"
+        class="fixed inset-0 bg-black/75 backdrop-blur-md z-[250000] flex items-center justify-center p-4 transition-all duration-300 ease-out"
         [class.animate-in]="isAnimatingIn()"
         [class.fade-in]="isAnimatingIn()"
         [class.animate-out]="isClosing()"
         [class.fade-out]="isClosing()"
         (click)="close()"
       >
-        <!-- Modal Container (Animación ultra-suave idéntica a Cola de Impresión) -->
+        <!-- Modal Container (Animación ultra-suave) -->
         <div
-          class="w-full max-w-sm bg-popover-solid text-popover-foreground border border-border rounded-3xl shadow-2xl p-6 text-center space-y-4 relative z-[250001]"
+          class="w-full max-w-sm bg-popover-solid text-popover-foreground border border-border rounded-3xl shadow-2xl p-6 text-center space-y-4 relative z-[250001] transition-transform duration-250"
           [class.animate-dialog-in]="isAnimatingIn()"
           [class.animate-dialog-out]="isClosing()"
           (click)="$event.stopPropagation()"
@@ -52,20 +52,21 @@ export interface EventItem {
 
           <div class="p-4 bg-white rounded-2xl inline-block border border-gray-100 shadow-inner">
             @if (event) {
-              <img [src]="event.qrCodeUrl" [alt]="'QR ' + event.title" class="w-44 h-44 mx-auto" />
+              <img [src]="qrImageUrl()" [alt]="'QR ' + event.title" class="w-48 h-48 mx-auto object-contain rounded-lg" />
             }
           </div>
 
           <div class="space-y-1">
             <p class="text-xs font-extrabold text-foreground">{{ event?.title }}</p>
+            <p class="text-[11px] text-muted-foreground font-mono">Código: <span class="font-bold text-foreground">{{ event?.uniqueCode }}</span></p>
             <p class="text-[11px] text-muted-foreground">Los invitados pueden escanear este QR para acceder a la vista móvil con OTP y subir fotos 360°.</p>
           </div>
 
           <div class="space-y-2 pt-2">
             <a
-              href="/guest/event-join"
+              [href]="guestJoinUrl()"
               target="_blank"
-              class="w-full h-10 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+              class="w-full h-10 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-decoration-none"
             >
               <span>📱 Abrir Vista Mobile Invitados</span>
             </a>
@@ -90,6 +91,19 @@ export class EventQrModalComponent {
   protected isClosing = signal(false);
 
   @Input() event: EventItem | null = null;
+
+  protected readonly guestJoinUrl = computed(() => {
+    const code = this.event?.uniqueCode || '';
+    return `${window.location.origin}/guest/event-join?code=${code}`;
+  });
+
+  protected readonly qrImageUrl = computed(() => {
+    if (this.event?.qrCodeUrl && this.event.qrCodeUrl.startsWith('http')) {
+      return this.event.qrCodeUrl;
+    }
+    const dataUrl = encodeURIComponent(this.guestJoinUrl());
+    return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${dataUrl}`;
+  });
 
   @Input()
   set isOpen(value: boolean) {
@@ -123,8 +137,7 @@ export class EventQrModalComponent {
 
   copyLink(): void {
     if (this.event) {
-      const link = `${window.location.origin}/guest/event-join?code=${this.event.uniqueCode || 'DEMO'}`;
-      navigator.clipboard.writeText(link);
+      navigator.clipboard.writeText(this.guestJoinUrl());
       this.copied.emit();
     }
   }
