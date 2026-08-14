@@ -52,40 +52,48 @@ describe('AuditLogsService Unit Tests', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should fetch audit logs from API and set logs signal', () => {
-    service.loadLogs(true).subscribe((logs) => {
-      expect(logs.length).toBe(2);
-      expect(logs[0].action).toBe('AUTH_LOGIN');
+  it('should fetch paginated audit logs from API and set logs and meta signals', () => {
+    service.loadLogs({ page: 1, limit: 10 }).subscribe((response) => {
+      expect(response.data.length).toBe(2);
+      expect(response.data[0].action).toBe('AUTH_LOGIN');
       expect(service.logs().length).toBe(2);
+      expect(service.meta().total).toBe(2);
       expect(service.isLoading()).toBe(false);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/audit-logs`);
+    const req = httpMock.expectOne((r) => r.url.endsWith('/audit-logs'));
     expect(req.request.method).toBe('GET');
-    req.flush(mockLogs);
+    expect(req.request.params.get('page')).toBe('1');
+    expect(req.request.params.get('limit')).toBe('10');
+    req.flush({
+      data: mockLogs,
+      meta: { total: 2, page: 1, limit: 10, totalPages: 1 },
+    });
   });
 
-  it('should return cached logs if forceRefresh is false and logs already exist', () => {
-    // First load to populate cache
-    service.loadLogs(true).subscribe();
-    httpMock.expectOne(`${environment.apiUrl}/audit-logs`).flush(mockLogs);
-
-    // Second call without forceRefresh
-    service.loadLogs(false).subscribe((logs) => {
-      expect(logs.length).toBe(2);
+  it('should send search parameter to API when search is provided', () => {
+    service.loadLogs({ page: 1, limit: 10, search: 'LOGIN' }).subscribe((res) => {
+      expect(res.data.length).toBe(1);
     });
 
-    // Verify no new HTTP request was made
-    httpMock.expectNone(`${environment.apiUrl}/audit-logs`);
+    const req = httpMock.expectOne((r) => r.url.endsWith('/audit-logs'));
+    expect(req.request.params.get('search')).toBe('LOGIN');
+    req.flush({
+      data: [mockLogs[0]],
+      meta: { total: 1, page: 1, limit: 10, totalPages: 1 },
+    });
   });
 
-  it('should use fallback mock data gracefully if backend fails (500)', () => {
-    service.loadLogs(true).subscribe((logs) => {
-      expect(logs.length).toBeGreaterThan(0);
-      expect(service.isLoading()).toBe(false);
+  it('should reset signals cleanly if backend returns error 500', () => {
+    service.loadLogs({ page: 1, limit: 10 }).subscribe({
+      error: (err) => {
+        expect(err.status).toBe(500);
+        expect(service.logs().length).toBe(0);
+        expect(service.isLoading()).toBe(false);
+      },
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/audit-logs`);
-    req.flush('Error', { status: 500, statusText: 'Server Error' });
+    const req = httpMock.expectOne((r) => r.url.endsWith('/audit-logs'));
+    req.flush('Server Error', { status: 500, statusText: 'Server Error' });
   });
 });

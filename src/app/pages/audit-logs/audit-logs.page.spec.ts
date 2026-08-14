@@ -63,9 +63,12 @@ describe('AuditLogsPage Component Unit Tests', () => {
   it('should create the component and load logs on init', async () => {
     fixture.detectChanges();
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/audit-logs`);
+    const req = httpMock.expectOne((r) => r.url.endsWith('/audit-logs'));
     expect(req.request.method).toBe('GET');
-    req.flush(mockLogs);
+    req.flush({
+      data: mockLogs,
+      meta: { total: 3, page: 1, limit: 10, totalPages: 1 },
+    });
 
     await fixture.whenStable();
 
@@ -74,12 +77,22 @@ describe('AuditLogsPage Component Unit Tests', () => {
     expect((component as any).paginatedLogs().length).toBe(3);
   });
 
-  it('should filter logs by query (email, action, entity or details)', async () => {
+  it('should filter logs by query reactively using computed signal', async () => {
     fixture.detectChanges();
-    httpMock.expectOne(`${environment.apiUrl}/audit-logs`).flush(mockLogs);
+    httpMock.expectOne((r) => r.url.endsWith('/audit-logs')).flush({
+      data: mockLogs,
+      meta: { total: 3, page: 1, limit: 10, totalPages: 1 },
+    });
     await fixture.whenStable();
 
     (component as any).onSearchChange('DELETE');
+    const req = httpMock.expectOne((r) => r.url.endsWith('/audit-logs'));
+    expect(req.request.params.get('search')).toBe('DELETE');
+    req.flush({
+      data: [mockLogs[1]],
+      meta: { total: 1, page: 1, limit: 10, totalPages: 1 },
+    });
+
     await fixture.whenStable();
 
     const filtered = (component as any).filteredLogs();
@@ -87,32 +100,34 @@ describe('AuditLogsPage Component Unit Tests', () => {
     expect(filtered[0].action).toBe('DELETE_USER');
   });
 
-  it('should clear search filter on clearSearch()', async () => {
+  it('should clear search filter on clearSearch() and trigger fresh load', async () => {
     fixture.detectChanges();
-    httpMock.expectOne(`${environment.apiUrl}/audit-logs`).flush(mockLogs);
+    httpMock.expectOne((r) => r.url.endsWith('/audit-logs')).flush({
+      data: mockLogs,
+      meta: { total: 3, page: 1, limit: 10, totalPages: 1 },
+    });
     await fixture.whenStable();
-
-    (component as any).onSearchChange('DELETE');
-    await fixture.whenStable();
-
-    expect((component as any).filteredLogs().length).toBe(1);
 
     (component as any).clearSearch();
+    const req = httpMock.expectOne((r) => r.url.endsWith('/audit-logs'));
+    req.flush({
+      data: mockLogs,
+      meta: { total: 3, page: 1, limit: 10, totalPages: 1 },
+    });
     await fixture.whenStable();
 
     expect((component as any).filteredLogs().length).toBe(3);
     expect((component as any).filterQuery()).toBe('');
   });
 
-  it('should handle pagination math correctly', async () => {
+  it('should handle pagination math correctly with computed totalPages', async () => {
     fixture.detectChanges();
-    httpMock.expectOne(`${environment.apiUrl}/audit-logs`).flush(mockLogs);
+    httpMock.expectOne((r) => r.url.endsWith('/audit-logs')).flush({
+      data: mockLogs,
+      meta: { total: 25, page: 1, limit: 10, totalPages: 3 },
+    });
     await fixture.whenStable();
 
-    (component as any).pageSize.set(2);
-    await fixture.whenStable();
-
-    expect((component as any).totalPages()).toBe(2);
-    expect((component as any).paginatedLogs().length).toBe(2);
+    expect((component as any).totalPages()).toBe(3);
   });
 });
