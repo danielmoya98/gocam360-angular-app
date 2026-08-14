@@ -237,18 +237,33 @@ export class EventsPage implements OnInit {
     this._toastService.success('Impresión Procesada', 'Se envió la orden de impresión térmica.');
   }
 
-  protected readonly eventFramesList = signal<{ id: string; name: string; previewUrl: string }[]>([
-    {
-      id: 'frame-default-1',
-      name: 'Marco Elegante 360 (PNG)',
-      previewUrl: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=300&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'frame-default-2',
-      name: 'Gold Celebration 360 (PNG)',
-      previewUrl: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=300&auto=format&fit=crop&q=80',
-    },
-  ]);
+  protected readonly eventFramesList = signal<{ id: string; name: string; previewUrl: string }[]>([]);
+
+  private formatTimeToHHMM(val: any): string {
+    if (!val) return '18:00';
+    const str = String(val);
+    if (/^\d{2}:\d{2}$/.test(str)) return str;
+    if (/^\d{2}:\d{2}:\d{2}/.test(str)) return str.substring(0, 5);
+
+    const parsed = new Date(val);
+    if (!isNaN(parsed.getTime())) {
+      const h = String(parsed.getUTCHours()).padStart(2, '0');
+      const m = String(parsed.getUTCMinutes()).padStart(2, '0');
+      return `${h}:${m}`;
+    }
+    return '18:00';
+  }
+
+  private formatDateToYYYYMMDD(val: any): string {
+    if (!val) return new Date().toISOString().substring(0, 10);
+    const str = String(val);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+    const parsed = new Date(val);
+    if (!isNaN(parsed.getTime())) {
+      return parsed.toISOString().substring(0, 10);
+    }
+    return new Date().toISOString().substring(0, 10);
+  }
 
   onFrameFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -307,6 +322,7 @@ export class EventsPage implements OnInit {
 
   openCreateDrawer(): void {
     this.activeDrawerTab.set('general');
+    this.eventFramesList.set([]);
     this.eventModel.set({
       name: '',
       description: '',
@@ -339,6 +355,22 @@ export class EventsPage implements OnInit {
     this.selectedEvent.set(ev);
     this.activeRowMenuId.set(null);
     this.activeDrawerTab.set('general');
+
+    // Cargar los marcos reales asociados desde PostgreSQL Prisma
+    const realFrames = (ev.eventFrames || [])
+      .map((ef) => {
+        const frame = ef.frame;
+        if (!frame) return null;
+        return {
+          id: frame.id || ef.frameId,
+          name: frame.name || 'Marco 360',
+          previewUrl: frame.previewImage || frame.overlayImage || '',
+        };
+      })
+      .filter((f): f is { id: string; name: string; previewUrl: string } => !!f && !!f.previewUrl);
+
+    this.eventFramesList.set(realFrames);
+
     this.eventModel.set({
       name: ev.name || ev.title,
       description: ev.description || '',
@@ -349,9 +381,9 @@ export class EventsPage implements OnInit {
       primaryColor: ev.primaryColor || '#6366f1',
       coverImage: ev.coverImage || '',
       logoUrl: ev.logoUrl || '',
-      eventDate: typeof ev.eventDate === 'string' ? ev.eventDate.substring(0, 10) : new Date(ev.eventDate || ev.date).toISOString().substring(0, 10),
-      startTime: typeof ev.startTime === 'string' ? ev.startTime.substring(0, 5) : '18:00',
-      endTime: typeof ev.endTime === 'string' ? ev.endTime.substring(0, 5) : '23:00',
+      eventDate: this.formatDateToYYYYMMDD(ev.eventDate || ev.date),
+      startTime: this.formatTimeToHHMM(ev.startTime),
+      endTime: this.formatTimeToHHMM(ev.endTime),
       maxPhotosPerGuest: ev.maxPhotosPerGuest || 10,
       maxPrintsPerGuest: ev.maxPrintsPerGuest || 1,
       galleryRetentionDays: ev.galleryRetentionDays || 7,
