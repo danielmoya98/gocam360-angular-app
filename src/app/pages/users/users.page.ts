@@ -165,11 +165,11 @@ export class UsersPage implements OnInit {
     return p.every((u) => this.selectedAdminIds().includes(u.id));
   });
 
-  onSearchInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.searchQuery.set(input.value);
+  onSearchInput(event: Event | string): void {
+    const value = typeof event === 'string' ? event : ((event?.target as HTMLInputElement)?.value ?? '');
+    this.searchQuery.set(value);
     this.currentPage.set(1);
-    this._preferencesService.savePageFilter('users', { searchQuery: input.value });
+    this._preferencesService.savePageFilter('users', { searchQuery: value });
   }
 
   clearFilters(): void {

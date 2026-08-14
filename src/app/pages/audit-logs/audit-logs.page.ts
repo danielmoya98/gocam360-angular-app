@@ -59,9 +59,10 @@ export class AuditLogsPage implements OnInit {
     });
   }
 
-  onSearchChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.filterQuery.set(target.value.toLowerCase());
+  onSearchChange(event: Event | string): void {
+    const value = typeof event === 'string' ? event : ((event?.target as HTMLInputElement)?.value ?? '');
+    this.filterQuery.set(value.toLowerCase());
+    this.currentPage.set(1);
     this.applyFilter();
   }
 
