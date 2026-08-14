@@ -18,6 +18,8 @@ import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { UsersService, AdminUserResponseDto, CreateAdminDto, UpdateAdminDto } from './services/users.service';
 import { PreferencesService } from '../../shared/services/preferences.service';
 
+import { ClickOutsideDirective } from '../../shared/directives/click-outside.directive';
+
 @Component({
   selector: 'app-users-page',
   standalone: true,
@@ -34,6 +36,7 @@ import { PreferencesService } from '../../shared/services/preferences.service';
     TablePaginationComponent,
     ErrorBoundaryComponent,
     IconComponent,
+    ClickOutsideDirective,
     DatePipe
   ],
   templateUrl: './users.page.html',
@@ -177,7 +180,22 @@ export class UsersPage implements OnInit {
     this.selectedStatusFilter.set('ALL');
     this.selectedRoleFilter.set('ALL');
     this.currentPage.set(1);
+    this.showStatusDropdown.set(false);
+    this.showRoleDropdown.set(false);
+    this.activeRowMenuId.set(null);
     this._preferencesService.savePageFilter('users', { searchQuery: '', statusFilter: 'ALL' });
+  }
+
+  closeStatusDropdown(): void {
+    this.showStatusDropdown.set(false);
+  }
+
+  closeRoleDropdown(): void {
+    this.showRoleDropdown.set(false);
+  }
+
+  closeRowMenu(): void {
+    this.activeRowMenuId.set(null);
   }
 
   setStatusFilter(status: string): void {

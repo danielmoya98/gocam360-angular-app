@@ -54,7 +54,7 @@
         }
 
         <!-- Status Dropdown Filter -->
-        <div class="relative">
+        <div class="relative" (appClickOutside)="closeStatusDropdown()">
           <button type="button" (click)="showStatusDropdown.update(v => !v); showRoleDropdown.set(false)"
             class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer shadow-xs">
             <app-icon name="filter" class="w-3.5 h-3.5 text-muted-foreground" />
@@ -86,7 +86,7 @@
         </div>
 
         <!-- Role Dropdown Filter -->
-        <div class="relative">
+        <div class="relative" (appClickOutside)="closeRoleDropdown()">
           <button type="button" (click)="showRoleDropdown.update(v => !v); showStatusDropdown.set(false)"
             class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer shadow-xs">
             <app-icon name="shield" class="w-3.5 h-3.5 text-muted-foreground" />
@@ -209,7 +209,7 @@
               class="py-2.5 px-3 text-muted-foreground font-mono text-[11px] column-smooth animate-in fade-in duration-200">
               {{ admin.createdAt | date:'shortDate' }}
             </td>
-            <td class="py-2.5 px-3 text-right relative">
+            <td class="py-2.5 px-3 text-right relative" (appClickOutside)="closeRowMenu()">
               <button type="button" (click)="toggleRowActions(admin)"
                 class="text-muted-foreground hover:text-foreground text-xs p-1 rounded hover:bg-muted cursor-pointer transition-colors">
                 <app-icon name="more" class="w-4 h-4" />
