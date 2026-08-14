@@ -468,6 +468,10 @@ export class EventsPage implements OnInit {
           .filter((f) => f.previewUrl.startsWith('data:image'))
           .map((f) => ({ name: f.name, overlayBase64: f.previewUrl }));
 
+        const keepFrameIds = this.eventFramesList()
+          .filter((f) => !f.previewUrl.startsWith('data:image'))
+          .map((f) => f.id);
+
         const payload: UpdateEventDto = {
           name: formVal.name,
           hostName: formVal.hostName,
@@ -477,6 +481,7 @@ export class EventsPage implements OnInit {
           maxPhotosPerGuest: Number(formVal.maxPhotosPerGuest),
           maxPrintsPerGuest: Number(formVal.maxPrintsPerGuest),
           galleryRetentionDays: Number(formVal.galleryRetentionDays),
+          keepFrameIds,
         };
 
         if (formVal.description?.trim()) payload.description = formVal.description.trim();

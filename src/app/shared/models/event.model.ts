@@ -111,4 +111,5 @@ export interface UpdateEventDto {
   logoUrl?: string;
   status?: EventStatus;
   frames?: CreateFrameItemDto[];
+  keepFrameIds?: string[];
 }
