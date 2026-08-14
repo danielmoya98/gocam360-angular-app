@@ -237,6 +237,69 @@ export class EventsPage implements OnInit {
     this._toastService.success('Impresión Procesada', 'Se envió la orden de impresión térmica.');
   }
 
+  protected readonly eventFramesList = signal<{ id: string; name: string; previewUrl: string }[]>([
+    {
+      id: 'frame-default-1',
+      name: 'Marco Elegante 360 (PNG)',
+      previewUrl: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=300&auto=format&fit=crop&q=80',
+    },
+    {
+      id: 'frame-default-2',
+      name: 'Gold Celebration 360 (PNG)',
+      previewUrl: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=300&auto=format&fit=crop&q=80',
+    },
+  ]);
+
+  onFrameFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const previewUrl = e.target?.result as string;
+        const newFrame = {
+          id: `frame-${Date.now()}`,
+          name: file.name.replace(/\.[^/.]+$/, ''),
+          previewUrl,
+        };
+        this.eventFramesList.update((frames) => [newFrame, ...frames]);
+        this._toastService.success('Marco Cargado', `Se cargó el marco "${newFrame.name}" correctamente.`);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeFrame(frameId: string): void {
+    this.eventFramesList.update((frames) => frames.filter((f) => f.id !== frameId));
+    this._toastService.info('Marco Removido', 'Se removió el marco de la lista del evento.');
+  }
+
+  onCoverImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        this.eventModel.update((m) => ({ ...m, coverImage: dataUrl }));
+        this._toastService.success('Imagen de Portada', 'Se cargó la portada del evento.');
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  onLogoUrlSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        this.eventModel.update((m) => ({ ...m, logoUrl: dataUrl }));
+        this._toastService.success('Logo de Marca', 'Se cargó el logo del evento.');
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
   openLiveWall(ev: EventItemResponseDto): void {
     this.activeRowMenuId.set(null);
     this._router.navigate(['/live-wall', ev.id]);

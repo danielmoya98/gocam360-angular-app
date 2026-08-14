@@ -528,25 +528,92 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Personalización de Marca & Branding (Campos Prisma) -->
+              <div class="pt-2 border-t border-border/40 space-y-2">
+                <span class="text-xs font-bold text-foreground block">Personalización & Branding (Prisma)</span>
+                
+                <div class="space-y-1">
+                  <label class="text-[11px] font-medium text-muted-foreground">Color Principal del Evento (primaryColor)</label>
+                  <div class="flex items-center gap-2">
+                    <input type="color" [value]="eventModel().primaryColor" (input)="eventModel.update(m => ({...m, primaryColor: $any($event.target).value}))" class="w-8 h-8 rounded border border-border cursor-pointer bg-transparent" />
+                    <input type="text" hlmInput [value]="eventModel().primaryColor" (input)="eventModel.update(m => ({...m, primaryColor: $any($event.target).value}))" placeholder="#6366f1" class="h-9 rounded-md text-xs font-mono flex-1" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="space-y-1">
+                    <label class="text-[11px] font-medium text-muted-foreground">Portada del Evento (coverImage)</label>
+                    <input type="file" #coverInput accept="image/*" (change)="onCoverImageSelected($event)" class="hidden" />
+                    <button type="button" (click)="coverInput.click()" class="w-full h-9 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center justify-center gap-1.5 cursor-pointer">
+                      <app-icon name="camera" class="w-3.5 h-3.5 text-muted-foreground" />
+                      <span>{{ eventModel().coverImage ? 'Cambiar Portada' : 'Subir Portada' }}</span>
+                    </button>
+                    @if (eventModel().coverImage) {
+                      <div class="relative w-full h-12 rounded-lg overflow-hidden border border-border mt-1">
+                        <img [src]="eventModel().coverImage" alt="Portada" class="w-full h-full object-cover" />
+                      </div>
+                    }
+                  </div>
+
+                  <div class="space-y-1">
+                    <label class="text-[11px] font-medium text-muted-foreground">Logo de Marca (logoUrl)</label>
+                    <input type="file" #logoInput accept="image/*" (change)="onLogoUrlSelected($event)" class="hidden" />
+                    <button type="button" (click)="logoInput.click()" class="w-full h-9 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center justify-center gap-1.5 cursor-pointer">
+                      <app-icon name="shield" class="w-3.5 h-3.5 text-muted-foreground" />
+                      <span>{{ eventModel().logoUrl ? 'Cambiar Logo' : 'Subir Logo' }}</span>
+                    </button>
+                    @if (eventModel().logoUrl) {
+                      <div class="relative w-full h-12 rounded-lg p-1 bg-white border border-border mt-1 flex items-center justify-center">
+                        <img [src]="eventModel().logoUrl" alt="Logo" class="max-h-full max-w-full object-contain" />
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
             </div>
           }
 
-          <!-- PESTAÑA 2: MARCOS / OVERLAYS -->
+          <!-- PESTAÑA 2: MARCOS / OVERLAYS (SUBIDA REAL CON CLOUDINARY) -->
           @if (activeDrawerTab() === 'frames') {
             <div class="space-y-3 animate-in fade-in duration-200">
-              <div class="border-2 border-dashed border-border rounded-xl p-6 text-center hover:bg-muted/40 transition-colors cursor-pointer group space-y-2">
+              <input type="file" #frameFileInput accept="image/png,image/svg+xml" (change)="onFrameFileSelected($event)" class="hidden" />
+              
+              <div (click)="frameFileInput.click()" class="border-2 border-dashed border-primary/40 rounded-xl p-5 text-center hover:bg-primary/5 transition-colors cursor-pointer group space-y-2">
                 <div class="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
                   <app-icon name="camera" class="w-5 h-5 text-primary" />
                 </div>
-                <p class="text-xs font-bold text-foreground">Arrastra tus marcos en PNG aquí</p>
-                <p class="text-[10px] text-muted-foreground">Soporta capa de transparencia PNG (Recomendado 1080x1920)</p>
+                <p class="text-xs font-bold text-foreground">Haz clic para subir marcos PNG / SVG (Cloudinary)</p>
+                <p class="text-[10px] text-muted-foreground">Soporta capas con transparencia (Recomendado 1080x1920 px)</p>
               </div>
-              
-              <div class="p-3 rounded-lg border border-border bg-muted/20 text-xs text-muted-foreground space-y-1">
-                <span class="font-bold text-foreground block">Marcos Predeterminados Disponibles:</span>
-                <div class="flex items-center gap-2 pt-1">
-                  <span class="px-2 py-1 rounded bg-card border border-border text-[10px] font-mono text-foreground">Marco Elegante 360 (PNG)</span>
-                  <span class="px-2 py-1 rounded bg-card border border-border text-[10px] font-mono text-foreground">Gold Celebration (PNG)</span>
+
+              <!-- Lista de Marcos Cargados para el Evento -->
+              <div class="space-y-2 pt-2">
+                <span class="text-xs font-bold text-foreground block">Marcos Asignados al Evento:</span>
+                
+                <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  @for (frame of eventFramesList(); track frame.id) {
+                    <div class="flex items-center justify-between p-2 rounded-xl border border-border bg-card shadow-2xs">
+                      <div class="flex items-center gap-2.5">
+                        <img [src]="frame.previewUrl" [alt]="frame.name" class="w-10 h-10 rounded-lg object-cover border border-border bg-black/10" />
+                        <div>
+                          <p class="text-xs font-bold text-foreground leading-tight">{{ frame.name }}</p>
+                          <span class="px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 text-[9px] font-mono font-bold">Activo PNG</span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        (click)="removeFrame(frame.id)"
+                        class="p-1.5 rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs transition-colors cursor-pointer"
+                        title="Remover Marco"
+                      >
+                        <app-icon name="trash" class="w-3.5 h-3.5 text-rose-400" />
+                      </button>
+                    </div>
+                  } @empty {
+                    <p class="text-xs text-muted-foreground text-center py-4">No hay marcos asignados aún.</p>
+                  }
                 </div>
               </div>
             </div>
