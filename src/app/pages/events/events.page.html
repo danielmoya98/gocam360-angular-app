@@ -180,11 +180,16 @@
           @for (event of paginatedEvents(); track event.id) {
             <div class="rounded-xl border border-border/80 bg-card overflow-hidden shadow-none hover:border-primary/50 transition-all flex flex-col justify-between group">
               
-              <!-- Gradient Banner con Badge de Estado y QR Fast Button -->
-              <div class="relative h-28 w-full p-3.5 bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 flex flex-col justify-between">
+              <!-- Gradient / Cover Banner con Badge de Estado y QR Fast Button -->
+              <div class="relative h-28 w-full p-3.5 bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 flex flex-col justify-between overflow-hidden">
+                @if (event.coverImage) {
+                  <img [src]="event.coverImage" [alt]="event.title" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-500 group-hover:scale-105" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/30 z-0"></div>
+                }
+
                 <div class="flex items-center justify-between z-10">
                   @if (event.status === 'ACTIVE') {
-                    <span class="px-2 py-0.5 rounded-full border border-emerald-500/40 text-emerald-400 text-[10px] font-bold bg-black/60 backdrop-blur-md flex items-center gap-1.5">
+                    <span class="px-2 py-0.5 rounded-full border border-emerald-500/40 text-emerald-400 text-[10px] font-bold bg-black/60 backdrop-blur-md flex items-center gap-1.5 shadow-xs">
                       <span class="relative flex h-1.5 w-1.5">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
@@ -207,16 +212,21 @@
                 </div>
 
                 <div class="z-10 flex items-center justify-between">
-                  <span class="text-[10px] font-mono font-bold text-white/80 uppercase tracking-widest">Código: {{ event.uniqueCode }}</span>
-                  <span class="text-[10px] text-white/70 font-mono">📅 {{ event.date | date:'shortDate' }}</span>
+                  <span class="text-[10px] font-mono font-bold text-white/90 uppercase tracking-widest drop-shadow-xs">Código: {{ event.uniqueCode }}</span>
+                  <span class="text-[10px] text-white/80 font-mono drop-shadow-xs">📅 {{ event.date | date:'shortDate' }}</span>
                 </div>
               </div>
 
               <!-- Contenido e Información del Evento -->
               <div class="p-4 pt-3 space-y-3 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 class="text-sm font-bold text-foreground truncate" [title]="event.title">{{ event.title }}</h3>
-                  <p class="text-[11px] text-muted-foreground mt-0.5 truncate">👤 Anfitrión: {{ event.hostName }} • 📍 {{ event.location }}</p>
+                <div class="flex items-start gap-2.5">
+                  @if (event.logoUrl) {
+                    <img [src]="event.logoUrl" [alt]="event.title" class="w-8 h-8 rounded-lg object-contain bg-white border border-border p-0.5 shrink-0 mt-0.5 shadow-2xs" />
+                  }
+                  <div class="min-w-0 flex-1">
+                    <h3 class="text-sm font-bold text-foreground truncate" [title]="event.title">{{ event.title }}</h3>
+                    <p class="text-[11px] text-muted-foreground mt-0.5 truncate">👤 Anfitrión: {{ event.hostName }} • 📍 {{ event.location }}</p>
+                  </div>
                 </div>
 
                 <!-- Métricas de Fotos e Impresiones del Evento -->
