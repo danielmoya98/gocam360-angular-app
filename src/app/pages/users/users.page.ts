@@ -218,7 +218,20 @@ export class UsersPage implements OnInit {
     this.currentPage.set(1);
   }
 
-  toggleRowActions(admin: AdminUserResponseDto): void {
+  toggleStatusDropdown(event?: Event): void {
+    event?.stopPropagation();
+    this.showStatusDropdown.update((v) => !v);
+    this.showRoleDropdown.set(false);
+  }
+
+  toggleRoleDropdown(event?: Event): void {
+    event?.stopPropagation();
+    this.showRoleDropdown.update((v) => !v);
+    this.showStatusDropdown.set(false);
+  }
+
+  toggleRowActions(admin: AdminUserResponseDto, event?: Event): void {
+    event?.stopPropagation();
     this.activeRowMenuId.update((id) => (id === admin.id ? null : admin.id));
   }
 

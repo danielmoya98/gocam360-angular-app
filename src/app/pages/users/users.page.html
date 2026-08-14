@@ -55,7 +55,7 @@
 
         <!-- Status Dropdown Filter -->
         <div class="relative" (appClickOutside)="closeStatusDropdown()">
-          <button type="button" (click)="showStatusDropdown.update(v => !v); showRoleDropdown.set(false)"
+          <button type="button" (click)="toggleStatusDropdown($event)"
             class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer shadow-xs">
             <app-icon name="filter" class="w-3.5 h-3.5 text-muted-foreground" />
             <span>Estado</span>
@@ -87,7 +87,7 @@
 
         <!-- Role Dropdown Filter -->
         <div class="relative" (appClickOutside)="closeRoleDropdown()">
-          <button type="button" (click)="showRoleDropdown.update(v => !v); showStatusDropdown.set(false)"
+          <button type="button" (click)="toggleRoleDropdown($event)"
             class="px-2.5 py-1 rounded-md border border-border bg-card hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 transition-all cursor-pointer shadow-xs">
             <app-icon name="shield" class="w-3.5 h-3.5 text-muted-foreground" />
             <span>Rol</span>
@@ -210,7 +210,7 @@
               {{ admin.createdAt | date:'shortDate' }}
             </td>
             <td class="py-2.5 px-3 text-right relative" (appClickOutside)="closeRowMenu()">
-              <button type="button" (click)="toggleRowActions(admin)"
+              <button type="button" (click)="toggleRowActions(admin, $event)"
                 class="text-muted-foreground hover:text-foreground text-xs p-1 rounded hover:bg-muted cursor-pointer transition-colors">
                 <app-icon name="more" class="w-4 h-4" />
               </button>
