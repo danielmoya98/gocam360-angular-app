@@ -425,10 +425,22 @@
   >
     @if (drawerMode() === 'view' && selectedEvent(); as ev) {
       <div class="space-y-4 text-xs">
-        <div class="p-4 rounded-xl bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-white space-y-1">
-          <h4 class="text-base font-bold">{{ ev.title }}</h4>
-          <p class="text-xs opacity-80">👤 Anfitrión: {{ ev.hostName }}</p>
-          <p class="text-xs opacity-80">📍 {{ ev.location }}</p>
+        <div class="relative p-4 rounded-xl bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-white overflow-hidden shadow-sm">
+          @if (ev.coverImage) {
+            <img [src]="ev.coverImage" [alt]="ev.title" class="absolute inset-0 w-full h-full object-cover z-0" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/30 z-0"></div>
+          }
+
+          <div class="relative z-10 flex items-start gap-3">
+            @if (ev.logoUrl) {
+              <img [src]="ev.logoUrl" [alt]="ev.title" class="w-10 h-10 rounded-lg object-contain bg-white border border-white/20 p-0.5 shrink-0 shadow-sm" />
+            }
+            <div class="min-w-0 flex-1 space-y-0.5">
+              <h4 class="text-base font-bold text-white drop-shadow-xs truncate">{{ ev.title }}</h4>
+              <p class="text-xs text-white/90 drop-shadow-xs truncate">👤 Anfitrión: {{ ev.hostName }}</p>
+              <p class="text-xs text-white/80 drop-shadow-xs truncate">📍 {{ ev.location }}</p>
+            </div>
+          </div>
         </div>
 
         <div class="space-y-2 pt-2">
