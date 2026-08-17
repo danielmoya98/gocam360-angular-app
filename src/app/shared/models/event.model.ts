@@ -28,9 +28,13 @@ export interface PublicFrameDto {
 export interface PublicEventDto {
   id: string;
   name: string;
-  status: string;
-  primaryColor?: string;
+  description?: string;
+  coverImage?: string;
   logoUrl?: string;
+  primaryColor?: string;
+  hostName?: string;
+  location?: string;
+  status: string;
   frames: PublicFrameDto[];
 }
 

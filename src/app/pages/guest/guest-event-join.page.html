@@ -8,91 +8,66 @@
       <div class="w-16 h-1.5 bg-border rounded-full"></div>
     </div>
 
-    <!-- ==================== PASO 1: LOGIN / AUTOTYPE CÓDIGO ==================== -->
-    @if (currentStep() === 'LOGIN') {
-      <div class="flex-1 flex flex-col p-6 sm:p-8 pt-14 animate-in slide-in-from-right-4 duration-300">
+    <!-- ==================== PASO 1: CÓDIGO ÚNICO DE EVENTO ==================== -->
+    @if (currentStep() === 'STEP_1_CODE') {
+      <div class="flex-1 flex flex-col p-6 sm:p-8 pt-12 animate-in fade-in zoom-in-95 duration-300">
 
         <div class="flex-1 flex flex-col justify-center space-y-6">
           
           <!-- Brand Icon Header -->
           <div class="text-center space-y-2">
-            <div class="w-14 h-14 bg-foreground text-background font-black text-2xl rounded-2xl flex items-center justify-center mx-auto shadow-xl tracking-tighter">
+            <div class="w-16 h-16 bg-foreground text-background font-black text-3xl rounded-2xl flex items-center justify-center mx-auto shadow-xl tracking-tighter">
               g
             </div>
             <h1 class="text-2xl font-black tracking-tight text-foreground">gocam360</h1>
             <p class="text-xs text-muted-foreground leading-relaxed px-2">
-              Conéctate al evento en vivo y envía tus mejores fotografías 360° directamente a la estación de impresión.
+              Conéctate a la plataforma de eventos 360° e imprime tus mejores fotografías en vivo.
             </p>
           </div>
 
-          <!-- Formulario de Ingreso de Invitado -->
-          <form (submit)="onJoinSubmit(); $event.preventDefault()" class="space-y-4 pt-2">
+          <!-- Formulario de Código del Evento -->
+          <form (submit)="validateEventCode(); $event.preventDefault()" class="space-y-5 pt-2">
             
-            <!-- CÓDIGO DE ACCESO CÓN ANIMACIÓN AUTOTYPE -->
-            <div class="space-y-1">
-              <label class="text-[11px] font-bold text-foreground uppercase tracking-wider block">
-                Código Único del Evento
+            <div class="space-y-2">
+              <label class="text-[11px] font-extrabold text-foreground uppercase tracking-widest text-center block">
+                CÓDIGO ÚNICO DEL EVENTO
               </label>
+              
               <div class="relative">
                 <input
                   type="text"
                   [value]="displayEventCode()"
                   (input)="onManualCodeInput($event)"
-                  placeholder="EJ. BODA-2026"
-                  class="w-full h-12 bg-muted/30 border border-border rounded-xl px-4 font-mono font-black text-foreground text-center uppercase tracking-widest text-base focus:outline-none focus:border-foreground transition-all shadow-inner"
+                  placeholder="BODA-FAAC"
+                  class="w-full h-14 bg-muted/30 border-2 border-border focus:border-foreground rounded-2xl px-4 font-mono font-black text-foreground text-center uppercase tracking-widest text-lg focus:outline-none transition-all shadow-inner"
                 />
                 @if (isAutoTyping()) {
-                  <span class="absolute right-3 top-3.5 flex h-2 w-2">
+                  <span class="absolute right-3.5 top-4.5 flex h-2.5 w-2.5">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                   </span>
                 }
               </div>
+
               @if (isAutoTyping()) {
-                <p class="text-[10px] text-emerald-400 font-mono text-center animate-pulse">⚡ Código escaneado por QR autocompletado...</p>
+                <p class="text-[10px] text-emerald-400 font-mono text-center animate-pulse">⚡ Escaneado vía Código QR autocompletado...</p>
+              } @else {
+                <p class="text-[10px] text-muted-foreground text-center">Ingresa el código proporcionado por el organizador del evento.</p>
               }
             </div>
 
-            <!-- NOMBRE DEL INVITADO -->
-            <div class="space-y-1">
-              <label class="text-[11px] font-bold text-foreground uppercase tracking-wider block">
-                Tu Nombre Completo *
-              </label>
-              <input
-                type="text"
-                [value]="guestName()"
-                (input)="guestName.set($any($event.target).value)"
-                placeholder="Ej. Camila Moya"
-                class="w-full h-12 bg-muted/30 border border-border rounded-xl px-4 text-sm text-foreground focus:outline-none focus:border-foreground transition-all placeholder:text-muted-foreground/60"
-              />
-            </div>
-
-            <!-- TELÉFONO DE WHATSAPP -->
-            <div class="space-y-1">
-              <label class="text-[11px] font-bold text-foreground uppercase tracking-wider block">
-                Teléfono (WhatsApp para Aviso) *
-              </label>
-              <input
-                type="tel"
-                [value]="guestPhone()"
-                (input)="guestPhone.set($any($event.target).value)"
-                placeholder="Ej. +52 55 1234 5678"
-                class="w-full h-12 bg-muted/30 border border-border rounded-xl px-4 text-sm text-foreground focus:outline-none focus:border-foreground transition-all placeholder:text-muted-foreground/60 font-mono"
-              />
-            </div>
-
-            <!-- BOTÓN SUBMIT -->
+            <!-- Botón Validar Código -->
             <div class="pt-2">
               <button
                 type="submit"
-                [disabled]="!displayEventCode() || !guestName() || !guestPhone() || isSubmitting()"
-                class="w-full h-12 rounded-xl bg-foreground text-background font-black text-xs shadow-md hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-40 flex items-center justify-center gap-2 cursor-pointer"
+                [disabled]="!displayEventCode() || isValidatingCode()"
+                class="w-full h-12 rounded-xl bg-foreground text-background font-black text-xs shadow-lg hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-40 flex items-center justify-center gap-2 cursor-pointer"
               >
-                @if (isSubmitting()) {
+                @if (isValidatingCode()) {
                   <app-icon name="refresh" class="w-4 h-4 animate-spin" />
-                  <span>Conectando con el Evento...</span>
+                  <span>Verificando Evento...</span>
                 } @else {
-                  <span>Entrar al Evento →</span>
+                  <span>Continuar →</span>
                 }
               </button>
             </div>
@@ -100,6 +75,131 @@
           </form>
 
         </div>
+
+      </div>
+    }
+
+    <!-- ==================== PASO 2: REGISTRO DE INVITADO CON BRANDING DEL EVENTO ==================== -->
+    @else if (currentStep() === 'STEP_2_GUEST_INFO') {
+      <div class="flex-1 flex flex-col p-6 pt-10 animate-in fade-in slide-in-from-right duration-400">
+        
+        <!-- Header con Portada, Logo & Descripción del Evento -->
+        <div class="relative rounded-3xl overflow-hidden shadow-xl mb-4 bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900 border border-border/60">
+          @if (eventData()?.coverImage) {
+            <img [src]="eventData()?.coverImage" [alt]="eventData()?.name" class="absolute inset-0 w-full h-full object-cover z-0" />
+            <div class="absolute inset-0 bg-gradient-to-t from-card via-card/85 to-black/40 z-0"></div>
+          } @else {
+            <div class="absolute inset-0 bg-gradient-to-tr from-indigo-900/90 via-purple-900/80 to-slate-900 z-0"></div>
+          }
+
+          <div class="relative z-10 p-5 pt-6 text-center space-y-2">
+            <!-- Logo del Evento u Organizador -->
+            <div class="w-16 h-16 rounded-2xl bg-white border border-white/20 p-1 shadow-2xl mx-auto flex items-center justify-center overflow-hidden">
+              @if (eventData()?.logoUrl) {
+                <img [src]="eventData()?.logoUrl" [alt]="eventData()?.name" class="max-w-full max-h-full object-contain" />
+              } @else {
+                <div class="w-full h-full bg-foreground text-background font-black text-xl flex items-center justify-center">
+                  {{ eventData()?.name?.substring(0, 1) || 'G' }}
+                </div>
+              }
+            </div>
+
+            <!-- Título del Evento -->
+            <h2 class="text-xl font-black text-foreground drop-shadow-sm leading-snug">
+              {{ eventData()?.name || 'Bienvenido al Evento' }}
+            </h2>
+
+            <!-- Descripción del Evento -->
+            @if (eventData()?.description) {
+              <p class="text-xs text-muted-foreground line-clamp-2 px-2 leading-relaxed">
+                {{ eventData()?.description }}
+              </p>
+            }
+
+            <!-- Anfitrión y Ubicación -->
+            <div class="flex items-center justify-center gap-2 pt-1">
+              @if (eventData()?.location) {
+                <span class="px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground text-[10px] font-bold">
+                  📍 {{ eventData()?.location }}
+                </span>
+              }
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold border border-emerald-500/20">
+                ● CÓDIGO: {{ displayEventCode() }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulario de Registro de Invitado -->
+        <form (submit)="onGuestRegisterSubmit(); $event.preventDefault()" class="space-y-3.5 flex-1 flex flex-col justify-between">
+          
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-extrabold text-foreground uppercase tracking-wider block">
+                COMPLETA TUS DATOS
+              </span>
+              <button
+                type="button"
+                (click)="currentStep.set('STEP_1_CODE')"
+                class="text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              >
+                ← Cambiar Código
+              </button>
+            </div>
+
+            <!-- Tu Nombre Completo -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-muted-foreground block">
+                Tu Nombre Completo *
+              </label>
+              <input
+                type="text"
+                [value]="guestName()"
+                (input)="guestName.set($any($event.target).value)"
+                placeholder="Ej. Camila Moya"
+                class="w-full h-11 bg-muted/30 border border-border rounded-xl px-3.5 text-xs text-foreground focus:outline-none focus:border-foreground transition-all placeholder:text-muted-foreground/60"
+              />
+            </div>
+
+            <!-- Teléfono de WhatsApp con Prefijo de Bolivia +591 -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-muted-foreground block">
+                Teléfono (WhatsApp para Aviso) *
+              </label>
+              <div class="flex items-center gap-1.5 border border-border rounded-xl bg-muted/30 overflow-hidden focus-within:border-foreground transition-all">
+                <span class="px-3 py-3 text-xs font-mono font-bold text-foreground bg-muted/60 border-r border-border/80 flex items-center gap-1 shrink-0">
+                  <span>🇧🇴</span>
+                  <span>+591</span>
+                </span>
+                <input
+                  type="tel"
+                  [value]="guestPhone()"
+                  (input)="guestPhone.set($any($event.target).value)"
+                  placeholder="71234567"
+                  class="flex-1 h-11 bg-transparent px-3 text-xs text-foreground focus:outline-none font-mono placeholder:text-muted-foreground/50"
+                />
+              </div>
+              <p class="text-[10px] text-muted-foreground">Te enviaremos una notificación cuando tus fotos impresas estén listas.</p>
+            </div>
+          </div>
+
+          <!-- Botón Conectarse al Evento -->
+          <div class="pt-2">
+            <button
+              type="submit"
+              [disabled]="!guestName() || !guestPhone() || isSubmitting()"
+              class="w-full h-12 rounded-xl bg-foreground text-background font-black text-xs shadow-lg hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-40 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              @if (isSubmitting()) {
+                <app-icon name="refresh" class="w-4 h-4 animate-spin" />
+                <span>Conectando con el Evento...</span>
+              } @else {
+                <span>Entrar al Evento →</span>
+              }
+            </button>
+          </div>
+
+        </form>
 
       </div>
     }
