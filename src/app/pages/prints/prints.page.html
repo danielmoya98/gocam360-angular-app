@@ -231,9 +231,9 @@
           <tr class="hover:bg-muted/40 transition-colors group">
             <td class="py-2.5 px-4">
               <div class="flex items-center gap-3">
-                <img [src]="item.photo.originalPath" [alt]="item.photo.guest.name"
+                <img [src]="item.photo.storagePath || item.photo.thumbnailPath || item.photo.originalPath" [alt]="item.photo.guest.name"
                   (click)="openPreviewModal(item.photo.storagePath)"
-                  class="w-9 h-9 rounded-lg object-cover ring-1 ring-border cursor-pointer shrink-0" />
+                  class="w-10 h-10 rounded-xl object-cover ring-1 ring-border/80 shadow-xs cursor-pointer shrink-0 hover:scale-105 transition-transform" />
                 <span class="font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{{
                   item.photo.guest.name }}</span>
               </div>
