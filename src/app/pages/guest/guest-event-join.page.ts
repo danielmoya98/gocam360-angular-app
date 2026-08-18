@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
@@ -28,6 +28,20 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
   protected readonly guestName = signal('');
   protected readonly guestPhone = signal('');
   protected readonly phoneCountryCode = signal('+591');
+
+  // Control de cuotas de fotos e impresiones del invitado
+  protected readonly photosUploaded = signal(0);
+  protected readonly printsRequested = signal(0);
+
+  protected readonly remainingPhotos = computed(() => {
+    const max = this.eventData()?.maxPhotosPerGuest ?? 10;
+    return Math.max(0, max - this.photosUploaded());
+  });
+
+  protected readonly remainingPrints = computed(() => {
+    const max = this.eventData()?.maxPrintsPerGuest ?? 1;
+    return Math.max(0, max - this.printsRequested());
+  });
 
   protected readonly isAutoTyping = signal(false);
   protected readonly isValidatingCode = signal(false);
@@ -200,7 +214,18 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
     return frame?.overlayUrl || '';
   }
 
+  discardPhoto(): void {
+    this.selectedPhotoUrl.set('');
+    this.currentStep.set('WELCOME');
+    this._toast.info('Foto Descartada', 'Puedes tomar o elegir otra fotografía.');
+  }
+
   sendToPrintQueue(): void {
+    if (this.remainingPhotos() <= 0) {
+      this._toast.error('Límite de fotos alcanzado', 'Has alcanzado el número máximo de fotografías permitidas para este evento.');
+      return;
+    }
+
     const guestId = this.currentGuestId();
     const eventId = this.eventData()?.id;
 
@@ -212,7 +237,7 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
     this.isUploading.set(true);
     const payload = {
       eventId,
-      guestId, // 👈 Usar el ID dinámico en lugar de 'guest-1'
+      guestId,
       frameId: this.selectedFrameId(),
       photoBase64: this.selectedPhotoUrl(),
     };
@@ -220,6 +245,8 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
     this._guestService.uploadPhoto(payload).subscribe({
       next: () => {
         this.isUploading.set(false);
+        this.photosUploaded.update((n) => n + 1);
+        this.printsRequested.update((n) => n + 1);
         this.currentStep.set('SUCCESS');
         this._toast.success('Foto Enviada', 'Tu orden ha ingresado a la cola de impresión.');
       },

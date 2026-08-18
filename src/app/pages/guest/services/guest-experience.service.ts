@@ -42,6 +42,6 @@ export class GuestExperienceService {
   }
 
   sendCrmQuote(payload: CrmQuotePayload): Observable<any> {
-    return this._api.post('/guest-experience/crm-lead', payload);
+    return this._api.post('/crm-leads/public-register', payload);
   }
 }

@@ -34,6 +34,8 @@ export interface PublicEventDto {
   primaryColor?: string;
   hostName?: string;
   location?: string;
+  maxPhotosPerGuest?: number;
+  maxPrintsPerGuest?: number;
   status: string;
   frames: PublicFrameDto[];
 }
