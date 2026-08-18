@@ -225,7 +225,7 @@
                   }
                   <div class="min-w-0 flex-1">
                     <h3 class="text-sm font-bold text-foreground truncate" [title]="event.title">{{ event.title }}</h3>
-                    <p class="text-[11px] text-muted-foreground mt-0.5 truncate">👤 Anfitrión: {{ event.hostName }} • 📍 {{ event.location }}</p>
+                    <p class="text-[11px] text-muted-foreground mt-0.5 truncate">👤 Anfitrión: {{ event.hostName }} • 👑 Encargado: {{ event.adminName || 'Admin' }}</p>
                   </div>
                 </div>
 
@@ -323,7 +323,7 @@
                   <td class="py-2.5 px-4">
                     <div>
                       <p class="font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{{ event.title }}</p>
-                      <span class="text-[11px] text-muted-foreground">👤 {{ event.hostName }} • 📍 {{ event.location }}</span>
+                      <span class="text-[11px] text-muted-foreground">👤 {{ event.hostName }} • 👑 {{ event.adminName || 'Admin' }} • 📍 {{ event.location }}</span>
                     </div>
                   </td>
                   <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">

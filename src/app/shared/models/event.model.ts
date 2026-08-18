@@ -43,6 +43,8 @@ export interface PublicEventDto {
 export interface EventItemResponseDto {
   id: string;
   adminId?: string;
+  adminName?: string;
+  adminEmail?: string;
   name: string;
   title: string; // Alias UI
   status: EventStatus;

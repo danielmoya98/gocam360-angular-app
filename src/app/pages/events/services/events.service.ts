@@ -27,6 +27,8 @@ export class EventsService {
     return {
       id: event.id,
       adminId: event.adminId,
+      adminName: event.adminName || event.admin?.fullName || 'Administrador',
+      adminEmail: event.adminEmail || event.admin?.email || '',
       name: nameVal,
       title: nameVal, // UI alias
       status: event.status || 'ACTIVE',
