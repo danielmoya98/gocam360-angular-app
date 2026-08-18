@@ -19,10 +19,11 @@
       <button
         type="button"
         (click)="exportReport()"
-        class="px-3 py-1.5 rounded-md bg-foreground text-background font-semibold text-xs shadow-sm hover:opacity-90 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+        [disabled]="isGeneratingPdf()"
+        class="px-3 py-1.5 rounded-md bg-foreground text-background font-semibold text-xs shadow-sm hover:opacity-90 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
       >
-        <app-icon name="download" class="w-3.5 h-3.5" />
-        <span>Exportar Reporte</span>
+        <app-icon name="download" class="w-3.5 h-3.5" [class.animate-bounce]="isGeneratingPdf()" />
+        <span>{{ isGeneratingPdf() ? 'Generando PDF...' : 'Exportar Reporte PDF' }}</span>
       </button>
     </div>
   </div>
