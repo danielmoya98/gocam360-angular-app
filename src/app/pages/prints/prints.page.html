@@ -163,7 +163,7 @@
             <span class="inline-block px-2 py-0.5 rounded bg-muted text-[10px] font-bold text-foreground font-mono">
               Marco: {{ item.photo.frame?.name || 'Sin Marco' }}
             </span>
-            <p class="text-[10px] text-muted-foreground font-mono">Hora: {{ item.requestedAt | date:'shortTime' }}</p>
+            <p class="text-[10px] text-muted-foreground font-mono">Hora: {{ (item.requestedAt || item.createdAt) | date:'shortTime' }}</p>
           </div>
         </div>
 
@@ -243,8 +243,7 @@
             <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">{{ item.photo.guest.phone }}</td>
             <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">{{ item.photo.frame?.name || 'Sin Marco'
               }}</td>
-            <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">{{ item.requestedAt | date:'shortTime'
-              }}</td>
+            <td class="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">{{ (item.requestedAt || item.createdAt) | date:'shortTime' }}</td>
             <td class="py-2.5 px-3">
               @if (item.status === 'PENDING') {
               <span
