@@ -162,29 +162,35 @@
         </div>
       </div>
 
-      <!-- Vector Line Chart SVG Adaptado a las Métricas Fotográficas -->
+      <!-- Vector Line Chart SVG Adaptado Dinámicamente a las Métricas Fotográficas -->
       <div class="w-full h-44 relative z-0">
         <svg class="w-full h-full overflow-visible" viewBox="0 0 500 120" preserveAspectRatio="none">
-          <!-- Curva 1: Volumen de Capturas de Fotos -->
+          <!-- Curva 1: Volumen Real de Fotos Capturadas -->
           <path
-            d="M 0,80 Q 50,30 100,65 T 200,40 T 300,25 T 400,15 T 500,35"
+            [attr.d]="chartPaths().photosPath"
             fill="none"
             stroke="currentColor"
             stroke-width="2.5"
+            class="text-foreground transition-all duration-500"
           />
-          <!-- Curva 2: Impresiones Térmicas Solicitadas -->
+          <!-- Curva 2: Impresiones Térmicas Entregadas (PRINTED) -->
           <path
-            d="M 0,95 Q 50,60 100,80 T 200,65 T 300,50 T 400,40 T 500,55"
+            [attr.d]="chartPaths().printsPath"
             fill="none"
             stroke="currentColor"
-            stroke-opacity="0.4"
-            stroke-width="1.5"
-            stroke-dasharray="3,3"
+            stroke-opacity="0.5"
+            stroke-width="2"
+            stroke-dasharray="4,4"
+            class="text-amber-400 transition-all duration-500"
           />
-          <circle cx="500" cy="35" r="4" class="fill-foreground animate-pulse" />
+          @if (chartPaths().lastPoint; as lp) {
+            <circle [attr.cx]="lp.x" [attr.cy]="lp.y" r="4" class="fill-foreground animate-pulse" />
+          }
         </svg>
         <div class="flex justify-between text-[10px] text-muted-foreground font-mono mt-3">
-          <span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span>
+          @for (month of chartPaths().months; track month) {
+            <span>{{ month }}</span>
+          }
         </div>
       </div>
     </div>
