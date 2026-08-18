@@ -47,13 +47,24 @@ export interface RecentActivityFeedItem {
 }
 
 export interface ActivityTrendPoint {
-  month: string;
+  date: string;
+  dayLabel: string;
   photos: number;
   prints: number;
 }
 
+export interface ChartsMetricsDto {
+  activityTrends: ActivityTrendPoint[];
+  eventsDistribution?: {
+    active: number;
+    finished: number;
+    total: number;
+  };
+}
+
 export interface SuperAdminMetricsResponseDto {
   cards: SuperAdminCardsMetrics;
+  charts?: ChartsMetricsDto;
   recentActivity: RecentActivityFeedItem[];
   activityTrends?: ActivityTrendPoint[];
 }

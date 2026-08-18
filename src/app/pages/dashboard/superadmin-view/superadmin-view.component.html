@@ -162,34 +162,32 @@
         </div>
       </div>
 
-      <!-- Vector Line Chart SVG Adaptado Dinámicamente a las Métricas Fotográficas -->
+      <!-- Vector Line Chart SVG Adaptado a las Métricas Fotográficas Real -->
       <div class="w-full h-44 relative z-0">
         <svg class="w-full h-full overflow-visible" viewBox="0 0 500 120" preserveAspectRatio="none">
-          <!-- Curva 1: Volumen Real de Fotos Capturadas -->
+          <!-- Curva 1: Fotos Subidas (Línea Continua Real) -->
           <path
-            [attr.d]="chartPaths().photosPath"
+            [attr.d]="photosSvgPath()"
             fill="none"
             stroke="currentColor"
             stroke-width="2.5"
-            class="text-foreground transition-all duration-500"
           />
-          <!-- Curva 2: Impresiones Térmicas Entregadas (PRINTED) -->
+          <!-- Curva 2: Impresiones Térmicas Completadas (Línea Punteada Real) -->
           <path
-            [attr.d]="chartPaths().printsPath"
+            [attr.d]="printsSvgPath()"
             fill="none"
             stroke="currentColor"
-            stroke-opacity="0.5"
-            stroke-width="2"
-            stroke-dasharray="4,4"
-            class="text-amber-400 transition-all duration-500"
+            stroke-opacity="0.4"
+            stroke-width="1.5"
+            stroke-dasharray="3,3"
           />
-          @if (chartPaths().lastPoint; as lp) {
-            <circle [attr.cx]="lp.x" [attr.cy]="lp.y" r="4" class="fill-foreground animate-pulse" />
-          }
+          <circle [attr.cx]="lastPointCoord().x" [attr.cy]="lastPointCoord().y" r="4" class="fill-foreground animate-pulse" />
         </svg>
-        <div class="flex justify-between text-[10px] text-muted-foreground font-mono mt-3">
-          @for (month of chartPaths().months; track month) {
-            <span>{{ month }}</span>
+        <div class="flex justify-between text-[10px] text-muted-foreground font-mono mt-3 overflow-x-auto no-scrollbar">
+          @for (tp of trendPoints(); track tp.date) {
+            <span>{{ tp.dayLabel || tp.date }}</span>
+          } @empty {
+            <span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span><span>Jul</span>
           }
         </div>
       </div>

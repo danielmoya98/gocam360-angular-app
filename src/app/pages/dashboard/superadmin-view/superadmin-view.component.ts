@@ -37,44 +37,45 @@ export class SuperadminViewComponent implements OnInit {
   protected readonly isLoading = signal(true);
   protected readonly metrics = signal<SuperAdminMetricsResponseDto | null>(null);
 
-  protected readonly chartPaths = computed(() => {
-    const trends = this.metrics()?.activityTrends || [];
-    if (trends.length === 0) {
-      return {
-        photosPath: 'M 0,90 L 100,70 L 200,80 L 300,50 L 400,60 L 500,40',
-        printsPath: 'M 0,105 L 100,95 L 200,100 L 300,80 L 400,85 L 500,70',
-        lastPoint: { x: 500, y: 40 },
-        months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-      };
-    }
+  protected readonly trendPoints = computed(() => {
+    return this.metrics()?.charts?.activityTrends || this.metrics()?.activityTrends || [];
+  });
 
-    const maxVal = Math.max(...trends.flatMap((t) => [t.photos, t.prints]), 10);
-    const width = 500;
-    const height = 100;
-    const step = width / Math.max(1, trends.length - 1);
+  protected readonly photosSvgPath = computed(() => {
+    const trends = this.trendPoints();
+    if (trends.length === 0) return 'M 0,100 L 500,100';
+    const maxVal = Math.max(...trends.map((t) => Math.max(t.photos, t.prints)), 5);
 
-    const photosPoints = trends.map((t, i) => {
-      const x = i * step;
-      const y = height - (t.photos / maxVal) * (height - 20) - 10;
-      return { x, y, raw: t.photos };
+    const points = trends.map((t, index) => {
+      const x = (index / (trends.length - 1 || 1)) * 500;
+      const y = 110 - (t.photos / maxVal) * 90;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
     });
 
-    const printsPoints = trends.map((t, i) => {
-      const x = i * step;
-      const y = height - (t.prints / maxVal) * (height - 20) - 10;
-      return { x, y, raw: t.prints };
+    return `M ${points.join(' L ')}`;
+  });
+
+  protected readonly printsSvgPath = computed(() => {
+    const trends = this.trendPoints();
+    if (trends.length === 0) return 'M 0,100 L 500,100';
+    const maxVal = Math.max(...trends.map((t) => Math.max(t.photos, t.prints)), 5);
+
+    const points = trends.map((t, index) => {
+      const x = (index / (trends.length - 1 || 1)) * 500;
+      const y = 110 - (t.prints / maxVal) * 90;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
     });
 
-    const photosPath = 'M ' + photosPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L ');
-    const printsPath = 'M ' + printsPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L ');
-    const lastPhoto = photosPoints[photosPoints.length - 1];
+    return `M ${points.join(' L ')}`;
+  });
 
-    return {
-      photosPath,
-      printsPath,
-      lastPoint: lastPhoto,
-      months: trends.map((t) => t.month),
-    };
+  protected readonly lastPointCoord = computed(() => {
+    const trends = this.trendPoints();
+    if (trends.length === 0) return { x: 500, y: 35 };
+    const maxVal = Math.max(...trends.map((t) => Math.max(t.photos, t.prints)), 5);
+    const lastPhoto = trends[trends.length - 1].photos;
+    const y = 110 - (lastPhoto / maxVal) * 90;
+    return { x: 500, y: Number(y.toFixed(1)) };
   });
 
   ngOnInit(): void {
