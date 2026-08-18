@@ -193,28 +193,27 @@
       </div>
     </div>
 
-    <!-- Donut Chart: Distribución del Almacenamiento & Eventos (1 Col) -->
+    <!-- Donut Chart: Distribución del Almacenamiento & Eventos (1 Col Real) -->
     <div class="p-5 rounded-lg border border-border/80 bg-card shadow-none space-y-4 flex flex-col justify-between">
       <div class="border-b border-border/40 pb-3">
         <h3 class="text-sm font-bold text-foreground">Estado de Servidores & Eventos</h3>
-        <p class="text-[11px] text-muted-foreground">Distribución de capacidad de almacenamiento</p>
+        <p class="text-[11px] text-muted-foreground">Distribución real de capacidad de almacenamiento</p>
       </div>
 
       <div class="flex items-center justify-center relative py-2">
         <svg class="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
           <path stroke="#27272A" stroke-width="3.8" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          <path stroke="currentColor" stroke-width="3.8" stroke-dasharray="78, 100" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          <path stroke="#10B981" stroke-width="3.8" stroke-dasharray="22, 100" stroke-dashoffset="-78" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path stroke="currentColor" stroke-width="3.8" [attr.stroke-dasharray]="storageDashArray()" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
         </svg>
         <div class="absolute text-center">
-          <span class="text-lg font-extrabold text-foreground font-mono">78%</span>
+          <span class="text-lg font-extrabold text-foreground font-mono">{{ storageUsedPercent() }}%</span>
           <span class="block text-[9px] text-muted-foreground">Cloudinary GB</span>
         </div>
       </div>
 
       <div class="space-y-1.5 text-xs">
-        <div class="flex justify-between items-center"><span class="flex items-center gap-1.5 text-muted-foreground"><span class="w-2 h-2 rounded-full bg-foreground"></span> Fotos HD Renderizadas</span><span class="font-mono font-bold text-foreground">78% (Cloud)</span></div>
-        <div class="flex justify-between items-center"><span class="flex items-center gap-1.5 text-muted-foreground"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Marcos & Logos PNG</span><span class="font-mono font-bold text-foreground">22% (Asset)</span></div>
+        <div class="flex justify-between items-center"><span class="flex items-center gap-1.5 text-muted-foreground"><span class="w-2 h-2 rounded-full bg-foreground"></span> Espacio Usado</span><span class="font-mono font-bold text-foreground">{{ metrics()?.cards?.storage?.usedGB || 0 }} GB ({{ storageUsedPercent() }}%)</span></div>
+        <div class="flex justify-between items-center"><span class="flex items-center gap-1.5 text-muted-foreground"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Espacio Disponible</span><span class="font-mono font-bold text-emerald-400">{{ storageFreePercent() }}% Libre</span></div>
       </div>
     </div>
 

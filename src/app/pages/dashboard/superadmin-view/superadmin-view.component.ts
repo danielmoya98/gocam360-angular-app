@@ -78,6 +78,19 @@ export class SuperadminViewComponent implements OnInit {
     return { x: 500, y: Number(y.toFixed(1)) };
   });
 
+  protected readonly storageUsedPercent = computed(() => {
+    return this.metrics()?.cards?.storage?.storageUsedPercent ?? 0;
+  });
+
+  protected readonly storageFreePercent = computed(() => {
+    return Math.max(0, 100 - this.storageUsedPercent());
+  });
+
+  protected readonly storageDashArray = computed(() => {
+    const used = this.storageUsedPercent();
+    return `${used}, 100`;
+  });
+
   ngOnInit(): void {
     this.loadMetrics();
   }
