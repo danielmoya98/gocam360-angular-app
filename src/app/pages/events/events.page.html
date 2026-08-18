@@ -501,6 +501,30 @@
           <!-- PESTAÑA 1: DETALLES GENERALES -->
           @if (activeDrawerTab() === 'general') {
             <div class="space-y-3 animate-in fade-in duration-200">
+              
+              <!-- Selector de Administrador Encargado / Creador -->
+              <div class="space-y-1 p-2.5 rounded-xl bg-muted/40 border border-border/60">
+                <label class="text-xs font-bold text-foreground flex items-center justify-between">
+                  <span>Administrador Encargado *</span>
+                  <span class="text-[10px] text-primary font-mono font-bold">Prisma: admin_id</span>
+                </label>
+                <div class="relative mt-1">
+                  <select
+                    [value]="eventModel().adminId"
+                    (change)="eventModel.update(m => ({ ...m, adminId: $any($event.target).value }))"
+                    class="w-full h-9 rounded-lg border border-border bg-card px-3 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer pr-8"
+                  >
+                    @for (u of usersList(); track u.id) {
+                      <option [value]="u.id" class="bg-slate-900 text-white py-1">
+                        👑 {{ u.fullName || u.email }} ({{ u.role }})
+                      </option>
+                    }
+                  </select>
+                  <app-icon name="chevron-down" class="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
+                </div>
+                <p class="text-[10px] text-muted-foreground">Determina la asignación y responsabilidad operativa del evento.</p>
+              </div>
+
               <div class="space-y-1">
                 <label class="text-xs font-bold text-foreground">Nombre del Evento *</label>
                 <input type="text" hlmInput [formField]="eventForm.name" placeholder="Ej. Boda Sofía & Carlos 360" class="h-9 rounded-md text-xs" />

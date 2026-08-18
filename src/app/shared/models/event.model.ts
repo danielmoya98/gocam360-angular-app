@@ -83,6 +83,7 @@ export interface CreateFrameItemDto {
 }
 
 export interface CreateEventDto {
+  adminId?: string;
   name: string;
   description?: string;
   hostName: string;
@@ -102,6 +103,7 @@ export interface CreateEventDto {
 }
 
 export interface UpdateEventDto {
+  adminId?: string;
   name?: string;
   description?: string;
   hostName?: string;

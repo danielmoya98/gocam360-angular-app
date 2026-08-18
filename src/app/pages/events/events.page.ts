@@ -18,6 +18,7 @@ import { PrintPhotoItem, PrintQueueModalComponent } from './print-queue-modal.co
 import { EventQrModalComponent } from './event-qr-modal.component';
 import { ClickOutsideDirective } from '../../shared/directives/click-outside.directive';
 import { EventsService, EventItemResponseDto, CreateEventDto, UpdateEventDto } from './services/events.service';
+import { UsersService, AdminUserResponseDto } from '../users/services/users.service';
 import { PreferencesService } from '../../shared/services/preferences.service';
 import { PrintsService } from '../prints/services/prints.service';
 
@@ -47,6 +48,7 @@ import { PrintsService } from '../prints/services/prints.service';
 })
 export class EventsPage implements OnInit {
   private readonly _eventsService = inject(EventsService);
+  private readonly _usersService = inject(UsersService);
   private readonly _printsService = inject(PrintsService);
   private readonly _toastService = inject(ToastService);
   private readonly _router = inject(Router);
@@ -62,6 +64,7 @@ export class EventsPage implements OnInit {
   protected readonly activeDrawerTab = signal<'general' | 'frames' | 'limits'>('general');
 
   protected readonly eventsList = signal<EventItemResponseDto[]>([]);
+  protected readonly usersList = signal<AdminUserResponseDto[]>([]);
 
   protected readonly searchQuery = signal(this.initialPref.searchQuery ?? '');
   protected readonly selectedStatusFilter = signal<string>(this.initialPref.statusFilter ?? 'ALL');
@@ -99,6 +102,7 @@ export class EventsPage implements OnInit {
   ]);
 
   protected readonly eventModel = signal({
+    adminId: '',
     name: '',
     description: '',
     hostName: '',
@@ -123,6 +127,14 @@ export class EventsPage implements OnInit {
 
   ngOnInit(): void {
     this.loadEvents();
+    this.loadUsers();
+  }
+
+  loadUsers(): void {
+    this._usersService.findAll().subscribe({
+      next: (users) => this.usersList.set(users),
+      error: () => {},
+    });
   }
 
   loadEvents(notify = false): void {
@@ -357,7 +369,9 @@ export class EventsPage implements OnInit {
   openCreateDrawer(): void {
     this.activeDrawerTab.set('general');
     this.eventFramesList.set([]);
+    const firstAdminId = this.usersList().length > 0 ? this.usersList()[0].id : '';
     this.eventModel.set({
+      adminId: firstAdminId,
       name: '',
       description: '',
       hostName: '',
@@ -390,7 +404,6 @@ export class EventsPage implements OnInit {
     this.activeRowMenuId.set(null);
     this.activeDrawerTab.set('general');
 
-    // Cargar los marcos reales asociados desde PostgreSQL Prisma
     const realFrames = (ev.eventFrames || [])
       .map((ef) => {
         const frame = ef.frame;
@@ -406,6 +419,7 @@ export class EventsPage implements OnInit {
     this.eventFramesList.set(realFrames);
 
     this.eventModel.set({
+      adminId: ev.adminId || '',
       name: ev.name || ev.title,
       description: ev.description || '',
       hostName: ev.hostName,
@@ -469,6 +483,8 @@ export class EventsPage implements OnInit {
           galleryRetentionDays: Number(formVal.galleryRetentionDays),
         };
 
+        if (formVal.adminId) payload.adminId = formVal.adminId;
+
         const customFrames = this.eventFramesList()
           .filter((f) => f.previewUrl.startsWith('data:image'))
           .map((f) => ({ name: f.name, overlayBase64: f.previewUrl }));
@@ -517,6 +533,8 @@ export class EventsPage implements OnInit {
           galleryRetentionDays: Number(formVal.galleryRetentionDays),
           keepFrameIds,
         };
+
+        if (formVal.adminId) payload.adminId = formVal.adminId;
 
         if (formVal.description?.trim()) payload.description = formVal.description.trim();
         if (formVal.hostPhone?.trim()) payload.hostPhone = formVal.hostPhone.trim();
