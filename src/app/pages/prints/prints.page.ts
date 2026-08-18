@@ -118,7 +118,7 @@ export class PrintsPage implements OnInit {
     const eventId = this.selectedEventId();
 
     if (eventId !== 'ALL') {
-      list = list.filter((r) => r.eventId === eventId);
+      list = list.filter((r) => r.eventId === eventId || (r.photo as any)?.eventId === eventId);
     }
     if (tab !== 'TODAS') {
       list = list.filter((r) => r.status === tab);
