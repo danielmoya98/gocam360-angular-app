@@ -35,19 +35,22 @@
   <!-- Selector por Evento + Filtros de Estado + View Switcher en Móvil -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
 
-    <!-- Selector Desplegable de Evento (Full Width en Móvil) -->
-    <div class="flex items-center gap-1 bg-card border border-border px-2.5 py-1.5 rounded-md text-xs w-full sm:w-80">
-      <span class="text-muted-foreground font-semibold shrink-0">Evento:</span>
-      <select [value]="selectedEventId()" (change)="onEventChange($event)"
-        class="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer w-full text-ellipsis overflow-hidden">
-        <option value="ALL" class="bg-popover-solid text-foreground">Todos los Eventos ({{ eventsList().length }})
-        </option>
+    <!-- Selector Desplegable de Evento con Estilo Obsidian VIP -->
+    <div class="relative flex items-center bg-muted/40 hover:bg-muted/60 border border-border/80 px-3 py-2 rounded-xl text-xs w-full sm:w-80 transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 shadow-xs">
+      <span class="text-muted-foreground font-extrabold shrink-0 mr-1">Evento:</span>
+      <select
+        [value]="selectedEventId()"
+        (change)="onEventChange($event)"
+        class="bg-transparent font-black text-foreground focus:outline-none cursor-pointer w-full text-ellipsis overflow-hidden pr-6 appearance-none leading-none"
+      >
+        <option value="ALL" class="bg-slate-900 text-white font-bold py-2">Todos los Eventos ({{ eventsList().length }})</option>
         @for (ev of eventsList(); track ev.id) {
-        <option [value]="ev.id" class="bg-popover-solid text-foreground">
-          {{ ev.title }} ({{ ev.totalPrints }} imp.)
-        </option>
+          <option [value]="ev.id" class="bg-slate-900 text-white font-bold py-2">
+            {{ ev.title }} ({{ ev.totalPrints }} imp.)
+          </option>
         }
       </select>
+      <app-icon name="chevron-down" class="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-80 text-foreground" />
     </div>
 
     <!-- Mobile Row: Status Filter Tabs + View Switcher (Debajo del evento en móvil) -->
