@@ -9,7 +9,7 @@
         <app-icon name="refresh" class="w-3.5 h-3.5" [class.animate-spin]="isLoading()" />
         <span>Actualizar Cola</span>
       </button>
-      <button type="button" (click)="downloadAllZip()"
+      <button type="button" (click)="openZipModal()"
         class="px-3 py-1.5 rounded-md bg-foreground text-background font-semibold text-xs shadow-sm hover:opacity-90 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer">
         <app-icon name="zip" class="w-3.5 h-3.5" />
         <span>Descargar ZIP Fotos</span>
@@ -330,6 +330,139 @@
       </div>
     </div>
   </div>
+  }
+
+  <!-- MODAL DE DESCARGA ZIP & COMPARTIR LINK CON ANFITRIÓN (HOST) -->
+  @if (isZipModalOpen()) {
+    <div class="fixed inset-0 w-screen h-screen z-[100000] flex items-center justify-center p-4">
+      <div class="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-md" (click)="closeZipModal()"></div>
+      <div class="relative bg-popover-solid text-popover-foreground border border-border rounded-2xl shadow-2xl p-5 w-full max-w-md max-h-[85vh] overflow-y-auto space-y-4 z-[100001] animate-in zoom-in-95 duration-200 no-scrollbar">
+        
+        <div class="flex items-center justify-between border-b border-border/60 pb-3">
+          <div>
+            <h3 class="text-sm font-extrabold text-foreground">Descargar Álbum & Compartir</h3>
+            <p class="text-[11px] text-muted-foreground">Exporta el archivo .ZIP o genera un enlace para el anfitrión</p>
+          </div>
+          <button (click)="closeZipModal()" class="text-muted-foreground hover:text-foreground cursor-pointer text-xs font-bold p-1">✕</button>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <!-- Selector de Evento -->
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+              Seleccionar Evento 360°:
+            </label>
+            <div class="relative">
+              <select
+                [value]="zipEventId()"
+                (change)="zipEventId.set($any($event.target).value)"
+                class="w-full bg-card border border-border/80 rounded-xl px-3 py-2.5 font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer pr-8"
+              >
+                @for (ev of eventsList(); track ev.id) {
+                  <option [value]="ev.id" class="bg-slate-900 text-white font-bold py-2">
+                    {{ ev.title }} — {{ ev.hostName || 'Anfitrión' }} ({{ ev.totalPhotos || 0 }} fotos)
+                  </option>
+                }
+              </select>
+              <app-icon name="chevron-down" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
+            </div>
+          </div>
+
+          @if (selectedZipEvent(); as ev) {
+            <!-- Tarjeta Informativa del Evento Seleccionado -->
+            <div class="p-3.5 rounded-xl bg-muted/40 border border-border/60 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-extrabold text-foreground text-sm">{{ ev.title }}</span>
+                <span class="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 font-mono text-[10px] font-bold uppercase">
+                  CÓDIGO: {{ ev.uniqueCode || ev.accessCode }}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-muted-foreground text-[11px] font-medium pt-1">
+                <div>Anfitrión: <span class="text-foreground font-bold">{{ ev.hostName || 'Sin especificar' }}</span></div>
+                <div>Ubicación: <span class="text-foreground font-bold">{{ ev.location }}</span></div>
+                <div>Fotos Capturadas: <span class="text-emerald-500 font-bold font-mono">{{ ev.totalPhotos || 0 }} fotos</span></div>
+                <div>Impresiones: <span class="text-amber-400 font-bold font-mono">{{ ev.totalPrints || 0 }} entregadas</span></div>
+              </div>
+            </div>
+
+            <!-- Opción 1: Descargar Fotos .ZIP -->
+            <div class="p-4 rounded-xl border border-border bg-card space-y-3 shadow-xs">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="p-2 rounded-lg bg-primary/10 text-primary">
+                    <app-icon name="zip" class="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-foreground text-xs">Descargar Fotografías (.ZIP)</h4>
+                    <p class="text-[10px] text-muted-foreground">Empaqueta todas las imágenes HD en un archivo comprimido</p>
+                  </div>
+                </div>
+              </div>
+
+              @if (isGeneratingZip()) {
+                <div class="p-3 rounded-lg bg-muted/60 border border-border/60 text-center space-y-2 animate-pulse">
+                  <div class="flex items-center justify-center gap-2 text-primary font-bold text-xs">
+                    <app-icon name="refresh" class="w-4 h-4 animate-spin" />
+                    <span>{{ zipProgressText() }}</span>
+                  </div>
+                  <p class="text-[10px] text-muted-foreground">No cierres esta ventana mientras se procesa el archivo.</p>
+                </div>
+              } @else {
+                <button
+                  type="button"
+                  (click)="downloadEventZip()"
+                  class="w-full h-10 rounded-xl bg-foreground text-background hover:opacity-90 font-extrabold text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <app-icon name="download" class="w-4 h-4" />
+                  <span>Generar y Descargar {{ ev.title }}.ZIP</span>
+                </button>
+              }
+            </div>
+
+            <!-- Opción 2: Compartir Enlace del Álbum con el Anfitrión -->
+            <div class="p-4 rounded-xl border border-purple-500/30 bg-purple-500/5 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="p-2 rounded-lg bg-purple-500/20 text-purple-300">
+                    <app-icon name="link" class="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-foreground text-xs">Álbum Digital para Anfitrión</h4>
+                    <p class="text-[10px] text-muted-foreground">El anfitrión podrá ver su galería e ingresar cuando desee</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <input
+                  type="text"
+                  readonly
+                  [value]="selectedZipEventGalleryUrl()"
+                  class="w-full bg-slate-900 border border-border rounded-lg px-3 py-1.5 font-mono text-[11px] text-muted-foreground focus:outline-none"
+                />
+                <button
+                  type="button"
+                  (click)="copyHostLink()"
+                  class="px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted font-bold text-xs text-foreground shrink-0 cursor-pointer"
+                >
+                  📋 Copiar
+                </button>
+              </div>
+
+              <button
+                type="button"
+                (click)="shareHostWhatsApp()"
+                class="w-full h-9 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+              >
+                <span>💬 Enviar Enlace por WhatsApp a {{ ev.hostName || 'Anfitrión' }}</span>
+              </button>
+            </div>
+          }
+
+        </div>
+      </div>
+    </div>
   }
 
 </div>

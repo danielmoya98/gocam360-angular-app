@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import JSZip from 'jszip';
 import { ToastService } from '../../shared/services/toast.service';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
@@ -20,7 +21,7 @@ import { PrintsService, PrintRequestItemDto, PrintStatus } from './services/prin
     PageHeaderComponent,
     KpiCardComponent,
     ViewSwitcherComponent,
-    TablePaginationComponent
+    TablePaginationComponent,
   ],
   templateUrl: './prints.page.html',
   styleUrl: './prints.page.css',
@@ -46,6 +47,24 @@ export class PrintsPage implements OnInit {
     url: '',
   });
 
+  // Estado Modal Descarga ZIP & Compartir con Anfitrión
+  protected readonly isZipModalOpen = signal(false);
+  protected readonly zipEventId = signal<string>('');
+  protected readonly isGeneratingZip = signal(false);
+  protected readonly zipProgressText = signal('');
+
+  protected readonly selectedZipEvent = computed(() => {
+    const id = this.zipEventId();
+    return this.eventsList().find((e) => e.id === id) || null;
+  });
+
+  protected readonly selectedZipEventGalleryUrl = computed(() => {
+    const ev = this.selectedZipEvent();
+    if (!ev) return '';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://gocam360.com';
+    return `${origin}/guest-experience?code=${ev.accessCode}`;
+  });
+
   ngOnInit(): void {
     this.loadAllData();
   }
@@ -59,12 +78,10 @@ export class PrintsPage implements OnInit {
       this.isLoading.set(true);
     }
 
-    // Reutilizar GET /events para cargar la lista de eventos con métricas
     this._eventsService.findAll(notify).subscribe({
       next: (events) => {
         this.eventsList.set(events);
 
-        // Cargar solicitudes de impresión filtrando por evento si hay uno seleccionado
         const targetEventId = this.selectedEventId() !== 'ALL' ? this.selectedEventId() : undefined;
         this._printsService.findAll(targetEventId, notify).subscribe({
           next: (prints) => {
@@ -102,7 +119,6 @@ export class PrintsPage implements OnInit {
     return ev ? ev.title : 'Evento 360°';
   }
 
-  // Métricas calculadas para las 4 KPI Cards combinando eventos e impresiones
   protected readonly totalPhotosCount = computed(() =>
     this.eventsList().reduce((acc, ev) => acc + (ev.totalPhotos || 0), 0)
   );
@@ -163,7 +179,104 @@ export class PrintsPage implements OnInit {
     this.previewState.set({ isOpen: false, url: '' });
   }
 
-  downloadAllZip(): void {
-    this._toastService.success('Descarga en Proceso', 'Se está generando el archivo ZIP con todas las capturas HD.');
+  // Abrir Modal de Descarga de Fotos ZIP y Compartir con Anfitrión
+  openZipModal(): void {
+    if (this.eventsList().length > 0) {
+      const currentSelected = this.selectedEventId();
+      this.zipEventId.set(currentSelected !== 'ALL' ? currentSelected : this.eventsList()[0].id);
+    }
+    this.isZipModalOpen.set(true);
+  }
+
+  closeZipModal(): void {
+    if (this.isGeneratingZip()) return;
+    this.isZipModalOpen.set(false);
+  }
+
+  // Descargar ZIP con todas las fotos del evento seleccionado
+  async downloadEventZip(): Promise<void> {
+    const ev = this.selectedZipEvent();
+    if (!ev) {
+      this._toastService.info('Selecciona un evento', 'Por favor elige un evento para descargar.');
+      return;
+    }
+
+    const eventPrints = this.printRequests().filter((r) => r.eventId === ev.id || (r.photo as any)?.eventId === ev.id);
+    const photoUrls = eventPrints.map((r) => r.photo.storagePath).filter(Boolean);
+
+    if (photoUrls.length === 0) {
+      this._toastService.info('Evento sin fotos', `El evento "${ev.title}" aún no cuenta con fotografías disponibles en Cloudinary.`);
+      return;
+    }
+
+    this.isGeneratingZip.set(true);
+    this.zipProgressText.set(`Descargando 0/${photoUrls.length} fotos...`);
+
+    try {
+      const zip = new JSZip();
+      const folderName = ev.title.replace(/[^a-zA-Z0-9_-]/g, '_');
+      const imgFolder = zip.folder(folderName) || zip;
+
+      let downloadedCount = 0;
+      for (let i = 0; i < photoUrls.length; i++) {
+        const url = photoUrls[i];
+        this.zipProgressText.set(`Procesando foto ${i + 1}/${photoUrls.length}...`);
+
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Error de red');
+          const blob = await response.blob();
+          const filename = `foto_${i + 1}_${Date.now()}.jpg`;
+          imgFolder.file(filename, blob);
+          downloadedCount++;
+        } catch {
+          // Continuar con las demás fotos si alguna falla
+        }
+      }
+
+      if (downloadedCount === 0) {
+        throw new Error('No se pudieron descargar imágenes desde Cloudinary');
+      }
+
+      this.zipProgressText.set('Comprimiendo archivo ZIP...');
+      const content = await zip.generateAsync({ type: 'blob' });
+
+      const downloadUrl = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `${folderName}_fotos_360.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(downloadUrl);
+
+      this.isGeneratingZip.set(false);
+      this._toastService.success('ZIP Generado', `Se descargaron ${downloadedCount} fotos del evento "${ev.title}".`);
+      this.closeZipModal();
+    } catch {
+      this.isGeneratingZip.set(false);
+      this._toastService.error('Error de Cloudinary', 'No se pudieron descargar las fotos. Verifica el enlace o tu conexión.');
+    }
+  }
+
+  // Copiar link público del evento para el Anfitrión
+  copyHostLink(): void {
+    const url = this.selectedZipEventGalleryUrl();
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(() => {
+      this._toastService.success('Enlace Copiado', 'Link del álbum copiado al portapapeles.');
+    });
+  }
+
+  // Compartir por WhatsApp con el Anfitrión
+  shareHostWhatsApp(): void {
+    const ev = this.selectedZipEvent();
+    const url = this.selectedZipEventGalleryUrl();
+    if (!ev || !url) return;
+
+    const hostName = ev.hostName || 'Anfitrión';
+    const message = `¡Hola ${hostName}! Te compartimos el enlace con todas las fotos de tu evento *${ev.title}*: ${url}`;
+    const waUrl = `https://wa.me/${ev.hostPhone ? ev.hostPhone.replace(/\D/g, '') : ''}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
   }
 }
