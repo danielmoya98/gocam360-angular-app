@@ -220,6 +220,7 @@ export class EventsPage implements OnInit {
   }
 
   goToPrintQueue(ev?: EventItemResponseDto): void {
+    this.activeRowMenuId.set(null);
     if (ev) {
       this.selectedEvent.set(ev);
     }
