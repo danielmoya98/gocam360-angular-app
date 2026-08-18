@@ -19,6 +19,7 @@ import { EventQrModalComponent } from './event-qr-modal.component';
 import { ClickOutsideDirective } from '../../shared/directives/click-outside.directive';
 import { EventsService, EventItemResponseDto, CreateEventDto, UpdateEventDto } from './services/events.service';
 import { PreferencesService } from '../../shared/services/preferences.service';
+import { PrintsService } from '../prints/services/prints.service';
 
 @Component({
   selector: 'app-events-page',
@@ -46,6 +47,7 @@ import { PreferencesService } from '../../shared/services/preferences.service';
 })
 export class EventsPage implements OnInit {
   private readonly _eventsService = inject(EventsService);
+  private readonly _printsService = inject(PrintsService);
   private readonly _toastService = inject(ToastService);
   private readonly _router = inject(Router);
   private readonly _preferencesService = inject(PreferencesService);
@@ -73,6 +75,7 @@ export class EventsPage implements OnInit {
   protected readonly isDeleteConfirmOpen = signal(false);
   protected readonly drawerMode = signal<'create' | 'edit' | 'view'>('create');
   protected readonly selectedEvent = signal<EventItemResponseDto | null>(null);
+  protected readonly eventPrintPhotos = signal<PrintPhotoItem[]>([]);
 
   protected readonly mockPrintPhotos = signal<PrintPhotoItem[]>([
     {
@@ -220,7 +223,30 @@ export class EventsPage implements OnInit {
     if (ev) {
       this.selectedEvent.set(ev);
     }
+    const targetEventId = ev?.id || this.selectedEvent()?.id;
     this.isPrintQueueModalOpen.set(true);
+
+    if (targetEventId) {
+      this._printsService.findAll(targetEventId, true).subscribe({
+        next: (prints) => {
+          const mapped: PrintPhotoItem[] = prints.map((p) => ({
+            id: p.id,
+            guestName: p.photo?.guest?.name || 'Invitado',
+            guestPhone: p.photo?.guest?.phone || '',
+            photoUrl: p.photo?.storagePath || p.photo?.thumbnailPath || p.photo?.originalPath || '',
+            frameName: p.photo?.frame?.name || 'Sin Marco',
+            requestedAt: (p.createdAt || p.requestedAt)
+              ? new Date(p.createdAt || p.requestedAt!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : '',
+            status: p.status === 'PRINTED' ? 'Printed' : 'Pending',
+          }));
+          this.eventPrintPhotos.set(mapped);
+        },
+        error: () => {
+          this._toastService.error('Error', 'No se pudieron recuperar las fotos del evento');
+        },
+      });
+    }
   }
 
   onNotifyWhatsApp(photo: PrintPhotoItem): void {
@@ -231,10 +257,17 @@ export class EventsPage implements OnInit {
   }
 
   onMarkAsPrinted(photoId: string): void {
-    this.mockPrintPhotos.update((photos) =>
-      photos.map((p) => (p.id === photoId ? { ...p, status: 'Printed' as const } : p))
-    );
-    this._toastService.success('Impresión Procesada', 'Se envió la orden de impresión térmica.');
+    this._printsService.updateStatus(photoId, 'PRINTING').subscribe({
+      next: () => {
+        this.eventPrintPhotos.update((photos) =>
+          photos.map((p) => (p.id === photoId ? { ...p, status: 'Printed' as const } : p))
+        );
+        this._toastService.success('Impresión Procesada', 'Se envió la orden a la estación térmica.');
+      },
+      error: () => {
+        this._toastService.error('Error', 'No se pudo procesar la solicitud de impresión');
+      },
+    });
   }
 
   protected readonly eventFramesList = signal<{ id: string; name: string; previewUrl: string }[]>([]);

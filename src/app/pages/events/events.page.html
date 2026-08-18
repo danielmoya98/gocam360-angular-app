@@ -687,11 +687,11 @@
     [event]="selectedEvent()"
   />
 
-  <!-- PRINT QUEUE & PHOTOS MODAL (100% Sólido sin Transparencias) -->
+  <!-- PRINT QUEUE & PHOTOS MODAL (Grid Instagram Feed con Backend Real NestJS) -->
   <app-print-queue-modal
     [(isOpen)]="isPrintQueueModalOpen"
-    [eventTitle]="selectedEvent()?.title ?? ''"
-    [photos]="mockPrintPhotos()"
+    [eventTitle]="selectedEvent()?.title ?? selectedEvent()?.name ?? ''"
+    [photos]="eventPrintPhotos()"
     (notifyWhatsApp)="onNotifyWhatsApp($event)"
     (markAsPrinted)="onMarkAsPrinted($event)"
   />
