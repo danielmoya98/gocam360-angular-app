@@ -62,7 +62,8 @@ export class PrintsPage implements OnInit {
     const ev = this.selectedZipEvent();
     if (!ev) return '';
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://gocam360.com';
-    return `${origin}/guest-experience?code=${ev.accessCode}`;
+    const code = ev.uniqueCode || ev.accessCode || '';
+    return `${origin}/guest/event-join?code=${code}`;
   });
 
   ngOnInit(): void {
