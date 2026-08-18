@@ -4,11 +4,11 @@ import { DatePipe } from '@angular/common';
 import { IconComponent } from '../../shared/ui/icon/icon.component';
 import { HlmInputDirective } from '../../shared/ui/input/hlm-input.directive';
 import { ToastService } from '../../shared/services/toast.service';
-import { GuestExperienceService } from './services/guest-experience.service';
+import { GuestExperienceService, MyPhotoDto } from './services/guest-experience.service';
 import { PublicEventDto, PublicFrameDto } from '../../shared/models/event.model';
 
-export type StepType = 'STEP_1_CODE' | 'STEP_2_GUEST_INFO' | 'LOADING_EVENT' | 'WELCOME' | 'FRAME' | 'SUCCESS';
-export type { PublicEventDto, PublicFrameDto };
+export type StepType = 'STEP_1_CODE' | 'STEP_2_GUEST_INFO' | 'LOADING_EVENT' | 'WELCOME' | 'FRAME' | 'MY_PHOTOS' | 'SUCCESS';
+export type { PublicEventDto, PublicFrameDto, MyPhotoDto };
 
 @Component({
   selector: 'app-guest-event-join-page',
@@ -32,6 +32,11 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
   // Control de cuotas de fotos e impresiones del invitado
   protected readonly photosUploaded = signal(0);
   protected readonly printsRequested = signal(0);
+
+  // Lista de fotos subidas por el invitado
+  protected readonly myPhotosList = signal<MyPhotoDto[]>([]);
+  protected readonly isLoadingMyPhotos = signal(false);
+  protected readonly requestingPrintPhotoId = signal<string | null>(null);
 
   protected readonly remainingPhotos = computed(() => {
     const max = this.eventData()?.maxPhotosPerGuest ?? 10;
@@ -226,9 +231,109 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
     this._toast.info('Foto Descartada', 'Puedes tomar o elegir otra fotografía.');
   }
 
+  // 1. Guardar la foto sólo en la Galería Digital (Sin Imprimir)
+  savePhotoDigitalOnly(): void {
+    if (this.remainingPhotos() <= 0) {
+      this._toast.error('Límite de fotos alcanzado', 'Has alcanzado el número máximo de fotografías permitidas para este evento.');
+      return;
+    }
+
+    const guestId = this.currentGuestId();
+    const eventId = this.eventData()?.id;
+
+    if (!guestId || !eventId) {
+      this._toast.error('Error de Sesión', 'No se encontró el registro del invitado. Por favor reingresa.');
+      return;
+    }
+
+    this.isUploading.set(true);
+    const payload = {
+      eventId,
+      guestId,
+      frameId: this.selectedFrameId(),
+      photoBase64: this.selectedPhotoUrl(),
+    };
+
+    this._guestService.uploadPhotoOnly(payload).subscribe({
+      next: () => {
+        this.isUploading.set(false);
+        this.photosUploaded.update((n) => n + 1);
+        this._toast.success('Foto Guardada', 'Tu foto fue guardada en el álbum digital del evento.');
+        this.openMyPhotos();
+      },
+      error: (err) => {
+        this.isUploading.set(false);
+        this._toast.error('Error al guardar', err?.error?.message || 'No se pudo guardar la fotografía.');
+      },
+    });
+  }
+
+  // 2. Cargar las fotos subidas por el invitado y navegar al paso MY_PHOTOS
+  openMyPhotos(): void {
+    const guestId = this.currentGuestId();
+    const eventId = this.eventData()?.id;
+
+    if (!guestId || !eventId) {
+      this.currentStep.set('WELCOME');
+      return;
+    }
+
+    this.isLoadingMyPhotos.set(true);
+    this.currentStep.set('MY_PHOTOS');
+
+    this._guestService.getMyPhotos(eventId, guestId).subscribe({
+      next: (photos) => {
+        this.myPhotosList.set(photos || []);
+        this.isLoadingMyPhotos.set(false);
+      },
+      error: () => {
+        this.isLoadingMyPhotos.set(false);
+      },
+    });
+  }
+
+  // 3. Solicitar la impresión de una foto que el invitado ya subió previamente
+  requestPrintForExistingPhoto(photoId: string): void {
+    if (this.remainingPrints() <= 0) {
+      this._toast.error('Límite de impresiones alcanzado', 'No te quedan impresiones en papel disponibles para este evento.');
+      return;
+    }
+
+    const guestId = this.currentGuestId();
+    const eventId = this.eventData()?.id;
+
+    if (!guestId || !eventId) {
+      this._toast.error('Error de Sesión', 'Reingresa al evento para continuar.');
+      return;
+    }
+
+    this.requestingPrintPhotoId.set(photoId);
+
+    this._guestService.requestPrintForPhoto({ photoId, guestId, eventId }).subscribe({
+      next: () => {
+        this.requestingPrintPhotoId.set(null);
+        this.printsRequested.update((n) => n + 1);
+        this._toast.success('Solicitud de Impresión Enviada', 'Tu foto ha ingresado a la cola de la impresora.');
+        
+        // Actualizar el estado local de la foto
+        this.myPhotosList.update((list) =>
+          list.map((p) => (p.id === photoId ? { ...p, isPendingPrint: true, hasPrintRequest: true } : p))
+        );
+      },
+      error: (err) => {
+        this.requestingPrintPhotoId.set(null);
+        this._toast.error('Error al enviar', err?.error?.message || 'No se pudo solicitar la impresión.');
+      },
+    });
+  }
+
   sendToPrintQueue(): void {
     if (this.remainingPhotos() <= 0) {
       this._toast.error('Límite de fotos alcanzado', 'Has alcanzado el número máximo de fotografías permitidas para este evento.');
+      return;
+    }
+    if (this.remainingPrints() <= 0) {
+      this._toast.error('Sin impresiones disponibles', 'Ya consumiste tus impresiones en papel. Puedes guardarla en la galería digital.');
       return;
     }
 

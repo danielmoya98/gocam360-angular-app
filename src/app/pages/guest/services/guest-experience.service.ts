@@ -23,6 +23,15 @@ export interface CrmQuotePayload {
   notes?: string;
 }
 
+export interface MyPhotoDto {
+  id: string;
+  storagePath: string;
+  uploadedAt: string | Date;
+  isPrinted: boolean;
+  isPendingPrint: boolean;
+  hasPrintRequest: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -39,6 +48,18 @@ export class GuestExperienceService {
 
   uploadPhoto(payload: UploadPhotoPayload): Observable<any> {
     return this._api.post('/guest-experience/upload', payload);
+  }
+
+  uploadPhotoOnly(payload: UploadPhotoPayload): Observable<any> {
+    return this._api.post('/guest-experience/upload-photo', payload);
+  }
+
+  getMyPhotos(eventId: string, guestId: string): Observable<MyPhotoDto[]> {
+    return this._api.get<MyPhotoDto[]>(`/guest-experience/my-photos?eventId=${eventId}&guestId=${guestId}`);
+  }
+
+  requestPrintForPhoto(payload: { photoId: string; guestId: string; eventId: string }): Observable<any> {
+    return this._api.post('/guest-experience/request-print', payload);
   }
 
   sendCrmQuote(payload: CrmQuotePayload): Observable<any> {
