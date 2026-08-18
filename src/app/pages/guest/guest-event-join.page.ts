@@ -151,6 +151,12 @@ export class GuestEventJoinPage implements OnInit, OnDestroy {
         if (res?.guestId) {
           this.currentGuestId.set(res.guestId);
         }
+        if (res?.photosUploaded !== undefined) {
+          this.photosUploaded.set(res.photosUploaded);
+        }
+        if (res?.printsRequested !== undefined) {
+          this.printsRequested.set(res.printsRequested);
+        }
         this.isSubmitting.set(false);
         // Transición fluida a la pantalla de bienvenida y captura de fotos
         this.currentStep.set('WELCOME');
